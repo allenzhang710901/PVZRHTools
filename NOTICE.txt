@@ -1,0 +1,10 @@
+   MelonLoader
+   Copyright 2020 - 2022 Lava Gang
+   
+   This product contains software (https://github.com/LavaGang/MelonLoader) developed
+   by Lava Gang, licensed under the Apache-2.0 license.
+
+   此项目使用MelonLoader,构建版本中修改内容如下： 
+   1.删除MelonLoader/Il2CppAssemblyGenerator文件夹以禁止下载Cpp2IL与Unity Runtime Libraries、连接远程API与构建缓存
+   2.附带了预构建好的融合版游戏运行缓存
+
