@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
+  </PropertyGroup>
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Command="COPY &quot;$(TargetPath)&quot; &quot;D:\Beta\pvz\rhex\UserLibs&quot;" />
+		<Exec Command="COPY &quot;$(TargetPath)&quot; &quot;D:\Beta\pvz\rhex\PVZRHTools&quot;" />
+	</Target>
+
+</Project>
