@@ -176,7 +176,7 @@
    END OF TERMS AND CONDITIONS
 
    PVZRHTools
-   Copyright 2025 Infinite75
+   Copyright 2025 Infinite-75
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -192,7 +192,11 @@
 
    https://github.com/Infinite-75/PVZRHTools
 
-   此项目使用MelonLoader,构建版本中修改内容如下： 
+   MelonLoader:Apache-2.0 license
+   HandyControl:MIT License
+   FastHotKeyForWPF:MIT License
+
+   此项目使用修改过的MelonLoader,构建版本中修改内容如下： 
    1.删除MelonLoader/Il2CppAssemblyGenerator文件夹以禁止下载Cpp2IL与Unity Runtime Libraries、连接远程API与构建缓存
    2.附带了预构建好的融合版游戏运行缓存
 

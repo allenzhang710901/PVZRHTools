@@ -11,10 +11,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolModData", "ToolModData\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "解决方案项", "解决方案项", "{9FA3D6BD-1EC1-3BA5-80CB-CE02773A58D5}"
 	ProjectSection(SolutionItems) = preProject
+		PVZRHTools\debug.txt = PVZRHTools\debug.txt
 		LICENSE = LICENSE
 		NOTICE.txt = NOTICE.txt
 		README.md = README.md
+		ToolMod\修改器更新日志.txt = ToolMod\修改器更新日志.txt
+		修改器更新日志.txt = 修改器更新日志.txt
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolPlugin", "ToolPlugin\ToolPlugin.csproj", "{6F98B77A-819A-4ACB-8245-A5DD1913A9B9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,6 +39,10 @@ Global
 		{BAF63FD9-65ED-466C-ACCD-91DB2BB89F91}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BAF63FD9-65ED-466C-ACCD-91DB2BB89F91}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BAF63FD9-65ED-466C-ACCD-91DB2BB89F91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F98B77A-819A-4ACB-8245-A5DD1913A9B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F98B77A-819A-4ACB-8245-A5DD1913A9B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F98B77A-819A-4ACB-8245-A5DD1913A9B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F98B77A-819A-4ACB-8245-A5DD1913A9B9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

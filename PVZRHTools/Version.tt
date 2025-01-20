@@ -17,15 +17,15 @@
 #>
 //ver<#= this.build #>
 namespace PVZRHTools;
+
 public static class ModifierVersion
 {
-    public static string Version => "<#= this.major #>.<#= this.minor #>.<#= this.build #>";
     public static string GameVersion => "<#= this.gameVersion #>";
-
+    public static string Version => "<#= this.major #>.<#= this.minor #>.<#= this.build #>";
 } 
 <#+
     int major = 3;
-    int minor = 7;
+    int minor = 10;
     int build = 1;
-    string gameVersion="2.1.6";
+    string gameVersion="2.2";
 #>

@@ -1,17 +1,10 @@
-﻿using CommunityToolkit.Mvvm.DependencyInjection;
-using FastHotKeyForWPF;
+﻿using FastHotKeyForWPF;
 using HandyControl.Controls;
 using HandyControl.Tools.Extension;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
-using ToolModData;
 
 namespace PVZRHTools
 {
@@ -26,16 +19,34 @@ namespace PVZRHTools
             Title = $"PVZ融合版修改器{ModifierVersion.GameVersion}-{ModifierVersion.Version} b站@Infinite75制作";
             WindowTitle.Content = Title;
             Instance = this;
-            DataContext = new ModifierViewModel();
             ModifierSprite = new ModifierSprite();
             Sprite.Show(ModifierSprite);
             ModifierSprite.Hide();
+            if (File.Exists("UserData/ModifierSettings.json"))
+            {
+                ModifierSaveModel s = JsonSerializer.Deserialize<ModifierSaveModel>(File.ReadAllText("UserData/ModifierSettings.json"));
+                DataContext = s.NeedSave ? new ModifierViewModel(s) : new ModifierViewModel();
+            }
+            else
+            {
+                DataContext = new ModifierViewModel();
+            }
+            App.inited = true;
         }
 
-        public ModifierSprite ModifierSprite { get; set; }
-        public static MainWindow? Instance { get; private set; }
+        public void DataGrid_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            e.Handled = false;
+        }
 
-        private void TitleBar_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        public void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            e.Handled = true;
+            var scrollViewer = (ScrollViewer)sender;
+            scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - e.Delta);
+        }
+
+        public void TitleBar_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             if ((e.LeftButton is MouseButtonState.Pressed) && (e.RightButton is MouseButtonState.Released) && (e.MiddleButton is MouseButtonState.Released))
             {
@@ -43,24 +54,12 @@ namespace PVZRHTools
             }
         }
 
-        private void TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        protected override void OnClosed(EventArgs e)
         {
-            Regex re = new("[^0-9]+");
-            e.Handled = re.IsMatch(e.Text);
-        }
-
-        private void DataGrid_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            e.Handled = false;
-        }
-
-        public ModifierViewModel ViewModel => (ModifierViewModel)DataContext;
-
-        private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            e.Handled = true;
-            var scrollViewer = (HandyControl.Controls.ScrollViewer)sender;
-            scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - e.Delta);
+            base.OnClosed(e);
+            GlobalHotKey.Destroy();
+            ViewModel.Save();
+            Application.Current.Shutdown();
         }
 
         protected override void OnSourceInitialized(EventArgs e)
@@ -82,15 +81,17 @@ namespace PVZRHTools
             GlobalHotKey.Add(ModelKeys.ALT, NormalKeys.F9, Handler14);
         }
 
-        protected override void OnClosed(EventArgs e)
-        {
-            base.OnClosed(e);
-            //File.WriteAllText("./PVZRHTools/ModifierSettings.json", JsonSerializer.Serialize(ViewModel));
-            GlobalHotKey.Destroy();
-            Application.Current.Shutdown();
-        }
-
         void Handler1(object sender, HotKeyEventArgs e) => CreatePlant.Command.Execute(null);
+
+        void Handler10(object sender, HotKeyEventArgs e) => MindCtrlAll.Command.Execute(null);
+
+        void Handler11(object sender, HotKeyEventArgs e) => NextWave.Command.Execute(null);
+
+        void Handler12(object sender, HotKeyEventArgs e) => ChangeLevelName.Command.Execute(null);
+
+        void Handler13(object sender, HotKeyEventArgs e) => ShowText.Command.Execute(null);
+
+        void Handler14(object sender, HotKeyEventArgs e) => FreePlanting.IsChecked = !FreePlanting.IsChecked;
 
         void Handler2(object sender, HotKeyEventArgs e) => createZombie.Command.Execute(null);
 
@@ -102,75 +103,14 @@ namespace PVZRHTools
 
         void Handler6(object sender, HotKeyEventArgs e) => WriteFieldZombies.Command.Execute(null);
 
-        void Handler7(object sender, HotKeyEventArgs e) => ZombieSea.IsChecked = !ZombieSea.IsChecked;
+        void Handler7(object sender, HotKeyEventArgs e) => ZombieSeaEnabled.IsChecked = !ZombieSeaEnabled.IsChecked;
 
         void Handler8(object sender, HotKeyEventArgs e) => KillAllZombies.Command.Execute(null);
 
         void Handler9(object sender, HotKeyEventArgs e) => ClearAllPlants.Command.Execute(null);
 
-        void Handler10(object sender, HotKeyEventArgs e) => MindCtrlAll.Command.Execute(null);
-
-        void Handler11(object sender, HotKeyEventArgs e) => NextWave.Command.Execute(null);
-
-        void Handler12(object sender, HotKeyEventArgs e) => ChangeLevelName.Command.Execute(null);
-
-        void Handler13(object sender, HotKeyEventArgs e) => ShowText.Command.Execute(null);
-
-        void Handler14(object sender, HotKeyEventArgs e) => FreePlanting.IsChecked = !FreePlanting.IsChecked;
-    }
-
-    //copy from csdn
-    public class SelectedItemsExt : DependencyObject
-    {
-        public static IList GetSelectedItems(DependencyObject obj)
-        {
-            return (IList)obj.GetValue(SelectedItemsProperty);
-        }
-
-        public static void SetSelectedItems(DependencyObject obj, IList value)
-        {
-            obj.SetValue(SelectedItemsProperty, value);
-        }
-
-        // Using a DependencyProperty as the backing store for SelectedItems.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty SelectedItemsProperty =
-            DependencyProperty.RegisterAttached("SelectedItems", typeof(IList), typeof(SelectedItemsExt), new PropertyMetadata(OnSelectedItemsChanged));
-
-        private static void OnSelectedItemsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var listBox = d as ListBox;
-            if ((listBox != null) && (listBox.SelectionMode == SelectionMode.Multiple))
-            {
-                if (e.OldValue != null)
-                {
-                    listBox.SelectionChanged -= OnlistBoxSelectionChanged;
-                }
-                IList collection = (e.NewValue as IList)!;
-                listBox.SelectedItems.Clear();
-                if (collection != null)
-                {
-                    foreach (object item in collection)
-                    {
-                        listBox.SelectedItems.Add(item);
-                    }
-                    listBox.OnApplyTemplate();
-                    listBox.SelectionChanged += OnlistBoxSelectionChanged;
-                }
-            }
-        }
-
-        private static void OnlistBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            IList dataSource = GetSelectedItems((sender as DependencyObject)!);
-            foreach (var item in e.AddedItems)
-            {
-                dataSource.Add(item);
-            }
-            foreach (var item in e.RemovedItems)
-            {
-                dataSource.Remove(item);
-            }
-            SetSelectedItems((sender as DependencyObject)!, dataSource);
-        }
+        public static MainWindow? Instance { get; set; }
+        public ModifierSprite ModifierSprite { get; set; }
+        public ModifierViewModel ViewModel => (ModifierViewModel)DataContext;
     }
 }

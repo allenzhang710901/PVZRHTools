@@ -1,139 +1,192 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using HandyControl.Tools.Extension;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
-using System.Text.Json.Serialization;
-using System.Windows;
-using System.Windows.Controls;
-using System.Xml.Linq;
+using System.Text.Json;
 using ToolModData;
+using System.IO;
+using FastHotKeyForWPF;
+using System.Windows.Input;
+using System.Text.Json.Serialization;
 
 namespace PVZRHTools
 {
+    public partial class CardUI : ObservableObject
+    {
+        public CardUI()
+        {
+            SetEnabled = false;
+        }
+
+        public Card GetCard() => new()
+        {
+            ID = ID,
+            NewID = NewID,
+            Sun = Sun,
+            CD = (float)CD,
+            Enabled = SetEnabled
+        };
+
+        partial void OnSetEnabledChanged(bool value)
+        {
+            List<Card> cards = new();
+            foreach (var c in MainWindow.Instance!.ViewModel.CardReplaces)
+            {
+                cards.Add(c.CardUI.GetCard());
+            }
+            App.DataSync.Value.SendData(new CardProperties()
+            {
+                CardReplaces = cards
+            });
+        }
+
+        public double CD { get; set; } = -1;
+
+        public int ID { get; set; } = -1;
+
+        public int NewID { get; set; } = -1;
+
+        public int Sun { get; set; } = -1;
+
+        [ObservableProperty]
+        private bool setEnabled;
+    }
+
+    public partial class CardUIVM : ObservableObject
+    {
+        public CardUIVM(CardUI CardUI) => this.CardUI = CardUI;
+
+        public bool Enabled
+        {
+            get => CardUI.SetEnabled;
+            set
+            {
+                SetProperty(CardUI.SetEnabled, value, CardUI, (t, e) => t.SetEnabled = e);
+                OnPropertyChanged(new PropertyChangedEventArgs("IsChecked"));
+                OnPropertyChanged(new PropertyChangedEventArgs("IsEnabled"));
+            }
+        }
+
+        [ObservableProperty]
+        private CardUI cardUI;
+    }
+
     [Serializable]
+    public partial class HotkeyUI : ObservableObject, IAutoHotKeyProperty
+    {
+        public event HotKeyEventHandler? Handler;
+
+        [JsonIgnore]
+        public int PoolID { get; set; }
+
+        [ObservableProperty]
+        private uint currentKeyA;
+
+        [ObservableProperty]
+        private Key currentKeyB;
+    }
+
+    [Serializable]
+    public partial class HotkeyUIVM : ObservableObject, IAutoHotKeyUpdate, IAutoHotKeyProperty
+    {
+        public HotkeyUIVM(HotkeyUI HotkeyUI)
+        {
+            this.HotkeyUI = HotkeyUI;
+            Clear = new(() => (CurrentKeyA, CurrentKeyB) = (0, 0));
+        }
+
+        public event HotKeyEventHandler? Handler;
+
+        public void RemoveSame()
+        {
+        }
+
+        public void UpdateHotKey()
+        {
+        }
+
+        public void UpdateText()
+        {
+        }
+
+        [JsonIgnore]
+        public RelayCommand Clear { get; init; }
+
+        [JsonIgnore]
+        public RelayCommand? Command { get; set; }
+
+        [JsonIgnore]
+        public uint CurrentKeyA { get => HotkeyUI.CurrentKeyA; set => HotkeyUI.CurrentKeyA = value; }
+
+        [JsonIgnore]
+        public Key CurrentKeyB { get => HotkeyUI.CurrentKeyB; set => HotkeyUI.CurrentKeyB = value; }
+
+        [JsonIgnore]
+        public int PoolID { get => HotkeyUI.PoolID; set => HotkeyUI.PoolID = value; }
+
+        [JsonIgnore]
+        public string Text { get; init; } = "";
+
+        [ObservableProperty]
+        private HotkeyUI hotkeyUI;
+    }
+
     public partial class ModifierViewModel : ObservableObject
     {
         public ModifierViewModel()
         {
             Plants = new()
             {
-                { -1, "不修改" }
+                { -1, "-1 : 不修改" }
             };
             Bullets2 = new()
             {
                 {-2,"-2 : 不修改" },
                 {-1,"-1 : 随机子弹" }
             };
-            Health1st = new();
-            Health2nd = new();
-            HealthPlant = new();
-            HealthZombie = new();
+            Health1sts = new();
+            Health2nds = new();
+            HealthPlants = new();
+            HealthZombies = new();
             foreach (var kp in App.InitData!.Value.Plants)
             {
                 Plants.Add(kp.Key, kp.Value);
             }
             foreach (var h1 in App.InitData.Value.FirstArmors)
             {
-                Health1st.Add(h1.Key, -1);
+                Health1sts.Add(h1.Key, -1);
             }
             foreach (var h2 in App.InitData.Value.SecondArmors)
             {
-                Health2nd.Add(h2.Key, -1);
+                Health2nds.Add(h2.Key, -1);
             }
             foreach (var h3 in App.InitData.Value.Plants)
             {
-                HealthPlant.Add(h3.Key, -1);
+                HealthPlants.Add(h3.Key, -1);
             }
             foreach (var h4 in App.InitData.Value.Zombies)
             {
-                HealthZombie.Add(h4.Key, -1);
+                HealthZombies.Add(h4.Key, -1);
             }
             foreach (var b in Bullets)
             {
                 Bullets2.Add(b.Key, b.Key.ToString() + " : " + b.Value);
             }
-            SpeedText = "游戏速度：";
-            Row = "0";
-            Col = "0";
-            Times = "1";
-            IsMindCtrl = false;
-            ZombieSeaCD = "40";
+            GameSpeed = 3;
+            ZombieSeaCD = 40;
             ZombieSeaTypes = new();
             FieldString = "";
             ZombieFieldString = "";
-            Sun = "";
-            Money = "";
-            LevelName = "";
+            NewLevelName = "";
             ShowText = "";
-            Health1stValue = "";
-            Health2ndValue = "";
-            HealthPlantValue = "";
-            HealthZombieValue = "";
-            BulletDamageValue = "";
-            BulletDamageType = -2;
+            BulletDamageType = 0;
+            LockPresent = -1;
+            LockBulletType = -2;
             ZombieSeaTypes = new();
-            DeveloperMode = new(Set_DeveloperMode);
-            GloveNoCD = new(Set_GloveNoCD);
-            HammerNoCD = new(Set_HammerNoCD);
-            PlantingNoCD = new(Set_PlantingNoCD);
-            FreePlanting = new(Set_FreePlanting);
-            UnlockAllFusions = new(Set_UnlockAllFusions);
-            SuperPresent = new(Set_SuperPresent);
-            UltimateRamdomZombie = new(Set_UltimateRamdomZombie);
-            PresentFastOpen = new(Set_PresentFastOpen);
-            LockPresent = new(Set_LockPresent);
-            FastShooting = new(Set_FastShooting);
-            HardPlant = new(Set_HardPlant);
-            NoHole = new(Set_NoHole);
-            HyponoEmperorNoCD = new(Set_HyponoEmperorNoCD);
-            MineNoCD = new(Set_MineNoCD);
-            ChomperNoCD = new(Set_ChomperNoCD);
-            CobCannonNoCD = new(Set_CobCannonNoCD);
-            NoIceRoad = new(Set_NoIceRoad);
-            ItemExistForever = new(Set_ItemExistForever);
-            CardNoInit = new(Set_CardNoInit);
-            JackboxNotExplode = new(Set_JackboxNotExplode);
-            GameSpeed = new(Set_GameSpeed);
-            CreatePlant = new(Set_CreatePlant);
-            CreateZombie = new(Set_CreateZombie);
-            CreateItem = new(Set_CreateItem);
-            CreatePassiveMateorite = new(Set_CreatePassiveMateorite);
-            CreateActiveMateorite = new(Set_CreateActiveMateorite);
-            CreateUltimateMateorite = new(Set_CreateUltimateMateorite);
-            SetZombieSea = new(Set_ZombieSea);
-            SetSun = new(Set_Sun);
-            SetMoney = new(Set_Money);
-            LockSun = new(Set_LockSun);
-            LockMoney = new(Set_LockMoney);
-            NextWave = new(Set_NextWave);
-            StopSummon = new(Set_StopSummon);
-            NoFail = new(Set_NoFail);
-            ClearIceRoads = new(Set_ClearIceRoads);
-            ClearAllHoles = new(Set_ClearAllHoles);
-            MindCtrlAll = new(Set_MindCtrl);
-            Win = new(Set_Win);
-            SetLevelName = new(Set_LevelName);
-            ShowingText = new(Set_ShowingText);
-            ClearFieldScripts = new(Set_ClearFieldScripts);
-            WriteField = new(Set_WriteField);
-            SimplePresents = new(Set_SimplePresents);
-            ClearAllPlants = new(Set_ClearAllPlants);
-            KillAllZombies = new(Set_KillAllZombies);
-            CopyFieldScripts = new(Set_CopyFieldScripts);
-            SetHealthPlant = new(Set_HealthPlant);
-            SetHealthZombie = new(Set_HealthZombie);
-            SetHealth1st = new(Set_Health1st);
-            SetHealth2nd = new(Set_Health2nd);
-            SetBulletDamage = new(Set_BulletDamage);
-            SetLockBullet = new(Set_LockBullet);
-            SetGameModes = new(Set_GameModes);
-            CreateCard = new(Set_CreateCard);
             TravelBuffs = new();
             InGameBuffs = new();
+            ImpToBeThrown = 37;
+            Times = 1;
             int bi = 0;
             foreach (var b in App.InitData.Value.AdvBuffs)
             {
@@ -154,346 +207,172 @@ namespace PVZRHTools
             {
                 CardReplaces.Add(new(new()));
             }
-            CardReplaces.ListChanged += (sender, e) =>
+            CardReplaces.ListChanged += (sender, e) => SyncCards();
+            SpeedValue = TickToSpeed((int)GameSpeed).ToString();
+            Hotkeys = new();
+            foreach (var (h, hui) in from h in KeyCommands let hui = new HotkeyUI() select (h, hui))
             {
-                MessageBox.Show("1");
-                List<Card> cards = new();
-                foreach (var c in MainWindow.Instance!.ViewModel.CardReplaces)
+                Hotkeys.Add(new HotkeyUIVM(hui)
                 {
-                    cards.Add(c.CardUI.GetCard());
-                }
-                App.DataSync.Value.SendData(new CardProperties()
-                {
-                    CardReplaces = cards
+                    Command = new(h.Item2),
+                    Text = h.Item1
                 });
+            }
+        }
+
+        public ModifierViewModel(List<HotkeyUIVM> hotkeys) : this()
+        {
+            int hi = 0;
+            Hotkeys = new();
+            foreach (var (h, hui) in from h in KeyCommands let hui = new HotkeyUI() select (h, hui))
+            {
+                Hotkeys.Add(new HotkeyUIVM(hotkeys[hi].HotkeyUI)
+                {
+                    Command = new(h.Item2),
+                    Text = h.Item1
+                });
+                hi++;
+            }
+        }
+
+        public ModifierViewModel(ModifierSaveModel s)
+        {
+            Plants = new()
+            {
+                { -1, "-1 : 不修改" }
             };
-        }
-
-        [ObservableProperty]
-        private string speedText;
-
-        [ObservableProperty]
-        private string row;
-
-        [ObservableProperty]
-        private string col;
-
-        [ObservableProperty]
-        private string times;
-
-        [ObservableProperty]
-        private int plantType;
-
-        [ObservableProperty]
-        private int zombieType;
-
-        [ObservableProperty]
-        private bool isMindCtrl;
-
-        [ObservableProperty]
-        private int itemType;
-
-        [ObservableProperty]
-        private bool zombieSea;
-
-        [ObservableProperty]
-        private string zombieSeaCD;
-
-        [ObservableProperty]
-        private List<KeyValuePair<int, string>> zombieSeaTypes;
-
-        [ObservableProperty]
-        private string fieldString;
-
-        [ObservableProperty]
-        private string zombieFieldString;
-
-        [ObservableProperty]
-        private string sun;
-
-        [ObservableProperty]
-        private string money;
-
-        [ObservableProperty]
-        private string levelName;
-
-        [ObservableProperty]
-        private string showText;
-
-        [ObservableProperty]
-        private bool clearOnWritingField;
-
-        [ObservableProperty]
-        private bool clearOnWritingZombies;
-
-        [ObservableProperty]
-        private int healthPlantType;
-
-        [ObservableProperty]
-        private int healthZombieType;
-
-        [ObservableProperty]
-        private int health1stType;
-
-        [ObservableProperty]
-        private int health2ndType;
-
-        [ObservableProperty]
-        private string healthPlantValue;
-
-        [ObservableProperty]
-        private string healthZombieValue;
-
-        [ObservableProperty]
-        private string health1stValue;
-
-        [ObservableProperty]
-        private string health2ndValue;
-
-        [ObservableProperty]
-        private int bulletDamageType;
-
-        [ObservableProperty]
-        private string bulletDamageValue;
-
-        [ObservableProperty]
-        private KeyValuePair<int, string> lockBullet;
-
-        [ObservableProperty]
-        private bool scaredyDream;
-
-        [ObservableProperty]
-        private bool columnPlanting;
-
-        [ObservableProperty]
-        private bool seedRain;
-
-        [ObservableProperty]
-        private bool exchange;
-
-        [ObservableProperty]
-        private bool shooting1;
-
-        [ObservableProperty]
-        private bool shooting2;
-
-        [ObservableProperty]
-        private bool shooting3;
-
-        [ObservableProperty]
-        private bool shooting4;
-
-        [ObservableProperty]
-        private bool freeCD;
-
-        [ObservableProperty]
-        private bool needSave;
-
-        [ObservableProperty]
-        private BindingList<TravelBuffVM> travelBuffs;
-
-        [ObservableProperty]
-        private BindingList<TravelBuffVM> inGameBuffs;
-
-        [ObservableProperty]
-        private BindingList<CardUIVM> cardReplaces;
-
-        public Dictionary<int, int> HealthPlant { get; set; }
-        public Dictionary<int, int> HealthZombie { get; set; }
-        public Dictionary<int, int> Health1st { get; set; }
-        public Dictionary<int, int> Health2nd { get; set; }
-        public RelayCommand CreateCard { get; set; }
-        public RelayCommand ClearFieldScripts { get; set; }
-        public RelayCommand WriteField { get; set; }
-        public RelayCommand CopyFieldScripts { get; set; }
-        public RelayCommand SimplePresents { get; set; }
-        public RelayCommand CreatePlant { get; set; }
-        public RelayCommand CreateZombie { get; set; }
-        public RelayCommand CreateItem { get; set; }
-        public RelayCommand CreatePassiveMateorite { get; set; }
-        public RelayCommand CreateActiveMateorite { get; set; }
-        public RelayCommand CreateUltimateMateorite { get; set; }
-        public RelayCommand SetZombieSea { get; set; }
-        public RelayCommand SetSun { get; set; }
-        public RelayCommand SetMoney { get; set; }
-        public RelayCommand NextWave { get; set; }
-        public RelayCommand ClearIceRoads { get; set; }
-        public RelayCommand ClearAllHoles { get; set; }
-        public RelayCommand MindCtrlAll { get; set; }
-        public RelayCommand Win { get; set; }
-        public RelayCommand SetLevelName { get; set; }
-        public RelayCommand ShowingText { get; set; }
-        public RelayCommand ClearAllPlants { get; set; }
-        public RelayCommand KillAllZombies { get; set; }
-        public RelayCommand SetHealthPlant { get; set; }
-        public RelayCommand SetHealthZombie { get; set; }
-        public RelayCommand SetHealth1st { get; set; }
-        public RelayCommand SetHealth2nd { get; set; }
-        public RelayCommand SetBulletDamage { get; set; }
-        public RelayCommand SetLockBullet { get; set; }
-        public RelayCommand SetGameModes { get; set; }
-        public RelayCommand<bool> LockSun { get; set; }
-        public RelayCommand<bool> LockMoney { get; set; }
-        public RelayCommand<bool> DeveloperMode { get; set; }
-        public RelayCommand<bool> GloveNoCD { get; set; }
-        public RelayCommand<bool> HammerNoCD { get; set; }
-        public RelayCommand<bool> PlantingNoCD { get; set; }
-        public RelayCommand<bool> FreePlanting { get; set; }
-        public RelayCommand<bool> UnlockAllFusions { get; set; }
-        public RelayCommand<bool> SuperPresent { get; set; }
-        public RelayCommand<bool> UltimateRamdomZombie { get; set; }
-        public RelayCommand<bool> PresentFastOpen { get; set; }
-        public RelayCommand<int> LockPresent { get; set; }
-        public RelayCommand<bool> FastShooting { get; set; }
-        public RelayCommand<bool> HardPlant { get; set; }
-        public RelayCommand<bool> NoHole { get; set; }
-        public RelayCommand<bool> HyponoEmperorNoCD { get; set; }
-        public RelayCommand<bool> MineNoCD { get; set; }
-        public RelayCommand<bool> ChomperNoCD { get; set; }
-        public RelayCommand<bool> CobCannonNoCD { get; set; }
-        public RelayCommand<bool> NoIceRoad { get; set; }
-        public RelayCommand<bool> ItemExistForever { get; set; }
-        public RelayCommand<bool> CardNoInit { get; set; }
-        public RelayCommand<bool> JackboxNotExplode { get; set; }
-        public RelayCommand<bool> StopSummon { get; set; }
-        public RelayCommand<bool> NoFail { get; set; }
-        public RelayCommand<double> GameSpeed { get; set; }
-        public static Dictionary<int, string>? Plants { get; set; }
-
-        [JsonIgnore]
-        public Dictionary<int, string> Plants2 => App.InitData!.Value.Plants;
-
-        [JsonIgnore]
-        public Dictionary<int, string> Zombies => App.InitData!.Value.Zombies;
-
-        [JsonIgnore]
-        public Dictionary<int, string> Items => new()
-        {
-            {0, "肥料"},
-            {1, "铁桶"},
-            {2, "橄榄头盔"},
-            {3, "小丑礼盒"},
-            {4, "镐子"},
-            {5, "机甲碎片"},
-            {6, "超级机甲碎片" }
-        };
-
-        [JsonIgnore]
-        public Dictionary<int, string> Bullets2 { get; set; }
-
-        [JsonIgnore]
-        public Dictionary<int, string> Bullets => App.InitData!.Value.Bullets;
-
-        [JsonIgnore]
-        public Dictionary<int, string> FirstArmor => App.InitData!.Value.FirstArmors;
-
-        [JsonIgnore]
-        public Dictionary<int, string> SecondArmor => App.InitData!.Value.SecondArmors;
-
-        [JsonIgnore]
-        public static bool NeedSync { get; set; } = true;
-
-        [RelayCommand]
-        public void TopMostSprite(bool b)
-        {
-            if (b)
+            Bullets2 = new()
             {
-                MainWindow.Instance!.ModifierSprite.Show();
+                {-2,"-2 : 不修改" },
+                {-1,"-1 : 随机子弹" }
+            };
+            Health1sts = new();
+            Health2nds = new();
+            HealthPlants = new();
+            HealthZombies = new();
+            foreach (var kp in App.InitData!.Value.Plants)
+            {
+                Plants.Add(kp.Key, kp.Value);
             }
-            else
+            foreach (var h1 in App.InitData.Value.FirstArmors)
             {
-                MainWindow.Instance!.ModifierSprite.Hide();
+                Health1sts.Add(h1.Key, -1);
+            }
+            foreach (var h2 in App.InitData.Value.SecondArmors)
+            {
+                Health2nds.Add(h2.Key, -1);
+            }
+            foreach (var h3 in App.InitData.Value.Plants)
+            {
+                HealthPlants.Add(h3.Key, -1);
+            }
+            foreach (var h4 in App.InitData.Value.Zombies)
+            {
+                HealthZombies.Add(h4.Key, -1);
+            }
+            foreach (var b in Bullets)
+            {
+                Bullets2.Add(b.Key, b.Key.ToString() + " : " + b.Value);
+            }
+            InGameBuffs = new();
+            CardNoInit = s.CardNoInit;
+            CardReplaces = new(s.CardReplaces);
+            ChomperNoCD = s.ChomperNoCD;
+            ClearOnWritingField = s.ClearOnWritingField;
+            ClearOnWritingZombies = s.ClearOnWritingZombies;
+            CobCannonNoCD = s.CobCannonNoCD;
+            Col = s.Col;
+            ColumnPlanting = s.ColumnPlanting;
+            DeveloperMode = s.DeveloperMode;
+            DevLour = s.DevLour;
+            Exchange = s.Exchange;
+            FastShooting = s.FastShooting;
+            FieldString = s.FieldString;
+            FreeCD = s.FreeCD;
+            FreePlanting = s.FreePlanting;
+            GameSpeed = s.GameSpeed;
+            GarlicDay = s.GarlicDay;
+            GloveNoCD = s.GloveNoCD;
+            HammerNoCD = s.HammerNoCD;
+            HardPlant = s.HardPlant;
+            HyponoEmperorNoCD = s.HyponoEmperorNoCD;
+            ImpToBeThrown = s.ImpToBeThrown;
+            IsMindCtrl = s.IsMindCtrl;
+            ItemExistForever = s.ItemExistForever;
+            ItemType = s.ItemType;
+            JackboxNotExplode = s.JackboxNotExplode;
+            LockBulletType = s.LockBulletType;
+            LockMoney = s.LockMoney;
+            LockPresent = s.LockPresent;
+            LockSun = s.LockSun;
+            MineNoCD = s.MineNoCD;
+            NeedSave = s.NeedSave;
+            NewLevelName = s.NewLevelName;
+            NewMoney = s.NewMoney;
+            NewSun = s.NewSun;
+            NoFail = s.NoFail;
+            NoHole = s.NoHole;
+            NoIceRoad = s.NoIceRoad;
+            PlantingNoCD = s.PlantingNoCD;
+            PlantType = s.PlantType;
+            PresentFastOpen = s.PresentFastOpen;
+            Row = s.Row;
+            ScaredyDream = s.ScaredyDream;
+            SeedRain = s.SeedRain;
+            Shooting1 = s.Shooting1;
+            Shooting2 = s.Shooting2;
+            Shooting3 = s.Shooting3;
+            Shooting4 = s.Shooting4;
+            ShowText = s.ShowText;
+            StopSummon = s.StopSummon;
+            SuperPresent = s.SuperPresent;
+            Times = s.Times;
+            TopMostSprite = s.TopMostSprite;
+            TravelBuffs = new(s.TravelBuffs);
+            UltimateRamdomZombie = s.UltimateRamdomZombie;
+            UndeadBullet = s.UndeadBullet;
+            UnlockAllFusions = s.UnlockAllFusions;
+            ZombieFieldString = s.ZombieFieldString;
+            ZombieSeaCD = s.ZombieSeaCD;
+            ZombieSeaEnabled = s.ZombieSeaEnabled;
+            ZombieType = s.ZombieType;
+            ZombieSeaTypes = new();
+            ZombieSeaTypes.AddRange(from zst in s.ZombieSeaTypes select new KeyValuePair<int, string>(zst, Zombies[zst]));
+            HammerFullCD = s.HammerFullCD;
+            HammerFullCDEnabled = s.HammerFullCDEnabled;
+            GloveFullCD = s.GloveFullCD;
+            GloveFullCDEnabled = s.GloveFullCDEnabled;
+            int bi = 0;
+            foreach (var b in App.InitData.Value.AdvBuffs)
+            {
+                InGameBuffs.Add(new(new(bi, b, true)));
+                bi++;
+            }
+            foreach (var b in App.InitData.Value.UltiBuffs)
+            {
+                InGameBuffs.Add(new(new(bi, b, true)));
+                bi++;
+            }
+            TravelBuffs.ListChanged += (sender, e) => SyncTravelBuffs();
+            InGameBuffs.ListChanged += (sender, e) => SyncInGameBuffs();
+            CardReplaces.ListChanged += (sender, e) => SyncCards();
+            SpeedValue = TickToSpeed((int)GameSpeed).ToString();
+            int hi = 0;
+            Hotkeys = new();
+            foreach (var (h, hui) in from h in KeyCommands let hui = new HotkeyUI() select (h, hui))
+            {
+                Hotkeys.Add(new HotkeyUIVM(s.Hotkeys[hi].HotkeyUI)
+                {
+                    Command = new(h.Item2),
+                    Text = h.Item1
+                });
+                hi++;
             }
         }
 
-        [RelayCommand]
-        public void GarlicDay(bool b)
+        public void SyncAll()
         {
-            App.DataSync.Value.SendData(new BasicProperties()
-            {
-                GarlicDay = b
-            });
-        }
-
-        [RelayCommand]
-        public void WriteZombies()
-        {
-            App.DataSync.Value.SendData(new InGameActions()
-            {
-                WriteZombies = ZombieFieldString,
-                ClearOnWritingZombies = ClearOnWritingZombies
-            });
-        }
-
-        [RelayCommand]
-        public void CopyZombieScripts()
-        {
-            App.DataSync.Value.SendData(new InGameActions()
-            {
-                ReadZombies = true
-            });
-        }
-
-        [RelayCommand]
-        public void TravelBuffSelectAll()
-        {
-            NeedSync = false;
-            foreach (var t in TravelBuffs)
-            {
-                t.Enabled = true;
-            }
-            NeedSync = true;
-            SyncTravelBuffs();
-        }
-
-        [RelayCommand]
-        public void TravelBuffUnselectAll()
-        {
-            NeedSync = false;
-            foreach (var t in TravelBuffs)
-            {
-                t.Enabled = false;
-            }
-            NeedSync = true;
-            SyncTravelBuffs();
-        }
-
-        [RelayCommand]
-        public void InGameBuffSelectAll()
-        {
-            NeedSync = false;
-            foreach (var t in InGameBuffs)
-            {
-                t.Enabled = true;
-            }
-            NeedSync = true;
-            SyncInGameBuffs();
-        }
-
-        [RelayCommand]
-        public void InGameBuffUnselectAll()
-        {
-            NeedSync = false;
-            foreach (var t in InGameBuffs)
-            {
-                t.Enabled = false;
-            }
-            NeedSync = true;
-            SyncInGameBuffs();
-        }
-
-        [RelayCommand]
-        public void UndeadBullet(bool b)
-        {
-            App.DataSync.Value.SendData(new BasicProperties()
-            {
-                UndeadBullet = b
-            });
-        }
-
-        public void SyncTravelBuffs()
-        {
-            if (!NeedSync) return;
+            if (!NeedSave) return;
             List<bool> adv = new();
             List<bool> ulti = new();
             foreach (TravelBuffVM buff in TravelBuffs)
@@ -507,16 +386,286 @@ namespace PVZRHTools
                     ulti.Add(buff.TravelBuff.Enabled);
                 }
             }
-            App.DataSync.Value.SendData(new SyncTravelBuff()
+            InGameActions iga = new()
             {
-                AdvTravelBuff = adv,
-                UltiTravelBuff = ulti
-            });
+                NoFail = NoFail,
+                StopSummon = StopSummon,
+                ZombieSeaCD = (int)ZombieSeaCD,
+                ZombieSeaEnabled = ZombieSeaEnabled,
+                ZombieSeaTypes = new(),
+                ZombieType = ZombieType,
+            };
+            iga.ZombieSeaTypes.AddRange(from zst in ZombieSeaTypes select zst.Key);
+            List<Card> cards = new();
+            cards.AddRange(from c in CardReplaces select c.CardUI.GetCard());
+            SyncAll syncAll = new()
+            {
+                BasicProperties = new BasicProperties()
+                {
+                    CardNoInit = CardNoInit,
+                    ChomperNoCD = ChomperNoCD,
+                    CobCannonNoCD = CobCannonNoCD,
+                    DeveloperMode = DeveloperMode,
+                    DevLour = DevLour,
+                    FastShooting = FastShooting,
+                    FreePlanting = FreePlanting,
+                    GameSpeed = (int)GameSpeed,
+                    GarlicDay = GarlicDay,
+                    GloveNoCD = GloveNoCD,
+                    HammerNoCD = HammerNoCD,
+                    HardPlant = HardPlant,
+                    HyponoEmperorNoCD = HyponoEmperorNoCD,
+                    ImpToBeThrown = ImpToBeThrown,
+                    ItemExistForever = ItemExistForever,
+                    JackboxNotExplode = JackboxNotExplode,
+                    LockPresent = LockPresent,
+                    MineNoCD = MineNoCD,
+                    NoHole = NoHole,
+                    NoIceRoad = NoIceRoad,
+                    PlantingNoCD = PlantingNoCD,
+                    PresentFastOpen = PresentFastOpen,
+                    SuperPresent = SuperPresent,
+                    UltimateRamdomZombie = UltimateRamdomZombie,
+                    UndeadBullet = UndeadBullet,
+                    UnlockAllFusions = UnlockAllFusions,
+                    GloveFullCD = GloveFullCDEnabled ? (int)GloveFullCD : -1,
+                    HammerFullCD = HammerFullCDEnabled ? (int)HammerFullCD : -1,
+                },
+                CardProperties = new CardProperties() { CardReplaces = cards },
+                InGameActions = iga,
+                TravelBuffs = new SyncTravelBuff()
+                {
+                    AdvTravelBuff = adv,
+                    UltiTravelBuff = ulti
+                },
+                ValueProperties = new ValueProperties() { LockBulletType = LockBulletType },
+                GameModes = new GameModes()
+                {
+                    Exchange = Exchange,
+                    ScaredyDream = ScaredyDream,
+                    ColumnPlanting = ColumnPlanting,
+                    SeedRain = SeedRain,
+                    Shooting1 = Shooting1,
+                    Shooting2 = Shooting2,
+                    Shooting3 = Shooting3,
+                    Shooting4 = Shooting4,
+                }
+            };
+
+            App.DataSync.Value.SendData(syncAll);
         }
+
+        public void SyncCards()
+        {
+            List<Card> cards = new();
+            cards.AddRange(from c in CardReplaces select c.CardUI.GetCard());
+            App.DataSync.Value.SendData(new CardProperties() { CardReplaces = cards });
+        }
+
+        #region Commands
+
+        [RelayCommand]
+        public void BulletDamage() => App.DataSync.Value.SendData(new ValueProperties() { BulletsDamage = new(BulletDamageType, (int)BulletDamageValue) });
+
+        [RelayCommand]
+        public void ClearAllHoles() => App.DataSync.Value.SendData(new InGameActions() { ClearAllHoles = true });
+
+        [RelayCommand]
+        public void ClearAllPlants() => App.DataSync.Value.SendData(new InGameActions() { ClearAllPlants = true });
+
+        [RelayCommand]
+        public void ClearIceRoads() => App.DataSync.Value.SendData(new InGameActions() { ClearAllIceRoads = true });
+
+        [RelayCommand]
+        public void CopyFieldScripts() => App.DataSync.Value.SendData(new InGameActions() { ReadField = true });
+
+        [RelayCommand]
+        public void CopyZombieScripts() => App.DataSync.Value.SendData(new InGameActions() { ReadZombies = true });
+
+        [RelayCommand]
+        public void CreateActiveMateorite() => App.DataSync.Value.SendData(new InGameActions() { CreateActiveMateorite = true });
+
+        [RelayCommand]
+        public void CreateCard() => App.DataSync.Value.SendData(new InGameActions() { Card = true, PlantType = PlantType });
+
+        [RelayCommand]
+        public void CreateItem() => App.DataSync.Value.SendData(new InGameActions() { ItemType = ItemType, });
+
+        [RelayCommand]
+        public void CreatePassiveMateorite() => App.DataSync.Value.SendData(new InGameActions() { CreatePassiveMateorite = true });
+
+        [RelayCommand]
+        public void CreatePlant() => App.DataSync.Value.SendData(new InGameActions()
+        {
+            Row = (int)Row,
+            Column = (int)Col,
+            Times = (int)Times,
+            PlantType = PlantType,
+        });
+
+        [RelayCommand]
+        public void CreateUltimateMateorite() => App.DataSync.Value.SendData(new InGameActions() { CreateUltimateMateorite = true });
+
+        [RelayCommand]
+        public void CreateZombie() => App.DataSync.Value.SendData(new InGameActions()
+        {
+            Row = (int)Row,
+            Column = (int)Col,
+            Times = (int)Times,
+            ZombieType = ZombieType,
+            SummonMindControlledZombies = IsMindCtrl,
+        });
+
+        [RelayCommand]
+        public void Health1st() => App.DataSync.Value.SendData(new ValueProperties() { FirstArmorsHealth = new(Health1stType, (int)Health1stValue) });
+
+        [RelayCommand]
+        public void Health2nd() => App.DataSync.Value.SendData(new ValueProperties() { SecondArmorsHealth = new(Health2ndType, (int)Health2ndValue) });
+
+        [RelayCommand]
+        public void HealthPlant() => App.DataSync.Value.SendData(new ValueProperties() { PlantsHealth = new(HealthPlantType, (int)HealthPlantValue) });
+
+        [RelayCommand]
+        public void HealthZombie() => App.DataSync.Value.SendData(new ValueProperties() { ZombiesHealth = new(HealthZombieType, (int)HealthZombieValue) });
+
+        [RelayCommand]
+        public void InGameBuffSelectAll()
+        {
+            if (!App.inited) return;
+            NeedSync = false;
+            foreach (var t in InGameBuffs)
+            {
+                t.Enabled = true;
+            }
+            NeedSync = true;
+            SyncInGameBuffs();
+        }
+
+        [RelayCommand]
+        public void InGameBuffUnselectAll()
+        {
+            if (!App.inited) return;
+            NeedSync = false;
+            foreach (var t in InGameBuffs)
+            {
+                t.Enabled = false;
+            }
+            NeedSync = true;
+            SyncInGameBuffs();
+        }
+
+        [RelayCommand]
+        public void KillAllZombies() => App.DataSync.Value.SendData(new InGameActions() { ClearAllZombies = true });
+
+        [RelayCommand]
+        public void LevelName() => App.DataSync.Value.SendData(new InGameActions() { ChangeLevelName = NewLevelName });
+
+        [RelayCommand]
+        public void LockBullet() => App.DataSync.Value.SendData(new ValueProperties() { LockBulletType = LockBulletType });
+
+        [RelayCommand]
+        public void MindCtrl() => App.DataSync.Value.SendData(new InGameActions() { MindControlAllZombies = true });
+
+        [RelayCommand]
+        public void Money() => App.DataSync.Value.SendData(new InGameActions() { CurrentMoney = (int)NewMoney });
+
+        [RelayCommand]
+        public void NextWave() => App.DataSync.Value.SendData(new InGameActions() { NextWave = true });
+
+        public void Save()
+        {
+            ModifierSaveModel s = new()
+            {
+                CardNoInit = CardNoInit,
+                CardReplaces = new(CardReplaces),
+                ChomperNoCD = ChomperNoCD,
+                ClearOnWritingField = ClearOnWritingField,
+                ClearOnWritingZombies = ClearOnWritingZombies,
+                CobCannonNoCD = CobCannonNoCD,
+                Col = Col,
+                ColumnPlanting = ColumnPlanting,
+                DeveloperMode = DeveloperMode,
+                DevLour = DevLour,
+                Exchange = Exchange,
+                FastShooting = FastShooting,
+                FieldString = FieldString,
+                FreeCD = FreeCD,
+                FreePlanting = FreePlanting,
+                GameSpeed = GameSpeed,
+                GarlicDay = GarlicDay,
+                GloveNoCD = GloveNoCD,
+                HammerNoCD = HammerNoCD,
+                HardPlant = HardPlant,
+                HyponoEmperorNoCD = HyponoEmperorNoCD,
+                ImpToBeThrown = ImpToBeThrown,
+                IsMindCtrl = IsMindCtrl,
+                ItemExistForever = ItemExistForever,
+                ItemType = ItemType,
+                JackboxNotExplode = JackboxNotExplode,
+                LockBulletType = LockBulletType,
+                LockMoney = LockMoney,
+                LockPresent = LockPresent,
+                LockSun = LockSun,
+                MineNoCD = MineNoCD,
+                NeedSave = NeedSave,
+                NewLevelName = NewLevelName,
+                NewMoney = NewMoney,
+                NewSun = NewSun,
+                NoFail = NoFail,
+                NoHole = NoHole,
+                NoIceRoad = NoIceRoad,
+                PlantingNoCD = PlantingNoCD,
+                PlantType = PlantType,
+                PresentFastOpen = PresentFastOpen,
+                Row = Row,
+                ScaredyDream = ScaredyDream,
+                SeedRain = SeedRain,
+                Shooting1 = Shooting1,
+                Shooting2 = Shooting2,
+                Shooting3 = Shooting3,
+                Shooting4 = Shooting4,
+                ShowText = ShowText,
+                StopSummon = StopSummon,
+                SuperPresent = SuperPresent,
+                Times = Times,
+                TopMostSprite = TopMostSprite,
+                TravelBuffs = new(TravelBuffs),
+                UltimateRamdomZombie = UltimateRamdomZombie,
+                UndeadBullet = UndeadBullet,
+                UnlockAllFusions = UnlockAllFusions,
+                ZombieFieldString = ZombieFieldString,
+                ZombieSeaCD = ZombieSeaCD,
+                ZombieSeaEnabled = ZombieSeaEnabled,
+                ZombieSeaTypes = new(),
+                ZombieType = ZombieType,
+                GloveFullCD = GloveFullCD,
+                GloveFullCDEnabled = GloveFullCDEnabled,
+                HammerFullCD = HammerFullCD,
+                HammerFullCDEnabled = HammerFullCDEnabled,
+                Hotkeys = Hotkeys
+            };
+            if (ZombieSeaTypes.Count > 0)
+            {
+                s.ZombieSeaTypes.AddRange(from zst in ZombieSeaTypes select zst.Key);
+            }
+            File.WriteAllText("UserData/ModifierSettings.json", JsonSerializer.Serialize(s));
+        }
+
+        [RelayCommand]
+        public void ShowingText() => App.DataSync.Value.SendData(new InGameActions() { ShowText = ShowText });
+
+        [RelayCommand]
+        public void SimplePresents() => App.DataSync.Value.SendData(new InGameActions()
+        {
+            WriteField = "[{\"ID\":256,\"Row\":2,\"Column\":0,\"LilyType\":-1},{\"ID\":256,\"Row\":2,\"Column\":1,\"LilyType\":-1},{\"ID\":256,\"Row\":2,\"Column\":2,\"LilyType\":-1},{\"ID\":256,\"Row\":2,\"Column\":3,\"LilyType\":-1},{\"ID\":256,\"Row\":2,\"Column\":4,\"LilyType\":-1},{\"ID\":250,\"Row\":2,\"Column\":5,\"LilyType\":-1},{\"ID\":250,\"Row\":2,\"Column\":6,\"LilyType\":-1},{\"ID\":250,\"Row\":2,\"Column\":7,\"LilyType\":-1},{\"ID\":250,\"Row\":2,\"Column\":8,\"LilyType\":-1},{\"ID\":250,\"Row\":2,\"Column\":9,\"LilyType\":-1}]",
+            ClearOnWritingField = ClearOnWritingField
+        });
+
+        [RelayCommand]
+        public void Sun() => App.DataSync.Value.SendData(new InGameActions() { CurrentSun = (int)NewSun });
 
         public void SyncInGameBuffs()
         {
-            if (!NeedSync) return;
             List<bool> adv = new();
             List<bool> ulti = new();
             foreach (TravelBuffVM buff in InGameBuffs)
@@ -537,252 +686,64 @@ namespace PVZRHTools
             });
         }
 
-        public void Set_CreateCard()
+        public void SyncTravelBuffs()
         {
-            App.DataSync.Value.SendData(new InGameActions()
+            List<bool> adv = new();
+            List<bool> ulti = new();
+            foreach (TravelBuffVM buff in TravelBuffs)
             {
-                Card = true,
-                PlantType = PlantType
-            });
-        }
-
-        public void Set_GameModes()
-        {
-            App.DataSync.Value.SendData(new GameModes()
-            {
-                Exchange = Exchange,
-                ScaredyDream = ScaredyDream,
-                ColumnPlanting = ColumnPlanting,
-                SeedRain = SeedRain,
-                Shooting1 = Shooting1,
-                Shooting2 = Shooting2,
-                Shooting3 = Shooting3,
-                Shooting4 = Shooting4,
-            });
-        }
-
-        public void Set_LockBullet()
-        {
-            App.DataSync.Value.SendData(new ValueProperties()
-            {
-                LockAllBullet = LockBullet.Key
-            });
-        }
-
-        public void Set_BulletDamage()
-        {
-            if (int.TryParse(BulletDamageValue, out var v))
-            {
-                App.DataSync.Value.SendData(new ValueProperties()
+                if (buff.TravelBuff.Index < App.InitData!.Value.AdvBuffs.Length)
                 {
-                    BulletsDamage = new(BulletDamageType, v)
-                });
-            }
-        }
-
-        public void Set_HealthPlant()
-        {
-            if (int.TryParse(HealthPlantValue, out var v))
-            {
-                App.DataSync.Value.SendData(new ValueProperties()
+                    adv.Add(buff.TravelBuff.Enabled);
+                }
+                else
                 {
-                    PlantsHealth = new(HealthPlantType, v)
-                });
+                    ulti.Add(buff.TravelBuff.Enabled);
+                }
             }
+            App.DataSync.Value.SendData(new SyncTravelBuff()
+            {
+                AdvTravelBuff = adv,
+                UltiTravelBuff = ulti
+            });
         }
 
-        public void Set_HealthZombie()
+        [RelayCommand]
+        public void TravelBuffSelectAll()
         {
-            if (int.TryParse(HealthZombieValue, out var v))
+            NeedSync = false;
+            foreach (var t in TravelBuffs)
             {
-                App.DataSync.Value.SendData(new ValueProperties()
-                {
-                    ZombiesHealth = new(HealthZombieType, v)
-                });
+                t.Enabled = true;
             }
+            NeedSync = true;
+            SyncTravelBuffs();
         }
 
-        public void Set_Health1st()
+        [RelayCommand]
+        public void TravelBuffUnselectAll()
         {
-            if (int.TryParse(Health1stValue, out var v))
+            NeedSync = false;
+            foreach (TravelBuffVM t in TravelBuffs)
             {
-                App.DataSync.Value.SendData(new ValueProperties()
-                {
-                    FirstArmorsHealth = new(Health1stType, v)
-                });
+                t.Enabled = false;
             }
+            NeedSync = true;
+            SyncTravelBuffs();
         }
 
-        public void Set_Health2nd()
-        {
-            if (int.TryParse(Health2ndValue, out var v))
-            {
-                App.DataSync.Value.SendData(new ValueProperties()
-                {
-                    SecondArmorsHealth = new(Health2ndType, v)
-                });
-            }
-        }
+        [RelayCommand]
+        public void Win() => App.DataSync.Value.SendData(new InGameActions() { Win = true });
 
-        public void Set_CopyFieldScripts()
-        {
-            App.DataSync.Value.SendData(new InGameActions()
-            {
-                ReadField = true
-            });
-        }
+        [RelayCommand]
+        public void WriteField() => App.DataSync.Value.SendData(new InGameActions() { WriteField = FieldString, ClearOnWritingField = ClearOnWritingField });
 
-        public void Set_ClearAllPlants()
-        {
-            App.DataSync.Value.SendData(new InGameActions()
-            {
-                ClearAllPlants = true
-            });
-        }
+        [RelayCommand]
+        public void WriteZombies() => App.DataSync.Value.SendData(new InGameActions() { WriteZombies = ZombieFieldString, ClearOnWritingZombies = ClearOnWritingZombies });
 
-        public void Set_KillAllZombies()
+        public void ZombieSea()
         {
-            App.DataSync.Value.SendData(new InGameActions()
-            {
-                ClearAllZombies = true
-            });
-        }
-
-        public void Set_SimplePresents()
-        {
-            App.DataSync.Value.SendData(new InGameActions()
-            {
-                WriteField = "[{\"ID\":256,\"Row\":2,\"Column\":0,\"LilyType\":-1},{\"ID\":256,\"Row\":2,\"Column\":1,\"LilyType\":-1},{\"ID\":256,\"Row\":2,\"Column\":2,\"LilyType\":-1},{\"ID\":256,\"Row\":2,\"Column\":3,\"LilyType\":-1},{\"ID\":256,\"Row\":2,\"Column\":4,\"LilyType\":-1},{\"ID\":250,\"Row\":2,\"Column\":5,\"LilyType\":-1},{\"ID\":250,\"Row\":2,\"Column\":6,\"LilyType\":-1},{\"ID\":250,\"Row\":2,\"Column\":7,\"LilyType\":-1},{\"ID\":250,\"Row\":2,\"Column\":8,\"LilyType\":-1},{\"ID\":250,\"Row\":2,\"Column\":9,\"LilyType\":-1}]",
-                ClearOnWritingField = ClearOnWritingField
-            });
-        }
-
-        public void Set_ClearFieldScripts()
-        {
-            FieldString = "";
-        }
-
-        public void Set_WriteField()
-        {
-            App.DataSync.Value.SendData(new InGameActions()
-            {
-                WriteField = FieldString,
-                ClearOnWritingField = ClearOnWritingField
-            });
-        }
-
-        public void Set_ClearAllHoles()
-        {
-            App.DataSync.Value.SendData(new InGameActions()
-            {
-                ClearAllHoles = true
-            });
-        }
-
-        public void Set_MindCtrl()
-        {
-            App.DataSync.Value.SendData(new InGameActions()
-            {
-                MindControlAllZombies = true
-            });
-        }
-
-        public void Set_Win()
-        {
-            App.DataSync.Value.SendData(new InGameActions()
-            {
-                Win = true
-            });
-        }
-
-        public void Set_LevelName()
-        {
-            App.DataSync.Value.SendData(new InGameActions()
-            {
-                ChangeLevelName = LevelName
-            });
-        }
-
-        public void Set_ShowingText()
-        {
-            App.DataSync.Value.SendData(new InGameActions()
-            {
-                ShowText = ShowText
-            });
-        }
-
-        public void Set_ClearIceRoads()
-        {
-            App.DataSync.Value.SendData(new InGameActions()
-            {
-                ClearAllIceRoads = true
-            });
-        }
-
-        public void Set_NoFail(bool b)
-        {
-            App.DataSync.Value.SendData(new InGameActions()
-            {
-                NoFail = b
-            });
-        }
-
-        public void Set_StopSummon(bool b)
-        {
-            App.DataSync.Value.SendData(new InGameActions()
-            {
-                StopSummon = b
-            });
-        }
-
-        public void Set_NextWave()
-        {
-            App.DataSync.Value.SendData(new InGameActions()
-            {
-                NextWave = true
-            });
-        }
-
-        public void Set_LockSun(bool b)
-        {
-            if (string.IsNullOrEmpty(Sun)) return;
-            App.DataSync.Value.SendData(new InGameActions()
-            {
-                LockSun = b,
-                CurrentSun = int.Parse(Sun)
-            });
-        }
-
-        public void Set_LockMoney(bool b)
-        {
-            if (string.IsNullOrEmpty(Money)) return;
-            App.DataSync.Value.SendData(new InGameActions()
-            {
-                LockMoney = b,
-                CurrentMoney = int.Parse(Money)
-            });
-        }
-
-        public void Set_Sun()
-        {
-            if (string.IsNullOrEmpty(Sun)) return;
-            App.DataSync.Value.SendData(new InGameActions()
-            {
-                CurrentSun = int.Parse(Sun)
-            });
-        }
-
-        public void Set_Money()
-        {
-            if (string.IsNullOrEmpty(Money)) return;
-            App.DataSync.Value.SendData(new InGameActions()
-            {
-                CurrentMoney = int.Parse(Money)
-            });
-        }
-
-        public void Set_ZombieSea()
-        {
+            if (!App.inited) return;
             List<int> types = new();
             foreach (var type in ZombieSeaTypes)
             {
@@ -790,77 +751,13 @@ namespace PVZRHTools
             }
             App.DataSync.Value.SendData(new InGameActions()
             {
-                ZombieSea = ZombieSea,
-                ZombieSeaCD = int.Parse(ZombieSeaCD),
+                ZombieSeaEnabled = ZombieSeaEnabled,
+                ZombieSeaCD = (int)ZombieSeaCD,
                 ZombieSeaTypes = types
             });
         }
 
-        public void Set_CreatePassiveMateorite()
-        {
-            App.DataSync.Value.SendData(new InGameActions()
-            {
-                CreatePassiveMateorite = true
-            });
-        }
-
-        public void Set_CreateUltimateMateorite()
-        {
-            App.DataSync.Value.SendData(new InGameActions()
-            {
-                CreateUltimateMateorite = true
-            });
-        }
-
-        public void Set_CreateActiveMateorite()
-        {
-            App.DataSync.Value.SendData(new InGameActions()
-            {
-                CreateActiveMateorite = true
-            });
-        }
-
-        public void Set_CreatePlant()
-        {
-            App.DataSync.Value.SendData(new InGameActions()
-            {
-                Row = string.IsNullOrEmpty(Row) || string.IsNullOrWhiteSpace(Row) ? 0 : int.Parse(Row),
-                Column = string.IsNullOrEmpty(Col) || string.IsNullOrWhiteSpace(Col) ? 0 : int.Parse(Col),
-                PlantType = PlantType,
-                Times = string.IsNullOrEmpty(Times) || string.IsNullOrWhiteSpace(Times) ? 1 : int.Parse(Times),
-            });
-        }
-
-        public void Set_CreateZombie()
-        {
-            App.DataSync.Value.SendData(new InGameActions()
-            {
-                Row = string.IsNullOrEmpty(Row) || string.IsNullOrWhiteSpace(Row) ? 0 : int.Parse(Row),
-                Column = string.IsNullOrEmpty(Col) || string.IsNullOrWhiteSpace(Col) ? 0 : int.Parse(Col),
-                ZombieType = ZombieType,
-                SummonMindControlledZombies = IsMindCtrl,
-                Times = string.IsNullOrEmpty(Times) || string.IsNullOrWhiteSpace(Times) ? 0 : int.Parse(Times),
-            });
-        }
-
-        public void Set_CreateItem()
-        {
-            App.DataSync.Value.SendData(new InGameActions()
-            {
-                ItemType = ItemType,
-            });
-        }
-
-        public void Set_GameSpeed(double b)
-        {
-            App.DataSync.Value.SendData(new SyncProperties()
-            {
-                GameSpeed = (int)b
-            });
-            SpeedText = "游戏速度：" + TickToSpeed((int)b).ToString();
-        }
-
-        public static float TickToSpeed(int speed) => speed switch
+        private static float TickToSpeed(int speed) => speed switch
         {
             0 => 0f,
             1 => 0.2f,
@@ -875,111 +772,411 @@ namespace PVZRHTools
             _ => 1f
         };
 
-        public void Set_JackboxNotExplode(bool b) => App.DataSync.Value.SendData(new BasicProperties()
+        private void GameModes() => App.DataSync.Value.SendData(new GameModes()
         {
-            JackboxNotExplode = b
+            Exchange = Exchange,
+            ScaredyDream = ScaredyDream,
+            ColumnPlanting = ColumnPlanting,
+            SeedRain = SeedRain,
+            Shooting1 = Shooting1,
+            Shooting2 = Shooting2,
+            Shooting3 = Shooting3,
+            Shooting4 = Shooting4,
         });
 
-        public void Set_CardNoInit(bool b) => App.DataSync.Value.SendData(new BasicProperties()
-        {
-            CardNoInit = b
-        });
+        partial void OnCardNoInitChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { CardNoInit = value });
 
-        public void Set_ItemExistForever(bool b) => App.DataSync.Value.SendData(new BasicProperties()
-        {
-            ItemExistForever = b
-        });
+        partial void OnChomperNoCDChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { ChomperNoCD = value });
 
-        public void Set_NoIceRoad(bool b) => App.DataSync.Value.SendData(new BasicProperties()
-        {
-            NoIceRoad = b
-        });
+        partial void OnCobCannonNoCDChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { CobCannonNoCD = value });
 
-        public void Set_MineNoCD(bool b) => App.DataSync.Value.SendData(new BasicProperties()
-        {
-            MineNoCD = b
-        });
+        partial void OnColumnPlantingChanged(bool value) => GameModes();
 
-        public void Set_ChomperNoCD(bool b) => App.DataSync.Value.SendData(new BasicProperties()
-        {
-            ChomperNoCD = b
-        });
+        partial void OnDeveloperModeChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { DeveloperMode = value, PlantingNoCD = FreeCD });
 
-        public void Set_CobCannonNoCD(bool b) => App.DataSync.Value.SendData(new BasicProperties()
-        {
-            CobCannonNoCD = b
-        });
+        partial void OnDevLourChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { DevLour = value });
 
-        public void Set_HyponoEmperorNoCD(bool b) => App.DataSync.Value.SendData(new BasicProperties()
-        {
-            HyponoEmperorNoCD = b
-        });
+        partial void OnExchangeChanged(bool value) => GameModes();
 
-        public void Set_NoHole(bool b) => App.DataSync.Value.SendData(new BasicProperties()
-        {
-            NoHole = b
-        });
+        partial void OnFastShootingChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { FastShooting = value });
 
-        public void Set_DeveloperMode(bool b) => App.DataSync.Value.SendData(new BasicProperties()
-        {
-            DeveloperMode = b,
-            PlantingNoCD = FreeCD
-        });
+        partial void OnFreePlantingChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { FreePlanting = value });
 
-        public void Set_GloveNoCD(bool b) => App.DataSync.Value.SendData(new BasicProperties()
+        partial void OnGameSpeedChanged(double value)
         {
-            GloveNoCD = b
-        });
+            App.DataSync.Value.SendData(new BasicProperties() { GameSpeed = (int)value });
+            SpeedValue = TickToSpeed((int)GameSpeed).ToString();
+        }
 
-        public void Set_HammerNoCD(bool b) => App.DataSync.Value.SendData(new BasicProperties()
-        {
-            HammerNoCD = b
-        });
+        partial void OnGarlicDayChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { GarlicDay = value });
 
-        public void Set_PlantingNoCD(bool b) => App.DataSync.Value.SendData(new BasicProperties()
-        {
-            PlantingNoCD = b
-        });
+        partial void OnGloveFullCDChanged(double value) => App.DataSync.Value.SendData(new BasicProperties() { GloveFullCD = value });
 
-        public void Set_FreePlanting(bool b) => App.DataSync.Value.SendData(new BasicProperties()
-        {
-            FreePlanting = b
-        });
+        partial void OnGloveFullCDEnabledChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { GloveFullCD = value ? GloveFullCD : -1 });
 
-        public void Set_UnlockAllFusions(bool b) => App.DataSync.Value.SendData(new BasicProperties()
-        {
-            UnlockAllFusions = b
-        });
+        partial void OnGloveNoCDChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { GloveNoCD = value });
 
-        public void Set_SuperPresent(bool b) => App.DataSync.Value.SendData(new BasicProperties()
-        {
-            SuperPresent = b
-        });
+        partial void OnHammerFullCDChanged(double value) => App.DataSync.Value.SendData(new BasicProperties() { HammerFullCD = value });
 
-        public void Set_UltimateRamdomZombie(bool b) => App.DataSync.Value.SendData(new BasicProperties()
-        {
-            UltimateRamdomZombie = b
-        });
+        partial void OnHammerFullCDEnabledChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { HammerFullCD = value ? HammerFullCD : -1 });
 
-        public void Set_PresentFastOpen(bool b) => App.DataSync.Value.SendData(new BasicProperties()
-        {
-            PresentFastOpen = b
-        });
+        partial void OnHammerNoCDChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { HammerNoCD = value });
 
-        public void Set_LockPresent(int b) => App.DataSync.Value.SendData(new BasicProperties()
-        {
-            LockPresent = b
-        });
+        partial void OnHardPlantChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { HardPlant = value });
 
-        public void Set_FastShooting(bool b) => App.DataSync.Value.SendData(new BasicProperties()
-        {
-            FastShooting = b
-        });
+        partial void OnHyponoEmperorNoCDChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { HyponoEmperorNoCD = value });
 
-        public void Set_HardPlant(bool b) => App.DataSync.Value.SendData(new BasicProperties()
+        partial void OnImpToBeThrownChanged(int value) => App.DataSync.Value.SendData(new BasicProperties() { ImpToBeThrown = value });
+
+        partial void OnItemExistForeverChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { ItemExistForever = value });
+
+        partial void OnJackboxNotExplodeChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { JackboxNotExplode = value });
+
+        partial void OnLockMoneyChanged(bool value) => App.DataSync.Value.SendData(new InGameActions() { LockMoney = value, CurrentMoney = (int)NewMoney });
+
+        partial void OnLockPresentChanged(int value) => App.DataSync.Value.SendData(new BasicProperties() { LockPresent = value });
+
+        partial void OnLockSunChanged(bool value) => App.DataSync.Value.SendData(new InGameActions() { LockSun = value, CurrentSun = (int)NewSun });
+
+        partial void OnMineNoCDChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { MineNoCD = value });
+
+        partial void OnNoFailChanged(bool value) => App.DataSync.Value.SendData(new InGameActions() { NoFail = value });
+
+        partial void OnNoHoleChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { NoHole = value });
+
+        partial void OnNoIceRoadChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { NoIceRoad = value });
+
+        partial void OnPlantingNoCDChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { PlantingNoCD = value });
+
+        partial void OnPresentFastOpenChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { PresentFastOpen = value });
+
+        partial void OnScaredyDreamChanged(bool value) => GameModes();
+
+        partial void OnSeedRainChanged(bool value) => GameModes();
+
+        partial void OnShooting1Changed(bool value) => GameModes();
+
+        partial void OnShooting2Changed(bool value) => GameModes();
+
+        partial void OnShooting3Changed(bool value) => GameModes();
+
+        partial void OnShooting4Changed(bool value) => GameModes();
+
+        partial void OnStopSummonChanged(bool value) => App.DataSync.Value.SendData(new InGameActions() { StopSummon = value });
+
+        partial void OnSuperPresentChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { SuperPresent = value });
+
+        partial void OnTopMostSpriteChanged(bool value)
         {
-            HardPlant = b
-        });
+            if (value)
+            {
+                MainWindow.Instance!.ModifierSprite.Show();
+            }
+            else
+            {
+                MainWindow.Instance!.ModifierSprite.Hide();
+            }
+        }
+
+        partial void OnUltimateRamdomZombieChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { UltimateRamdomZombie = value });
+
+        partial void OnUndeadBulletChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { UndeadBullet = value });
+
+        partial void OnUnlockAllFusionsChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { UnlockAllFusions = value });
+
+        partial void OnZombieSeaCDChanged(double value) => ZombieSea();
+
+        partial void OnZombieSeaEnabledChanged(bool value) => ZombieSea();
+
+        partial void OnZombieSeaTypesChanged(List<KeyValuePair<int, string>> value) => ZombieSea();
+
+        #endregion Commands
+
+        #region ItemSources
+
+        public static bool NeedSync { get; set; } = true;
+
+        public static Dictionary<int, string>? Plants { get; set; }
+
+        public Dictionary<int, string> Bullets => App.InitData!.Value.Bullets;
+
+        public Dictionary<int, string> Bullets2 { get; set; }
+
+        public Dictionary<int, string> FirstArmor => App.InitData!.Value.FirstArmors;
+
+        public Dictionary<int, int> Health1sts { get; set; }
+
+        public Dictionary<int, int> Health2nds { get; set; }
+
+        public Dictionary<int, int> HealthPlants { get; set; }
+
+        public Dictionary<int, int> HealthZombies { get; set; }
+
+        public Dictionary<int, string> Items => new()
+        {
+            {0, "肥料"},
+            {1, "铁桶"},
+            {2, "橄榄头盔"},
+            {3, "小丑礼盒"},
+            {4, "镐子"},
+            {5, "机甲碎片"},
+            {6, "超级机甲碎片" }
+        };
+
+        public List<(string, Action)> KeyCommands => new()
+        {
+            ("手套无CD",()=>GloveNoCD=!GloveNoCD),
+            ("锤子无CD",()=>HammerNoCD=!HammerNoCD),
+        };
+
+        public Dictionary<int, string> Plants2 => App.InitData!.Value.Plants;
+
+        public Dictionary<int, string> SecondArmor => App.InitData!.Value.SecondArmors;
+
+        public Dictionary<int, string> Zombies => App.InitData!.Value.Zombies;
+
+        #endregion ItemSources
+
+        #region Properties
+
+        [ObservableProperty]
+        private int bulletDamageType;
+
+        [ObservableProperty]
+        private double bulletDamageValue;
+
+        [ObservableProperty]
+        private bool cardNoInit;
+
+        [ObservableProperty]
+        private BindingList<CardUIVM> cardReplaces;
+
+        [ObservableProperty]
+        private bool chomperNoCD;
+
+        [ObservableProperty]
+        private bool clearOnWritingField;
+
+        [ObservableProperty]
+        private bool clearOnWritingZombies;
+
+        [ObservableProperty]
+        private bool cobCannonNoCD;
+
+        [ObservableProperty]
+        private double col;
+
+        [ObservableProperty]
+        private bool columnPlanting;
+
+        [ObservableProperty]
+        private bool developerMode;
+
+        [ObservableProperty]
+        private bool devLour;
+
+        [ObservableProperty]
+        private bool exchange;
+
+        [ObservableProperty]
+        private bool fastShooting;
+
+        [ObservableProperty]
+        private string fieldString;
+
+        [ObservableProperty]
+        private bool freeCD;
+
+        [ObservableProperty]
+        private bool freePlanting;
+
+        [ObservableProperty]
+        private double gameSpeed;
+
+        [ObservableProperty]
+        private bool garlicDay;
+
+        [ObservableProperty]
+        private double gloveFullCD;
+
+        [ObservableProperty]
+        private bool gloveFullCDEnabled;
+
+        [ObservableProperty]
+        private bool gloveNoCD;
+
+        [ObservableProperty]
+        private double hammerFullCD;
+
+        [ObservableProperty]
+        private bool hammerFullCDEnabled;
+
+        [ObservableProperty]
+        private bool hammerNoCD;
+
+        [ObservableProperty]
+        private bool hardPlant;
+
+        [ObservableProperty]
+        private int health1stType;
+
+        [ObservableProperty]
+        private double health1stValue;
+
+        [ObservableProperty]
+        private int health2ndType;
+
+        [ObservableProperty]
+        private double health2ndValue;
+
+        [ObservableProperty]
+        private int healthPlantType;
+
+        [ObservableProperty]
+        private double healthPlantValue;
+
+        [ObservableProperty]
+        private int healthZombieType;
+
+        [ObservableProperty]
+        private double healthZombieValue;
+
+        [ObservableProperty]
+        private List<HotkeyUIVM> hotkeys;
+
+        [ObservableProperty]
+        private bool hyponoEmperorNoCD;
+
+        [ObservableProperty]
+        private int impToBeThrown;
+
+        [ObservableProperty]
+        private BindingList<TravelBuffVM> inGameBuffs;
+
+        [ObservableProperty]
+        private bool isMindCtrl;
+
+        [ObservableProperty]
+        private bool itemExistForever;
+
+        [ObservableProperty]
+        private int itemType;
+
+        [ObservableProperty]
+        private bool jackboxNotExplode;
+
+        [ObservableProperty]
+        private int lockBulletType;
+
+        [ObservableProperty]
+        private bool lockMoney;
+
+        [ObservableProperty]
+        private int lockPresent;
+
+        [ObservableProperty]
+        private bool lockSun;
+
+        [ObservableProperty]
+        private bool mineNoCD;
+
+        [ObservableProperty]
+        private bool needSave;
+
+        [ObservableProperty]
+        private string newLevelName;
+
+        [ObservableProperty]
+        private double newMoney;
+
+        [ObservableProperty]
+        private double newSun;
+
+        [ObservableProperty]
+        private bool noFail;
+
+        [ObservableProperty]
+        private bool noHole;
+
+        [ObservableProperty]
+        private bool noIceRoad;
+
+        [ObservableProperty]
+        private bool plantingNoCD;
+
+        [ObservableProperty]
+        private int plantType;
+
+        [ObservableProperty]
+        private bool presentFastOpen;
+
+        [ObservableProperty]
+        private double row;
+
+        [ObservableProperty]
+        private bool scaredyDream;
+
+        [ObservableProperty]
+        private bool seedRain;
+
+        [ObservableProperty]
+        private bool shooting1;
+
+        [ObservableProperty]
+        private bool shooting2;
+
+        [ObservableProperty]
+        private bool shooting3;
+
+        [ObservableProperty]
+        private bool shooting4;
+
+        [ObservableProperty]
+        private string showText;
+
+        [ObservableProperty]
+        private string speedValue;
+
+        [ObservableProperty]
+        private bool stopSummon;
+
+        [ObservableProperty]
+        private bool superPresent;
+
+        [ObservableProperty]
+        private double times;
+
+        [ObservableProperty]
+        private bool topMostSprite;
+
+        [ObservableProperty]
+        private BindingList<TravelBuffVM> travelBuffs;
+
+        [ObservableProperty]
+        private bool ultimateRamdomZombie;
+
+        [ObservableProperty]
+        private bool undeadBullet;
+
+        [ObservableProperty]
+        private bool unlockAllFusions;
+
+        [ObservableProperty]
+        private string zombieFieldString;
+
+        [ObservableProperty]
+        private double zombieSeaCD;
+
+        [ObservableProperty]
+        private bool zombieSeaEnabled;
+
+        [ObservableProperty]
+        private List<KeyValuePair<int, string>> zombieSeaTypes;
+
+        [ObservableProperty]
+        private int zombieType;
+
+        #endregion Properties
     }
 
     public partial class TravelBuff : ObservableObject, INotifyPropertyChanged
@@ -991,26 +1188,20 @@ namespace PVZRHTools
             InGame = inGame;
         }
 
+        public TravelBuff()
+        { }
+
+        public int Index { get; set; }
+        public bool InGame { get; set; }
+        public string Text { get; set; } = "";
+
         [ObservableProperty]
         private bool enabled;
-
-        public int Index { get; init; }
-
-        [JsonIgnore]
-        public string Text { get; set; }
-
-        public bool InGame { get; init; }
     }
 
     public partial class TravelBuffVM : ObservableObject
     {
-        public TravelBuffVM(TravelBuff b)
-        {
-            TravelBuff = b;
-        }
-
-        [ObservableProperty]
-        private TravelBuff travelBuff;
+        public TravelBuffVM(TravelBuff TravelBuff) => this.TravelBuff = TravelBuff;
 
         public bool Enabled
         {
@@ -1021,64 +1212,8 @@ namespace PVZRHTools
                 OnPropertyChanged(new PropertyChangedEventArgs("IsChecked"));
             }
         }
-    }
-
-    public partial class CardUIVM : ObservableObject
-    {
-        public CardUIVM(CardUI c)
-        {
-            CardUI = c;
-        }
 
         [ObservableProperty]
-        private CardUI cardUI;
-
-        public bool Enabled
-        {
-            get => CardUI.SetEnabled;
-            set
-            {
-                SetProperty(CardUI.SetEnabled, value, CardUI, (t, e) => t.SetEnabled = e);
-                OnPropertyChanged(new PropertyChangedEventArgs("IsChecked"));
-            }
-        }
-    }
-
-    public partial class CardUI : ObservableObject
-    {
-        public CardUI()
-        {
-            SetEnabled = false;
-        }
-
-        [ObservableProperty]
-        private bool setEnabled;
-
-        partial void OnSetEnabledChanged(bool value)
-        {
-            List<Card> cards = new();
-            foreach (var c in MainWindow.Instance!.ViewModel.CardReplaces)
-            {
-                cards.Add(c.CardUI.GetCard());
-            }
-            App.DataSync.Value.SendData(new CardProperties()
-            {
-                CardReplaces = cards
-            });
-        }
-
-        public int ID { get; set; } = -1;
-        public int NewID { get; set; } = -1;
-        public int Sun { get; set; } = -1;
-        public double CD { get; set; } = -1;
-
-        public Card GetCard() => new()
-        {
-            ID = ID,
-            NewID = NewID,
-            Sun = Sun,
-            CD = (float)CD,
-            Enabled = SetEnabled
-        };
+        private TravelBuff travelBuff;
     }
 }

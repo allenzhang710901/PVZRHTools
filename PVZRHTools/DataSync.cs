@@ -1,24 +1,21 @@
-﻿using System.Net.Sockets;
+﻿using System.IO;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Windows;
-using System;
-using System.Windows.Threading;
 using ToolModData;
-using CommunityToolkit.Mvvm.DependencyInjection;
-using System.IO;
 
 namespace PVZRHTools
 {
     public class DataSync
     {
-        public DataSync()
+        public DataSync(int port)
         {
             buffer = new byte[1024 * 64];
             modifierSocket = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            modifierSocket.Connect(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 13531));
+            modifierSocket.Connect(new IPEndPoint(IPAddress.Parse("127.0.0.1"), port));
             modifierSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, new(Receive), modifierSocket);
         }
 
@@ -28,19 +25,6 @@ namespace PVZRHTools
             {
                 modifierSocket.Shutdown(SocketShutdown.Both);
                 modifierSocket.Close();
-            }
-        }
-
-        public void Receive(IAsyncResult ar)
-        {
-            Socket? socket = ar.AsyncState as Socket;
-            if (socket is not null)
-            {
-                int bytes = socket.EndReceive(ar);
-                ar.AsyncWaitHandle.Close();
-                ProcessData(Encoding.UTF8.GetString(buffer, 0, bytes));
-                buffer = new byte[1024 * 64];
-                socket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, new(Receive), socket);
             }
         }
 
@@ -59,8 +43,7 @@ namespace PVZRHTools
                             {
                                 if (s.AdvInGame is not null && s.UltiInGame is not null)
                                 {
-                                    //垃圾Ioc.Default.GetService<ModifierViewModel>()把词条修改的进度卡了整整两周
-                                    //把ViewModel基本改了个遍，结果是这里把数据sync到****里去了
+                                    Enabled = false;
                                     for (int i = 0; i < s.AdvInGame.Count; i++)
                                     {
                                         MainWindow.Instance!.ViewModel.InGameBuffs[i].Enabled = s.AdvInGame[i];
@@ -69,6 +52,7 @@ namespace PVZRHTools
                                     {
                                         MainWindow.Instance!.ViewModel.InGameBuffs[i + s.AdvInGame.Count].Enabled = s.UltiInGame[i];
                                     }
+                                    Enabled = true;
                                 }
                             });
                             break;
@@ -86,6 +70,11 @@ namespace PVZRHTools
                             }
                             break;
                         }
+                    case 15:
+                        {
+                            Application.Current.Dispatcher.Invoke(() => ((ModifierViewModel)MainWindow.Instance!.DataContext).SyncAll());
+                            break;
+                        }
                     case 16:
                         {
                             Application.Current.Dispatcher.Invoke(new Action(delegate { Application.Current.Shutdown(); }));
@@ -101,12 +90,28 @@ namespace PVZRHTools
             }
         }
 
+        public void Receive(IAsyncResult ar)
+        {
+            Socket? socket = ar.AsyncState as Socket;
+            if (socket is not null)
+            {
+                int bytes = socket.EndReceive(ar);
+                ar.AsyncWaitHandle.Close();
+                ProcessData(Encoding.UTF8.GetString(buffer, 0, bytes));
+                buffer = new byte[1024 * 64];
+                socket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, new(Receive), socket);
+            }
+        }
+
         public void SendData<T>(T data)
         {
+            if (!App.inited) return;
+            if (!Enabled) return;
             modifierSocket.Send(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(data)));
             Thread.Sleep(5);
         }
 
+        public static bool Enabled { get; set; } = true;
         public static Lazy<DataSync> Instance { get; } = new();
         public byte[] buffer;
         public Socket modifierSocket;

@@ -1,35 +1,21 @@
-﻿using Il2Cpp;
-using Il2CppInterop.Runtime;
-using Il2CppTMPro;
-using MelonLoader;
-using Newtonsoft.Json.Bson;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
+﻿using Harmony;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Threading.Tasks;
-using ToolModData;
-using Unity.VisualScripting;
 using UnityEngine;
+using static ToolModData.Modifier;
 
 namespace ToolMod
 {
     public class DataSync
     {
-        public static Lazy<DataSync> Instance { get; } = new();
-        public byte[] buffer;
-
         public DataSync()
         {
             buffer = new byte[1024 * 64];
             gameSocket = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            gameSocket.Bind(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 13531));
+            gameSocket.Bind(new IPEndPoint(IPAddress.Parse("127.0.0.1"), Core.Port.Value.Value));
             Process modifier = new();
             ProcessStartInfo info = new()
             {
@@ -37,7 +23,8 @@ namespace ToolMod
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
             };
-            info.ArgumentList.Add("PVZRHTools");
+            info.ArgumentList.Add(CommandLineToken);
+            info.ArgumentList.Add(Core.Port.Value.Value.ToString());
             modifier.StartInfo = info;
             gameSocket.Listen(1);
             modifier.Start();
@@ -83,10 +70,16 @@ namespace ToolMod
 
         public void SendData<T>(T data)
         {
+            if (Dev)
+            {
+                Core.Instance.Value.LoggerInstance.Msg("Send:" + JsonSerializer.Serialize(data));
+            }
             modifierSocket.SendAsync(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(data)), SocketFlags.None);
             Thread.Sleep(5);
         }
 
+        public static Lazy<DataSync> Instance { get; } = new();
+        public byte[] buffer;
         public Socket gameSocket;
         public Socket modifierSocket;
     }

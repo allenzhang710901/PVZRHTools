@@ -1,11 +1,12 @@
-﻿<Window x:Class="PVZRHTools.MainWindow"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PVZRHTools"
-        xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:hc="https://handyorg.github.io/handycontrol"
+        xmlns:fh="clr-namespace:FastHotKeyForWPF;assembly=FastHotKeyForWPF"
+        x:Class="PVZRHTools.MainWindow"
         mc:Ignorable="d"
         Height="450" Width="800"
         Icon="./PVZRHTools/icon.ico" WindowStyle="None" Background="#991A1A1A"
@@ -32,287 +33,104 @@
             <Image x:Name="inf75" Margin="0,0,752,0" Source="/PVZRHTools/icon.png" Stretch="Fill" />
         </Grid>
         <TabControl TabStripPlacement="Left" Margin="0,49,0,0" BorderBrush="#FF212125" Background="#80212125" BorderThickness="0,0,0,0">
-
             <TabItem Header="全局特性修改">
                 <Border Background="#FF212125" Margin="0,8,0,0" BorderBrush="#FF2FA42F" BorderThickness="2,2,2,2">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <StackPanel>
                             <Expander Header="基本特性" Style="{DynamicResource Expander.Small}" MinWidth="28" MinHeight="28">
                                 <Grid>
-                                    <CheckBox x:Name="DeveloperMode" Content="开发者模式" Height="21" Margin="10,10,596,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=DeveloperMode}">
-                                                <b:InvokeCommandAction Command="{Binding DeveloperMode}" CommandParameter="{Binding IsChecked, ElementName=DeveloperMode}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                    <CheckBox x:Name="GloveNoCD" Content="手套无CD" Height="21" Margin="119,10,492,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=GloveNoCD}">
-                                                <b:InvokeCommandAction Command="{Binding GloveNoCD}" CommandParameter="{Binding IsChecked, ElementName=GloveNoCD}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                    <CheckBox x:Name="HammerNoCD" Content="锤子无CD" Height="21" Margin="213,10,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left" Width="83">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=HammerNoCD}">
-                                                <b:InvokeCommandAction Command="{Binding HammerNoCD}" CommandParameter="{Binding IsChecked, ElementName=HammerNoCD}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                    <CheckBox x:Name="PlantingNoCD" IsChecked="{Binding FreeCD}" Content="植物卡槽无CD" Height="21" Margin="309,10,-289,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=PlantingNoCD}">
-                                                <b:InvokeCommandAction Command="{Binding PlantingNoCD}" CommandParameter="{Binding IsChecked, ElementName=PlantingNoCD}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                    <CheckBox x:Name="FreePlanting" Content="自由种植" Height="21" Margin="10,36,10,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=FreePlanting}">
-                                                <b:InvokeCommandAction Command="{Binding FreePlanting}" CommandParameter="{Binding IsChecked, ElementName=FreePlanting}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                    <CheckBox x:Name="UnlockAllFusions" Content="解锁全部融合配方" Height="21" Margin="97,36,-77,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=UnlockAllFusions}">
-                                                <b:InvokeCommandAction Command="{Binding UnlockAllFusions}" CommandParameter="{Binding IsChecked, ElementName=UnlockAllFusions}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-
-                                    <Label x:Name="SpeedLabel" Content="{Binding SpeedText}" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,62,0,0" />
-                                    <Slider x:Name="SpeedSlider" IsSelectionRangeEnabled="True" HorizontalAlignment="Left" Height="17" VerticalAlignment="Top" Width="154" Foreground="White" BorderBrush="Transparent" Background="#FF00FFCA" IsSnapToTickEnabled="True" SmallChange="1" Maximum="9" Value="4" TickFrequency="1" Style="{DynamicResource SliderBaseStyle}" Margin="119,63,0,0">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding Value, ElementName=SpeedSlider}">
-                                                <b:InvokeCommandAction Command="{Binding GameSpeed}" CommandParameter="{Binding Value, ElementName=SpeedSlider}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </Slider>
+                                    <CheckBox x:Name="DeveloperMode" Content="开发者模式" Height="21" Margin="10,10,596,0" VerticalAlignment="Top" Foreground="White" IsChecked="{Binding DeveloperMode}" BorderThickness="2,2,2,2" HorizontalAlignment="Left"/>
+                                    <CheckBox x:Name="GloveNoCD" IsChecked="{Binding GloveNoCD}" Content="手套无CD" Height="21" Margin="119,10,492,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left"/>
+                                    <CheckBox x:Name="HammerNoCD" IsChecked="{Binding HammerNoCD}" Content="锤子无CD" Height="21" Margin="213,10,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left" Width="83"/>
+                                    <CheckBox x:Name="PlantingNoCD" IsChecked="{Binding PlantingNoCD}" Content="植物卡槽无CD" Height="21" Margin="309,10,-289,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left"/>
+                                    <CheckBox x:Name="FreePlanting" IsChecked="{Binding FreePlanting}" Content="自由种植" Height="21" Margin="432,10,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left"/>
+                                    <CheckBox x:Name="UnlockAllFusions" IsChecked="{Binding UnlockAllFusions}" Content="解锁全部融合配方" Height="21" Margin="532,10,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left"/>
+                                    <Label x:Name="SpeedLabel" Content="游戏速度：" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,62,0,0" Style="{DynamicResource LabelBaseStyle}" />
+                                    <Label x:Name="SpeedValue" Content="{Binding SpeedValue}" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="92,62,0,0" Style="{DynamicResource BaseStyle}" Height="28" Width="45" />
+                                    <Slider x:Name="GameSpeed" Value="{Binding GameSpeed}" IsSelectionRangeEnabled="True" HorizontalAlignment="Left" Height="17" VerticalAlignment="Top" Width="154" Foreground="White" BorderBrush="Transparent" Background="#FF00FFCA" IsSnapToTickEnabled="True" SmallChange="1" Maximum="9" TickFrequency="1" Style="{DynamicResource SliderBaseStyle}" Margin="142,68,0,0"/>
+                                    <hc:NumericUpDown IsEnabled="{Binding GloveFullCDEnabled}" DecimalPlaces="1" x:Name="GloveFullCD" HorizontalAlignment="Left" Margin="114,36,0,0" VerticalAlignment="Top" Width="80" Height="20" Value="{Binding GloveFullCD}" Increment="0.1" Minimum="0" SelectionOpacity="0.1" />
+                                    <hc:NumericUpDown IsEnabled="{Binding HammerFullCDEnabled}" DecimalPlaces="1" x:Name="HammerFullCD" HorizontalAlignment="Left" VerticalAlignment="Top" Width="88" Height="20" Value="{Binding HammerFullCD}" Margin="309,36,0,0" Minimum="0" Increment="0.1" SelectionOpacity="0.2" />
+                                    <CheckBox x:Name="HammerFullCDEnabled" Content="锁定锤子CD" Height="21" Margin="214,38,0,0" VerticalAlignment="Top" Foreground="White" IsChecked="{Binding HammerFullCDEnabled}" BorderThickness="2,2,2,2" HorizontalAlignment="Left" ToolTip="此项不可代替锤子无CD"/>
+                                    <CheckBox x:Name="GloveFullCDEnabled" Height="21" Margin="10,41,0,0" VerticalAlignment="Top" Foreground="White" IsChecked="{Binding GloveFullCDEnabled}" BorderThickness="2,2,2,2" HorizontalAlignment="Left" Content="锁定手套CD" ToolTip="此项不可代替手套无CD，某些情况下取消修改后需用一次手套才能能将CD复原"/>
                                 </Grid>
                             </Expander>
                             <Expander Header="礼盒修改" Style="{DynamicResource Expander.Small}" MinWidth="28" MinHeight="28">
                                 <Grid>
-                                    <CheckBox x:Name="SuperPresent" Content="超级礼盒" Height="21" Margin="10,10,574,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=SuperPresent}">
-                                                <b:InvokeCommandAction Command="{Binding SuperPresent}" CommandParameter="{Binding IsChecked, ElementName=SuperPresent}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                    <CheckBox x:Name="UltimateRamdomZombie" Content="普通盒子僵尸、黄金盒子僵尸概率出究极僵尸" Height="21" Margin="95,10,293,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=UltimateRamdomZombie}">
-                                                <b:InvokeCommandAction Command="{Binding UltimateRamdomZombie}" CommandParameter="{Binding IsChecked, ElementName=UltimateRamdomZombie}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                    <CheckBox x:Name="PresentFastOpen" Content="礼盒快速打开" Height="21" Margin="376,10,177,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=PresentFastOpen}">
-                                                <b:InvokeCommandAction Command="{Binding PresentFastOpen}" CommandParameter="{Binding IsChecked, ElementName=PresentFastOpen}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                    <ComboBox hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="锁定礼盒植物：" hc:TitleElement.TitleWidth="90" x:Name="LockPresent" HorizontalAlignment="Left" Height="26" Margin="10,36,0,0" Width="217" SelectedValuePath="Key" DisplayMemberPath="Value" ItemsSource="{Binding Plants}" Style="{DynamicResource ComboBoxExtend}" VerticalAlignment="Top">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding SelectedValue, ElementName=LockPresent}">
-                                                <b:InvokeCommandAction Command="{Binding LockPresent}" CommandParameter="{Binding SelectedValue, ElementName=LockPresent}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </ComboBox>
+                                    <CheckBox x:Name="SuperPresent" IsChecked="{Binding SuperPresent}" Content="超级礼盒" Height="21" Margin="10,10,574,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left"/>
+                                    <CheckBox x:Name="UltimateRamdomZombie" IsChecked="{Binding UltimateRamdomZombie}" Content="普通盒子僵尸、黄金盒子僵尸概率出究极僵尸" Height="21" Margin="95,10,293,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left"/>
+                                    <CheckBox x:Name="PresentFastOpen" IsChecked="{Binding PresentFastOpen}" Content="礼盒快速打开" Height="21" Margin="376,10,177,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left"/>
+                                    <ComboBox SelectedValue="{Binding LockPresent}" hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="锁定礼盒植物：" hc:TitleElement.TitleWidth="90" x:Name="LockPresent" HorizontalAlignment="Left" Height="26" Margin="10,36,0,0" Width="217" SelectedValuePath="Key" DisplayMemberPath="Value" ItemsSource="{Binding Plants}" Style="{DynamicResource ComboBoxExtend}" VerticalAlignment="Top"/>
                                 </Grid>
                             </Expander>
                             <Expander Header="数值修改" Style="{DynamicResource Expander.Small}" MinWidth="28" MinHeight="28">
                                 <Grid>
                                     <Label Content="设为-1以还原数值" HorizontalAlignment="Left" Margin="0,2,0,0" VerticalAlignment="Top" Foreground="White" />
                                     <ComboBox hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="植物初始血量修改：" hc:TitleElement.TitleWidth="115" x:Name="HealthPlantType" HorizontalAlignment="Left" Height="20" Margin="10,32,0,0" VerticalAlignment="Top" Width="236" SelectedValuePath="Key" DisplayMemberPath="Value" ItemsSource="{Binding Plants2, Mode=OneWay}" SelectedValue="{Binding HealthPlantType}" Style="{DynamicResource ComboBoxExtend}" />
-                                    <TextBox x:Name="HealthPlantValue" HorizontalAlignment="Left" Margin="251,32,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="60" Height="20" Text="{Binding HealthPlantValue}" />
+                                    <hc:NumericUpDown DecimalPlaces="0" x:Name="HealthPlantValue" HorizontalAlignment="Left" Margin="251,32,0,0" VerticalAlignment="Top" Width="60" Height="20" Value="{Binding HealthPlantValue}" />
                                     <ComboBox hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="僵尸初始血量修改：" hc:TitleElement.TitleWidth="115" x:Name="HealthZombieType" HorizontalAlignment="Left" Height="20" Margin="10,62,0,0" VerticalAlignment="Top" Width="236" SelectedValuePath="Key" DisplayMemberPath="Value" ItemsSource="{Binding Zombies, Mode=OneWay}" SelectedValue="{Binding HealthZombieType}" Style="{DynamicResource ComboBoxExtend}" />
                                     <ComboBox hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="一类防具血量修改：" hc:TitleElement.TitleWidth="115" x:Name="Health1stType" HorizontalAlignment="Left" Height="20" Margin="10,92,0,0" VerticalAlignment="Top" Width="236" SelectedValuePath="Key" DisplayMemberPath="Value" ItemsSource="{Binding FirstArmor, Mode=OneWay}" SelectedValue="{Binding Health1stType}" Style="{DynamicResource ComboBoxExtend}" />
                                     <ComboBox hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="二类防具血量修改：" hc:TitleElement.TitleWidth="115" x:Name="Health2ndType" HorizontalAlignment="Left" Height="20" Margin="10,123,0,0" VerticalAlignment="Top" Width="236" SelectedValuePath="Key" DisplayMemberPath="Value" ItemsSource="{Binding SecondArmor, Mode=OneWay}" SelectedValue="{Binding Health2ndType}" Style="{DynamicResource ComboBoxExtend}" />
                                     <ComboBox hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="子弹伤害值修改：" hc:TitleElement.TitleWidth="115" x:Name="bulletDamageType" HorizontalAlignment="Left" Height="20" Margin="10,155,0,0" VerticalAlignment="Top" Width="236" SelectedValuePath="Key" DisplayMemberPath="Value" ItemsSource="{Binding Bullets, Mode=OneWay}" SelectedValue="{Binding BulletDamageType}" Style="{DynamicResource ComboBoxExtend}" />
-                                    <TextBox x:Name="HealthZombieValue" HorizontalAlignment="Left" Margin="251,62,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="60" Height="20" Text="{Binding HealthZombieValue}" />
-                                    <TextBox x:Name="Health1stValue" HorizontalAlignment="Left" Margin="251,92,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="60" Height="20" Text="{Binding Health1stValue}" />
-                                    <TextBox x:Name="Health2ndValue" HorizontalAlignment="Left" Margin="251,123,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="60" Height="20" Text="{Binding Health2ndValue}" />
-                                    <TextBox x:Name="bulletDamageValue" HorizontalAlignment="Left" Margin="251,155,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="60" Height="20" Text="{Binding BulletDamageValue}" />
-                                    <Button x:Name="hpbutton" Content="修改" Height="30" Margin="0,32,0,0" VerticalAlignment="Top" Width="70" Command="{Binding SetHealthPlant}" />
-                                    <Button x:Name="hzbutton" Content="修改" Height="30" Margin="0,62,0,0" VerticalAlignment="Top" Width="70" Command="{Binding SetHealthZombie}" />
-                                    <Button x:Name="h1button" Content="修改" Height="30" Margin="0,92,0,0" VerticalAlignment="Top" Width="70" Command="{Binding SetHealth1st}" />
-                                    <Button x:Name="h2button" Content="修改" Height="30" Margin="0,123,0,0" VerticalAlignment="Top" Width="70" Command="{Binding SetHealth2nd}" />
-                                    <Button x:Name="bulletbutton" Content="修改" Height="30" Margin="0,155,0,0" VerticalAlignment="Top" Width="70" Command="{Binding SetBulletDamage}" />
-                                    <ComboBox hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="锁定全部子弹类型：" hc:TitleElement.TitleWidth="115" x:Name="LockBulletType" HorizontalAlignment="Left" Height="20" Margin="10,187,0,0" VerticalAlignment="Top" Width="236" SelectedValuePath="Key" DisplayMemberPath="Value" SelectedItem="{Binding LockBullet}" ItemsSource="{Binding Bullets2}" Style="{DynamicResource ComboBoxExtend}" />
-                                    <Button x:Name="lockBulletButton" Content="修改" Height="30" Margin="251,187,0,0" VerticalAlignment="Top" Width="134" Command="{Binding SetLockBullet}" HorizontalAlignment="Left" />
+                                    <hc:NumericUpDown DecimalPlaces="0" x:Name="HealthZombieValue" HorizontalAlignment="Left" Margin="251,62,0,0" VerticalAlignment="Top" Width="60" Height="20" Value="{Binding HealthZombieValue}" />
+                                    <hc:NumericUpDown DecimalPlaces="0" x:Name="Health1stValue" HorizontalAlignment="Left" Margin="251,92,0,0" VerticalAlignment="Top" Width="60" Height="20" Value="{Binding Health1stValue}" />
+                                    <hc:NumericUpDown DecimalPlaces="0" x:Name="Health2ndValue" HorizontalAlignment="Left" Margin="251,123,0,0" VerticalAlignment="Top" Width="60" Height="20" Value="{Binding Health2ndValue}" />
+                                    <hc:NumericUpDown DecimalPlaces="0" x:Name="bulletDamageValue" HorizontalAlignment="Left" Margin="251,155,0,0" VerticalAlignment="Top" Width="60" Height="20" Value="{Binding BulletDamageValue}" />
+                                    <Button x:Name="hpbutton" Content="修改" Height="30" Margin="0,32,0,0" VerticalAlignment="Top" Width="70" Command="{Binding HealthPlantCommand}" />
+                                    <Button x:Name="hzbutton" Content="修改" Height="30" Margin="0,62,0,0" VerticalAlignment="Top" Width="70" Command="{Binding HealthZombieCommand}" />
+                                    <Button x:Name="h1button" Content="修改" Height="30" Margin="0,92,0,0" VerticalAlignment="Top" Width="70" Command="{Binding Health1stCommand}" />
+                                    <Button x:Name="h2button" Content="修改" Height="30" Margin="0,123,0,0" VerticalAlignment="Top" Width="70" Command="{Binding Health2ndCommand}" />
+                                    <Button x:Name="bulletbutton" Content="修改" Height="30" Margin="0,155,0,0" VerticalAlignment="Top" Width="70" Command="{Binding BulletDamageCommand}" />
+                                    <ComboBox hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="锁定全部子弹类型：" hc:TitleElement.TitleWidth="115" x:Name="LockBulletType" HorizontalAlignment="Left" Height="20" Margin="10,187,0,0" VerticalAlignment="Top" Width="236" SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding LockBulletType}" ItemsSource="{Binding Bullets2, Mode=OneWay}" Style="{DynamicResource ComboBoxExtend}" />
+                                    <Button x:Name="lockBulletButton" Content="修改" Height="30" Margin="251,187,0,0" VerticalAlignment="Top" Width="134" Command="{Binding LockBulletCommand}" HorizontalAlignment="Left" />
+                                    <Label HorizontalAlignment="Left" Margin="410,33,0,0" VerticalAlignment="Top" Height="182">
+                                        <TextBlock TextWrapping="Wrap" Foreground="#FF52FF65"><Run Text="注："/><LineBreak/><Run Text="1.防具中文名懒得做"/><Run Text="了"/><LineBreak/><Run Text="2.绝大多数子弹没有广泛使用且一目了然的中文名，故只保留蓝飘飘在源代码中的英文命名"/><Run Language="zh-cn" Text="，若看不懂名称点开试一下即可"/><LineBreak/><Run Text="3.子弹锁定可能造成各种奇怪的问题，仅供娱乐，不会"/><Run Language="zh-cn" Text="针对性修复此处任何bug"/></TextBlock>
+                                    </Label>
                                 </Grid>
                             </Expander>
                             <Expander Header="关卡特性附加" Style="{DynamicResource Expander.Small}" MinWidth="28" MinHeight="28">
                                 <Grid>
-                                    <CheckBox x:Name="ColumnPlanting" Content="排山倒海" Height="21" Margin="110,10,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding ColumnPlanting}" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=ColumnPlanting}">
-                                                <b:InvokeCommandAction Command="{Binding SetGameModes}" CommandParameter="{Binding IsChecked, ElementName=ColumnPlanting}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                    <CheckBox x:Name="SeedRain" Content="种子雨" Height="21" Margin="205,10,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding SeedRain}" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=SeedRain}">
-                                                <b:InvokeCommandAction Command="{Binding SetGameModes}" CommandParameter="{Binding IsChecked, ElementName=SeedRain}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                    <CheckBox x:Name="Exchange" Content="等价交换" Height="21" Margin="284,10,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding Exchange}" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=Exchange}">
-                                                <b:InvokeCommandAction Command="{Binding SetGameModes}" CommandParameter="{Binding IsChecked, ElementName=Exchange}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                    <CheckBox x:Name="Shooting1" Content="诸神1" Height="21" Margin="10,36,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding Shooting1}" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=Shooting1}">
-                                                <b:InvokeCommandAction Command="{Binding SetGameModes}" CommandParameter="{Binding IsChecked, ElementName=Shooting1}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                    <CheckBox x:Name="Shooting2" Content="诸神2" Height="21" Margin="78,36,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding Shooting2}" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=Shooting2}">
-                                                <b:InvokeCommandAction Command="{Binding SetGameModes}" CommandParameter="{Binding IsChecked, ElementName=Shooting2}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                    <CheckBox x:Name="Shooting3" Content="诸神3" Height="21" Margin="153,36,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding Shooting3}" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=Shooting3}">
-                                                <b:InvokeCommandAction Command="{Binding SetGameModes}" CommandParameter="{Binding IsChecked, ElementName=Shooting3}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                    <CheckBox x:Name="Shooting4" Content="诸神：全军出击" Height="21" Margin="224,36,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding Shooting4}" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=Shooting4}">
-                                                <b:InvokeCommandAction Command="{Binding SetGameModes}" CommandParameter="{Binding IsChecked, ElementName=Shooting4}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                    <CheckBox x:Name="ScaredyDream" Content="胆小菇之梦" Height="21" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" Margin="10,10,0,0" IsChecked="{Binding ScaredyDream}" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=ScaredyDream}">
-                                                <b:InvokeCommandAction Command="{Binding SetGameModes}" CommandParameter="{Binding IsChecked, ElementName=ScaredyDream}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
+                                    <CheckBox x:Name="ColumnPlanting" Content="排山倒海" Height="21" Margin="110,10,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding ColumnPlanting}" HorizontalAlignment="Left"/>
+                                    <CheckBox x:Name="SeedRain" Content="种子雨" Height="21" Margin="205,10,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding SeedRain}" HorizontalAlignment="Left"/>
+                                    <CheckBox x:Name="Exchange" Content="等价交换" Height="21" Margin="284,10,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding Exchange}" HorizontalAlignment="Left"/>
+                                    <CheckBox x:Name="Shooting1" Content="诸神1" Height="21" Margin="10,36,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding Shooting1}" HorizontalAlignment="Left"/>
+                                    <CheckBox x:Name="Shooting2" Content="诸神2" Height="21" Margin="78,36,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding Shooting2}" HorizontalAlignment="Left"/>
+                                    <CheckBox x:Name="Shooting3" Content="诸神3" Height="21" Margin="153,36,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding Shooting3}" HorizontalAlignment="Left"/>
+                                    <CheckBox x:Name="Shooting4" Content="诸神：全军出击" Height="21" Margin="224,36,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding Shooting4}" HorizontalAlignment="Left"/>
+                                    <CheckBox x:Name="ScaredyDream" Content="胆小菇之梦" Height="21" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" Margin="10,10,0,0" IsChecked="{Binding ScaredyDream}" HorizontalAlignment="Left"/>
                                 </Grid>
                             </Expander>
                             <Expander Header="场地特性" Style="{DynamicResource Expander.Small}" MinWidth="28" MinHeight="28">
                                 <Grid>
-                                    <CheckBox x:Name="NoIceRoad" Content="不生成冰道" Height="21" Margin="10,10,10,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=NoIceRoad}">
-                                                <b:InvokeCommandAction Command="{Binding NoIceRoad}" CommandParameter="{Binding IsChecked, ElementName=NoIceRoad}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                    <CheckBox x:Name="ItemExistForever" Content="物品不消失" Height="21" Margin="127,10,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=ItemExistForever}">
-                                                <b:InvokeCommandAction Command="{Binding ItemExistForever}" CommandParameter="{Binding IsChecked, ElementName=ItemExistForever}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                    <CheckBox x:Name="CardNoInit" Content="卡槽无初始CD" Height="21" Margin="239,10,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=CardNoInit}">
-                                                <b:InvokeCommandAction Command="{Binding CardNoInit}" CommandParameter="{Binding IsChecked, ElementName=CardNoInit}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                    <CheckBox x:Name="JackboxNotExplode" Content="小丑盒子不爆" Height="21" Margin="369,10,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=JackboxNotExplode}">
-                                                <b:InvokeCommandAction Command="{Binding JackboxNotExplode}" CommandParameter="{Binding IsChecked, ElementName=JackboxNotExplode}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                    <CheckBox x:Name="GarlicDay" Content="大蒜天" Height="21" Margin="499,10,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=GarlicDay}">
-                                                <b:InvokeCommandAction Command="{Binding GarlicDayCommand}" CommandParameter="{Binding IsChecked, ElementName=GarlicDay}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
+                                    <CheckBox x:Name="NoIceRoad" IsChecked="{Binding NoIceRoad}" Content="不生成冰道" Height="21" Margin="10,10,10,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left"/>
+                                    <CheckBox x:Name="ItemExistForever" IsChecked="{Binding ItemExistForever}" Content="物品不消失" Height="21" Margin="127,10,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left"/>
+                                    <CheckBox x:Name="CardNoInit" IsChecked="{Binding CardNoInit}" Content="卡槽无初始CD" Height="21" Margin="239,10,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left"/>
+                                    <CheckBox x:Name="JackboxNotExplode" IsChecked="{Binding JackboxNotExplode}" Content="小丑盒子不爆" Height="21" Margin="369,10,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left"/>
+                                    <CheckBox x:Name="GarlicDay" IsChecked="{Binding GarlicDay}" Content="大蒜天" Height="21" Margin="499,10,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left"/>
+                                    <ComboBox hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="巨人扔出的僵尸类型：" hc:TitleElement.TitleWidth="130" x:Name="ImpToBeThrown" HorizontalAlignment="Left" Height="20" Margin="10,36,0,0" VerticalAlignment="Top" Width="328" SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding LockBulletType}" ItemsSource="{Binding Zombies, Mode=OneWay}" Style="{DynamicResource ComboBoxExtend}" />
+
                                 </Grid>
                             </Expander>
                             <Expander Header="植物特性" Style="{DynamicResource Expander.Small}" MinWidth="28" MinHeight="28">
                                 <Grid>
-                                    <CheckBox x:Name="FastShooting" Content="植物攻击无间隔(部分植物受动画限制无法生效)" Height="21" Margin="10,10,10,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=FastShooting}">
-                                                <b:InvokeCommandAction Command="{Binding FastShooting}" CommandParameter="{Binding IsChecked, ElementName=FastShooting}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                    <CheckBox x:Name="HardPlant" Content="植物无敌" Height="21" Margin="296,10,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=HardPlant}">
-                                                <b:InvokeCommandAction Command="{Binding HardPlant}" CommandParameter="{Binding IsChecked, ElementName=HardPlant}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                    <CheckBox x:Name="NoHole" Content="不生成坑洞" Height="20" Margin="390,10,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=NoHole}">
-                                                <b:InvokeCommandAction Command="{Binding NoHole}" CommandParameter="{Binding IsChecked, ElementName=NoHole}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                    <CheckBox x:Name="HyponoEmperorNoCD" Content="魅帝菇无CD" Height="21" Margin="10,36,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=HyponoEmperorNoCD}">
-                                                <b:InvokeCommandAction Command="{Binding HyponoEmperorNoCD}" CommandParameter="{Binding IsChecked, ElementName=HyponoEmperorNoCD}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                    <CheckBox x:Name="MineNoCD" Content="地雷无CD" Height="21" Margin="118,36,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=MineNoCD}">
-                                                <b:InvokeCommandAction Command="{Binding MineNoCD}" CommandParameter="{Binding IsChecked, ElementName=MineNoCD}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                    <CheckBox x:Name="ChomperNoCD" Content="大嘴花无CD" Height="21" Margin="214,36,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=ChomperNoCD}">
-                                                <b:InvokeCommandAction Command="{Binding ChomperNoCD}" CommandParameter="{Binding IsChecked, ElementName=ChomperNoCD}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                    <CheckBox x:Name="CobCannonNoCD" Content="玉米加农炮无CD" Height="21" Margin="321,36,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=CobCannonNoCD}">
-                                                <b:InvokeCommandAction Command="{Binding CobCannonNoCD}" CommandParameter="{Binding IsChecked, ElementName=CobCannonNoCD}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                    <CheckBox x:Name="UndeadBullet" Content="子弹无限穿透" Height="21" Margin="493,10,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=UndeadBullet}">
-                                                <b:InvokeCommandAction Command="{Binding UndeadBulletCommand}" CommandParameter="{Binding IsChecked, ElementName=UndeadBullet}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
+                                    <CheckBox x:Name="FastShooting" IsChecked="{Binding FastShooting}" Content="植物攻击无间隔(部分植物受动画限制无法生效)" Height="21" Margin="10,10,10,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left"/>
+                                    <CheckBox x:Name="HardPlant" IsChecked="{Binding HardPlant}" Content="植物无敌" Height="21" Margin="296,10,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left"/>
+                                    <CheckBox x:Name="NoHole" IsChecked="{Binding NoHole}" Content="不生成坑洞" Height="20" Margin="390,10,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left"/>
+                                    <CheckBox x:Name="HyponoEmperorNoCD" IsChecked="{Binding HyponoEmperorNoCD}" Content="魅帝菇无CD" Height="21" Margin="10,36,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left"/>
+                                    <CheckBox x:Name="MineNoCD" IsChecked="{Binding MineNoCD}" Content="地雷无CD" Height="21" Margin="118,36,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left"/>
+                                    <CheckBox x:Name="ChomperNoCD" IsChecked="{Binding ChomperNoCD}" Content="大嘴花无CD" Height="21" Margin="214,36,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left"/>
+                                    <CheckBox x:Name="CobCannonNoCD" IsChecked="{Binding CobCannonNoCD}" Content="玉米加农炮无CD" Height="21" Margin="321,36,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left"/>
+                                    <CheckBox x:Name="UndeadBullet" IsChecked="{Binding UndeadBullet}" Content="子弹无限穿透" Height="21" Margin="493,10,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left"/>
+                                    <CheckBox x:Name="DevLour" IsChecked="{Binding DevLour}" Content="窝红温了" Height="21" Margin="10,62,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left" ToolTip="开发者模式猫瓜，植物叠太多可能导致问题，仅供娱乐"/>
                                 </Grid>
                             </Expander>
+
                             <Label Height="168" Width="684" Foreground="White">
-                                <TextBlock FontSize="16" Foreground="#FF2FA42F" Height="208" Width="648" ><Run Text="此修改器完全免费" /><Run Text="。若有付费/要求三连+关注/私信发链接的情况，说明你" /><Run Text="被骗了" /><Run Text="，" /><LineBreak /><Run /><Run Text="请" /><Run Text="注意" /><Run Language="zh-cn" Text="隐私和" /><Run Text="财产安全" /><Run Text="！" /><Run Text="&#xA;在b站的视频或直播中使用本修改器时，如果你愿意可以注上修改器作者的名字@Infinite75&#xA;关闭控制台输出窗口、游戏窗口、修改窗口中任何一个都会整体关闭游戏，小心误触" /><LineBreak /></TextBlock>
+                                <TextBlock FontSize="16" Foreground="#FF2FA42F" Height="140" Width="648" ><Run Text="此修改器完全免费"/><Run Text="。若有付费/要求三连+关注/私信发链接的情况，说明你"/><Run Text="被骗了"/><Run Text="，"/><LineBreak/><Run/><Run Text="请"/><Run Text="注意"/><Run Text="隐私和"/><Run Text="财产安全"/><Run Text="！"/><LineBreak/><Run Text="修改器已"/><Run Language="zh-cn" Text="在github"/><Run Text="开源"/><Run Text="&#xA;在b站的视频或直播中使用本修改器时，如果你愿意可以注上修改器作者的名字@Infinite75&#xA;关闭控制台输出窗口、游戏窗口、修改窗口中任何一个都会整体关闭游戏，小心误触"/><LineBreak/></TextBlock>
                             </Label>
                         </StackPanel>
                     </ScrollViewer>
                 </Border>
             </TabItem>
-
             <TabItem Header="游戏内操作">
                 <Border Background="#00212125" Margin="0,8,0,0" BorderBrush="#FF2FA42F" BorderThickness="2,2,2,2">
                     <ScrollViewer HorizontalScrollBarVisibility="Auto">
@@ -321,115 +139,73 @@
                                 <Grid>
                                     <hc:NumericUpDown DecimalPlaces="0" hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="行：" hc:TitleElement.TitleWidth="30" x:Name="Row" HorizontalAlignment="Left" Margin="190,3,0,0" VerticalAlignment="Top" Width="90" Value="{Binding Row}" Maximum="12" Minimum="0" Style="{DynamicResource NumericUpDownExtend}" />
                                     <Label Content="行、列号设为0表示整行/整列" HorizontalAlignment="Left" Margin="0,3,0,0" VerticalAlignment="Top" Foreground="White" />
-                                    <hc:NumericUpDown DecimalPlaces="0" hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="列：" hc:TitleElement.TitleWidth="30" x:Name="Column" HorizontalAlignment="Left" Margin="285,3,0,0"  VerticalAlignment="Top" Width="90" Value="{Binding Col}" Maximum="10" Minimum="0" Style="{DynamicResource NumericUpDownExtend}" />
+                                    <hc:NumericUpDown DecimalPlaces="0" hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="列：" hc:TitleElement.TitleWidth="30" x:Name="Column" HorizontalAlignment="Left" Margin="285,3,0,0"  VerticalAlignment="Top" Width="90" Value="{Binding Col}" Maximum="24" Minimum="0" Style="{DynamicResource NumericUpDownExtend}" />
                                     <hc:NumericUpDown DecimalPlaces="0" hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="重复执行次数：" hc:TitleElement.TitleWidth="100" x:Name="Times" HorizontalAlignment="Left" Margin="380,3,0,0" VerticalAlignment="Top" Width="224" Value="{Binding Times}" Maximum="50" Minimum="1" Style="{DynamicResource NumericUpDownExtend}" />
                                     <hc:ElementGroup Orientation="Horizontal" Layout="Stack" Margin="0,36,0,0" Width="552" HorizontalAlignment="Left" Style="{DynamicResource ElementGroupSolid}">
-                                        <Button x:Name="CreatePlant" Content="生成植物" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="68" Command="{Binding CreatePlant}" Style="{DynamicResource ButtonGroupItemHorizontalFirst}" />
+                                        <Button x:Name="CreatePlant" Content="生成植物" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="68" Command="{Binding CreatePlantCommand}" Style="{DynamicResource ButtonGroupItemHorizontalFirst}" />
                                         <ComboBox x:Name="PlantType" SelectedValuePath="Key" DisplayMemberPath="Value" ItemsSource="{Binding Plants2}" SelectedValue="{Binding PlantType}" Style="{DynamicResource ComboBoxExtend}" Width="150" HorizontalAlignment="Left" VerticalContentAlignment="Center" Margin="-34,0,0,0" VerticalAlignment="Center" Height="30" />
-                                        <Button x:Name="CreateCard" Content="生成植物卡片" Width="122" Command="{Binding CreateCard}" Height="30" />
-                                        <Button x:Name="SimplePresents" Content="斗蛐蛐快速布阵(5礼盒+5僵尸礼盒)" Width="215" Command="{Binding SimplePresents}" Height="30" />
+                                        <Button x:Name="CreateCard" Content="生成植物卡片" Width="122" Command="{Binding CreateCardCommand}" Height="30" />
+                                        <Button x:Name="SimplePresents" Content="斗蛐蛐快速布阵(5礼盒+5僵尸礼盒)" Width="215" Command="{Binding SimplePresentsCommand}" Height="30" />
                                     </hc:ElementGroup>
                                     <hc:ElementGroup Orientation="Horizontal" Layout="Stack" Margin="0,66,0,0" Width="217" HorizontalAlignment="Left">
-                                        <Button x:Name="createZombie" Content="生成僵尸" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="68" Command="{Binding CreateZombie}" />
+                                        <Button x:Name="createZombie" Content="生成僵尸" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="68" Command="{Binding CreateZombieCommand}" />
                                         <ComboBox x:Name="ZombieType" HorizontalAlignment="Left" Height="30" VerticalAlignment="Center" Width="150" SelectedValuePath="Key" DisplayMemberPath="Value" ItemsSource="{Binding Zombies}" SelectedValue="{Binding ZombieType}" />
                                     </hc:ElementGroup>
                                     <CheckBox x:Name="IsMindCtrl" Content="生成魅惑僵尸" Height="30" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding IsMindCtrl}" Style="{DynamicResource CheckBoxBaseStyle}" BorderBrush="#FF3F3F46" Margin="217,66,369,0" VerticalAlignment="Top" />
-
                                     <hc:ElementGroup Orientation="Horizontal" Layout="Stack" Margin="0,95,0,0" HorizontalAlignment="Left">
-                                        <Button x:Name="CreateItem" Content="生成物品" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="68" Command="{Binding CreateItem}" />
+                                        <Button x:Name="CreateItem" Content="生成物品" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="68" Command="{Binding CreateItemCommand}" />
                                         <ComboBox x:Name="ItemType" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="150" SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding ItemType}" ItemsSource="{Binding Items, Mode=OneWay}" />
                                     </hc:ElementGroup>
-
                                     <hc:ButtonGroup Height="30" Margin="231,96,270,0" Style="{DynamicResource ButtonGroupSolid}">
-                                        <Button x:Name="CreatePassiveMateorite" Content="普通陨星" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="69" Command="{Binding CreatePassiveMateorite}" Style="{DynamicResource ButtonGroupItemHorizontalFirst}" />
-                                        <Button x:Name="CreateActiveMateorite" Content="充能陨星" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="68" Command="{Binding CreateActiveMateorite}" Style="{DynamicResource ButtonGroupItemDefault}" />
-                                        <Button x:Name="CreateUltimateMateorite" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="68" Content="究极陨星" Command="{Binding CreateUltimateMateorite}" Style="{DynamicResource ButtonGroupItemHorizontalLast}" />
+                                        <Button x:Name="CreatePassiveMateorite" Content="普通陨星" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="69" Command="{Binding CreatePassiveMateoriteCommand}" Style="{DynamicResource ButtonGroupItemHorizontalFirst}" />
+                                        <Button x:Name="CreateActiveMateorite" Content="充能陨星" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="68" Command="{Binding CreateActiveMateoriteCommand}" Style="{DynamicResource ButtonGroupItemDefault}" />
+                                        <Button x:Name="CreateUltimateMateorite" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="68" Content="究极陨星" Command="{Binding CreateUltimateMateoriteCommand}" Style="{DynamicResource ButtonGroupItemHorizontalLast}" />
                                     </hc:ButtonGroup>
                                     <Label Content="植物布阵：" HorizontalAlignment="Left" Margin="0,145,0,0" VerticalAlignment="Top" Height="30" Width="89" />
-                                    <Button x:Name="ReadField" HorizontalAlignment="Left" Height="30" Margin="89,144,0,0" VerticalAlignment="Top" Width="173" Content="复制当前阵型代码至剪贴板" Command="{Binding CopyFieldScripts}" />
+                                    <Button x:Name="ReadField" HorizontalAlignment="Left" Height="30" Margin="89,144,0,0" VerticalAlignment="Top" Width="173" Content="复制当前阵型代码至剪贴板" Command="{Binding CopyFieldScriptsCommand}" />
                                     <CheckBox x:Name="ClearOnWritingField" Content="布阵时清空场地" Height="30" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding ClearOnWritingField}" HorizontalAlignment="Left"  Margin="269,145,0,0" />
-
                                     <hc:ElementGroup Orientation="Horizontal" Layout="Stack" Margin="0,174,0,0" Height="30" HorizontalAlignment="Left">
-                                        <Button x:Name="WriteField" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="105" Content="根据代码布阵" Command="{Binding WriteField}" />
-
+                                        <Button x:Name="WriteField" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="105" Content="根据代码布阵" Command="{Binding WriteFieldCommand}" />
                                         <hc:TextBox hc:InfoElement.ShowClearButton="True" x:Name="FieldString" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top" Width="488" Text="{Binding FieldString}" Height="30" />
                                     </hc:ElementGroup>
                                     <Label Content="僵尸布阵：" HorizontalAlignment="Left" Margin="0,203,0,0" VerticalAlignment="Top" Height="30" Width="89" />
                                     <Button x:Name="ReadFieldZombies" HorizontalAlignment="Left" Height="30" Margin="89,204,0,0" VerticalAlignment="Top" Width="173" Content="复制当前阵型代码至剪贴板" Command="{Binding CopyZombieScriptsCommand}" />
                                     <CheckBox x:Name="ClearZombiesOnWritingField" Content="布阵时清空场地" Height="30" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding ClearOnWritingZombies}" HorizontalAlignment="Left" Margin="269,203,0,0" />
-
                                     <hc:ElementGroup Orientation="Horizontal" Layout="Stack" Margin="0,233,0,0" Height="30" HorizontalAlignment="Left">
                                         <Button x:Name="WriteFieldZombies" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="105" Content="根据代码布阵" Command="{Binding WriteZombiesCommand}" />
-
                                         <hc:TextBox hc:InfoElement.ShowClearButton="True" x:Name="FieldStringZombies" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top" Width="488" Text="{Binding ZombieFieldString}" Height="30" />
                                     </hc:ElementGroup>
                                 </Grid>
                             </Expander>
                             <Expander Header="僵尸海">
                                 <StackPanel>
-                                    <CheckBox x:Name="ZombieSea" Content="极限僵尸海" Height="21" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding ZombieSea}" Width="126" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=ZombieSea}">
-                                                <b:InvokeCommandAction Command="{Binding SetZombieSea}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                    <hc:NumericUpDown DecimalPlaces="0" hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="生成间隔帧数：" hc:TitleElement.TitleWidth="90" x:Name="FpCreate" Width="167" Value="{Binding ZombieSeaCD}" Maximum="1000" Minimum="10" Style="{DynamicResource NumericUpDownExtend}" HorizontalAlignment="Left">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding Value, ElementName=FpCreate}">
-                                                <b:InvokeCommandAction Command="{Binding SetZombieSea}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </hc:NumericUpDown>
-                                    <hc:CheckComboBox local:SelectedItemsExt.SelectedItems="{Binding ZombieSeaTypes,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="僵尸类型：" hc:TitleElement.TitleWidth="80" Style="{DynamicResource CheckComboBoxExtend}" ItemsSource="{Binding Zombies}" SelectedValuePath="Key" DisplayMemberPath="Value" Width="361" HorizontalAlignment="Left" IsSynchronizedWithCurrentItem="True" />
+                                    <CheckBox x:Name="ZombieSeaEnabled" Content="极限僵尸海" Height="21" Foreground="White" BorderThickness="2,2,2,2" IsChecked="{Binding ZombieSeaEnabled}" Width="126" HorizontalAlignment="Left"/>
+                                    <hc:NumericUpDown DecimalPlaces="0" hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="生成间隔帧数：" hc:TitleElement.TitleWidth="90" x:Name="FpCreate" Width="167" Value="{Binding ZombieSeaCD}" Maximum="1000" Minimum="10" Style="{DynamicResource NumericUpDownExtend}" HorizontalAlignment="Left"/>
+                                    <hc:CheckComboBox local:SelectedItemsExt.SelectedItems="{Binding ZombieSeaTypes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="僵尸类型：" hc:TitleElement.TitleWidth="80" Style="{DynamicResource CheckComboBoxExtend}" ItemsSource="{Binding Zombies}" SelectedValuePath="Key" DisplayMemberPath="Value" Width="361" HorizontalAlignment="Left" IsSynchronizedWithCurrentItem="True"/>
                                 </StackPanel>
                             </Expander>
                             <Expander Header="游戏状态调整">
                                 <Grid>
-                                    <Button x:Name="ChagneSun" Content="修改阳光" HorizontalAlignment="Left" Height="30" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Command="{Binding SetSun, ValidatesOnNotifyDataErrors=True}" />
-                                    <hc:NumericUpDown x:Name="Sun" HorizontalAlignment="Left" Margin="90,10,0,0" VerticalAlignment="Top" Width="94" Height="30" Value="{Binding Sun}" Increment="100" Maximum="2147483647" Minimum="0" />
-                                    <CheckBox x:Name="LockSun" Content="锁定阳光" Height="21" Margin="189,17,437,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=LockSun}">
-                                                <b:InvokeCommandAction Command="{Binding LockSun}" CommandParameter="{Binding IsChecked, ElementName=LockSun}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                    <Button x:Name="ChangeMoney" Content="修改钱数" HorizontalAlignment="Left" Height="30" Margin="275,12,0,0" VerticalAlignment="Top" Width="75" Command="{Binding SetMoney, ValidatesOnNotifyDataErrors=True}" />
-                                    <hc:NumericUpDown x:Name="Money" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="94" Height="30" Value="{Binding Money}" Increment="100" Maximum="99999" Minimum="0" Margin="356,12,0,0" />
-                                    <CheckBox x:Name="LockMoney" Content="锁定钱数" Height="21" Margin="455,17,166,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=LockMoney}">
-                                                <b:InvokeCommandAction Command="{Binding LockMoney}" CommandParameter="{Binding IsChecked, ElementName=LockMoney}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                    <Button x:Name="NextWave" Content="生成下一波僵尸" HorizontalAlignment="Left" Height="30" Margin="10,91,0,0" VerticalAlignment="Top" Width="167" Command="{Binding NextWave}" />
-                                    <CheckBox x:Name="StopSummon" Content="暂停出怪" Height="21" Margin="182,96,437,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=StopSummon}">
-                                                <b:InvokeCommandAction Command="{Binding StopSummon}" CommandParameter="{Binding IsChecked, ElementName=StopSummon}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                    <CheckBox x:Name="NoFail" Content="僵尸进家不死，勾选仅在本局生效" Height="21" Margin="263,96,228,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=NoFail}">
-                                                <b:InvokeCommandAction Command="{Binding NoFail}" CommandParameter="{Binding IsChecked, ElementName=NoFail}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
+                                    <Button x:Name="ChagneSun" Content="修改阳光" HorizontalAlignment="Left" Height="30" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Command="{Binding SunCommand}" />
+                                    <hc:NumericUpDown DecimalPlaces="0" x:Name="Sun" HorizontalAlignment="Left" Margin="90,10,0,0" VerticalAlignment="Top" Width="94" Height="30" Value="{Binding NewSun, ValidatesOnNotifyDataErrors=True}" Increment="100" Maximum="2147483647" Minimum="0" />
+                                    <CheckBox x:Name="LockSun" IsChecked="{Binding LockSun}" Content="锁定阳光" Height="21" Margin="189,17,437,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2"/>
+                                    <Button x:Name="ChangeMoney" Content="修改钱数" HorizontalAlignment="Left" Height="30" Margin="275,12,0,0" VerticalAlignment="Top" Width="75" Command="{Binding MoneyCommand, ValidatesOnNotifyDataErrors=True}" />
+                                    <hc:NumericUpDown DecimalPlaces="0" x:Name="Money" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="94" Height="30" Value="{Binding NewMoney}" Increment="100" Maximum="99999" Minimum="0" Margin="356,12,0,0" />
+                                    <CheckBox x:Name="LockMoney" IsChecked="{Binding LockMoney}" Content="锁定钱数" Height="21" Margin="455,17,166,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2"/>
+                                    <Button x:Name="NextWave" Content="生成下一波僵尸" HorizontalAlignment="Left" Height="30" Margin="10,91,0,0" VerticalAlignment="Top" Width="167" Command="{Binding NextWaveCommand}" />
+                                    <CheckBox x:Name="StopSummon" IsChecked="{Binding StopSummon}" Content="暂停出怪" Height="21" Margin="182,96,437,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2"/>
+                                    <CheckBox x:Name="NoFail" IsChecked="{Binding NoFail}" Content="僵尸进家不死，勾选仅在本局生效" Height="21" Margin="263,96,228,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2"/>
                                     <hc:ButtonGroup Margin="10,51,74,0" Height="30">
-                                        <Button x:Name="ClearAllPlants" Content="清除全部植物" Command="{Binding ClearAllPlants}" Style="{DynamicResource ButtonGroupItemHorizontalFirst}" />
-                                        <Button x:Name="KillAllZombies" Content="秒杀全部僵尸" Command="{Binding KillAllZombies}" Margin="0,0,0,0" Style="{DynamicResource ButtonGroupItemDefault}" />
-                                        <Button x:Name="ClearIce" Content="清除所有冰道" Command="{Binding ClearIceRoads}" Style="{DynamicResource ButtonGroupItemDefault}" />
-                                        <Button x:Name="MindCtrlAll" Content="魅惑全部僵尸" Command="{Binding MindCtrlAll}" Style="{DynamicResource ButtonGroupItemDefault}" />
-                                        <Button x:Name="ClearAllHoles" Content="清除所有坑洞" Command="{Binding ClearAllHoles}" Style="{DynamicResource ButtonGroupItemDefault}" />
-                                        <Button x:Name="Win" Content="直接过关" Command="{Binding Win}" Style="{DynamicResource ButtonGroupItemHorizontalLast}" />
+                                        <Button x:Name="ClearAllPlants" Content="清除全部植物" Command="{Binding ClearAllPlantsCommand}" Style="{DynamicResource ButtonGroupItemHorizontalFirst}" />
+                                        <Button x:Name="KillAllZombies" Content="秒杀全部僵尸" Command="{Binding KillAllZombiesCommand}" Margin="0,0,0,0" Style="{DynamicResource ButtonGroupItemDefault}" />
+                                        <Button x:Name="ClearIce" Content="清除所有冰道" Command="{Binding ClearIceRoadsCommand}" Style="{DynamicResource ButtonGroupItemDefault}" />
+                                        <Button x:Name="MindCtrlAll" Content="魅惑全部僵尸" Command="{Binding MindCtrlAllCommand}" Style="{DynamicResource ButtonGroupItemDefault}" />
+                                        <Button x:Name="ClearAllHoles" Content="清除所有坑洞" Command="{Binding ClearAllHolesCommand}" Style="{DynamicResource ButtonGroupItemDefault}" />
+                                        <Button x:Name="Win" Content="直接过关" Command="{Binding WinCommand}" Style="{DynamicResource ButtonGroupItemHorizontalLast}" />
                                     </hc:ButtonGroup>
-                                    <Button x:Name="ChangeLevelName" Content="修改关卡名称" HorizontalAlignment="Left" Height="30" Margin="12,136,0,0" VerticalAlignment="Top" Width="106" Command="{Binding SetLevelName}" />
+                                    <Button x:Name="ChangeLevelName" Content="修改关卡名称" HorizontalAlignment="Left" Height="30" Margin="12,136,0,0" VerticalAlignment="Top" Width="106" Command="{Binding LevelNameCommand}" />
                                     <TextBox x:Name="LevelName" HorizontalAlignment="Left" Margin="133,138,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="229" Height="20" Text="{Binding LevelName}" />
-                                    <Button x:Name="ShowText" Content="显示字幕" HorizontalAlignment="Left" Height="30" Margin="12,171,0,0" VerticalAlignment="Top" Width="106" Command="{Binding ShowingText}" />
+                                    <Button x:Name="ShowText" Content="显示字幕" HorizontalAlignment="Left" Height="30" Margin="12,171,0,0" VerticalAlignment="Top" Width="106" Command="{Binding ShowingTextCommand}" />
                                     <TextBox x:Name="Text" HorizontalAlignment="Left" Margin="133,171,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="229" Height="20" Text="{Binding ShowText}" />
                                 </Grid>
                             </Expander>
@@ -445,7 +221,6 @@
                                 <StackPanel>
                                     <StackPanel Orientation="Horizontal">
                                         <Label Content="此页面中词条在每局游戏开始时/生存模式第1轮作为初始词条自动添加，局内修改无效" Foreground="White" Height="27" Width="485" />
-
                                         <hc:ButtonGroup>
                                             <Button Content="全选" Command="{Binding TravelBuffSelectAllCommand}" />
                                             <Button Content="全不选" Command="{Binding TravelBuffUnselectAllCommand}" />
@@ -453,12 +228,11 @@
                                     </StackPanel>
                                     <DataGrid hc:DataGridAttach.ShowSelectAllButton="True" x:Name="TravelBuffs" Background="#FF212125" ItemsSource="{Binding TravelBuffs}" AutoGenerateColumns="False" HeadersVisibility="None" CanUserAddRows="False" CanUserDeleteRows="False"  CanUserResizeRows="False" CanUserSortColumns="False" CanUserResizeColumns="False" CanUserReorderColumns="False"  Style="{DynamicResource DataGrid.Small}" PreviewMouseWheel="DataGrid_PreviewMouseWheel">
                                         <DataGrid.Columns>
-                                            <DataGridCheckBoxColumn Binding="{Binding Enabled,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">
+                                            <DataGridCheckBoxColumn Binding="{Binding Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                                                 <DataGridCheckBoxColumn.ElementStyle>
                                                     <Style />
                                                 </DataGridCheckBoxColumn.ElementStyle>
                                             </DataGridCheckBoxColumn>
-
                                             <DataGridTextColumn IsReadOnly="True" Binding="{Binding TravelBuff.Text}" />
                                         </DataGrid.Columns>
                                     </DataGrid>
@@ -468,7 +242,6 @@
                                 <StackPanel>
                                     <StackPanel Orientation="Horizontal">
                                         <Label Content="此页面中词条与游戏实时同步，可任意增删词条，但仅对本局有效" Foreground="White" Height="27" Width="382" />
-
                                         <hc:ButtonGroup>
                                             <Button Content="全选" Command="{Binding InGameBuffSelectAllCommand}" />
                                             <Button Content="全不选" Command="{Binding InGameBuffUnselectAllCommand}" />
@@ -476,7 +249,7 @@
                                     </StackPanel>
                                     <DataGrid x:Name="InGameBuffs" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding InGameBuffs}" CanUserAddRows="False" CanUserDeleteRows="False"  CanUserResizeRows="False" CanUserSortColumns="False" CanUserResizeColumns="False" CanUserReorderColumns="False" Background="#FF1A1A1A" Style="{DynamicResource DataGrid.Small}" PreviewMouseWheel="DataGrid_PreviewMouseWheel">
                                         <DataGrid.Columns>
-                                            <DataGridCheckBoxColumn Binding="{Binding Enabled,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">
+                                            <DataGridCheckBoxColumn Binding="{Binding Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                                                 <DataGridCheckBoxColumn.ElementStyle>
                                                     <Style />
                                                 </DataGridCheckBoxColumn.ElementStyle>
@@ -492,75 +265,91 @@
             </TabItem>
             <TabItem Header="卡槽替换">
                 <Border Background="#FF212125" Margin="0,8,0,0" BorderBrush="#FF2FA42F" BorderThickness="2,2,2,2">
-                    <hc:ScrollViewer HorizontalScrollBarVisibility="Auto" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
-                        <StackPanel>
-                            <DataGrid x:Name="CardReplaces" Background="#FF1A1A1A" ItemsSource="{Binding CardReplaces}" AutoGenerateColumns="False">
-                                <DataGrid.Columns>
-                                    <DataGridCheckBoxColumn Header="是否应用" Binding="{Binding CardUI.SetEnabled,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}">
-                                        <DataGridCheckBoxColumn.ElementStyle>
-                                            <Style />
-                                        </DataGridCheckBoxColumn.ElementStyle>
-                                    </DataGridCheckBoxColumn>
-                                    <DataGridTemplateColumn Header="原植物类型">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <ComboBox SelectedValue="{Binding CardUI.ID,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" ItemsSource="{Binding Source={x:Static local:ModifierViewModel.Plants}}" DisplayMemberPath="Value" SelectedValuePath="Key" />
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                    <DataGridTemplateColumn Header="新植物类型">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <ComboBox SelectedValue="{Binding CardUI.NewID,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" ItemsSource="{Binding Source={x:Static local:ModifierViewModel.Plants}}" DisplayMemberPath="Value" SelectedValuePath="Key" />
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                    <DataGridTemplateColumn Header="自定义阳光">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <hc:NumericUpDown Maximum="2147483647" Minimum="-1" Increment="25" DecimalPlaces="0" Value="{Binding CardUI.Sun,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" />
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                    <DataGridTemplateColumn Header="自定义冷却时间">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <hc:NumericUpDown Maximum="10000" Minimum="-1" Increment="1" DecimalPlaces="2" Value="{Binding CardUI.CD,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" />
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </StackPanel>
-                    </hc:ScrollViewer>
-                </Border>
-            </TabItem>
-            <TabItem Header="按键表">
-                <Border Background="#FF212125" Margin="0,8,0,0" BorderBrush="#FF2FA42F" BorderThickness="2,2,2,2">
                     <Grid>
-                        <TextBlock TextWrapping="Wrap" Margin="10,10,54,14" Foreground="Cyan"><Run Text="部分功能需提前填好数据，游戏运行时其他软件中下列键位均失效" /><Run Text="，可能导致冲突" /><Run Text="，改键位太麻烦暂时没做" /><LineBreak /><Run /><Run Text="高级时停：5" /><Run Text="或" /><Run Language="zh-cn" Text="R" /><LineBreak /><Run Text="卡槽置顶：Tab" /><LineBreak /><Run Text="刷怪时间显示：`" /><LineBreak /><Run Text="生成植物：" /><Run Text="Shift+" /><Run Text="Alt+A" /><LineBreak /><Run Text="生成僵尸：" /><Run Text="Shift+" /><Run Text="Alt+S" /><LineBreak /><Run Text="生成物品：" /><Run Text="Shift+" /><Run Text="Alt+D" /><LineBreak /><Run Text="究极陨星：" /><Run Text="Shift+" /><Run Text="Alt+" /><Run Text="H" /><LineBreak /><Run Text="植物布阵：Alt+" /><Run Text="J" /><LineBreak /><Run Text="僵尸布阵：Alt+" /><Run Text="K" /><LineBreak /><Run Text="僵尸海：Alt+" /><Run Text="L" /><LineBreak /><Run Text="秒杀全部僵尸：Alt+" /><Run Text="F1" /><LineBreak /><Run Text="清除全部植物：Alt+" /><Run Text="F" /><Run Text="2" /><LineBreak /><Run Text="魅惑全部僵尸：Alt+F3" /><LineBreak /><Run Text="下一波：Alt+F6" /><LineBreak /><Run Text="修改关卡名称：Alt+N" /><LineBreak /><Run Text="显示字幕：Alt+M" /><LineBreak /><Run Text="自由种植：Alt+F9" /><LineBreak /><Run /></TextBlock>
+                        <Label Content="设为负数表示不修改，条目生效时无法编辑数值" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <DataGrid hc:DataGridAttach.ShowRowNumber="True" VerticalScrollBarVisibility="Visible" x:Name="CardReplaces" Background="#FF1A1A1A" ItemsSource="{Binding CardReplaces}" AutoGenerateColumns="False" Margin="0,28,0,0">
+                            <DataGrid.Columns>
+                                <DataGridCheckBoxColumn Header="是否应用" Binding="{Binding CardUI.SetEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                    <DataGridCheckBoxColumn.ElementStyle>
+                                        <Style />
+                                    </DataGridCheckBoxColumn.ElementStyle>
+                                </DataGridCheckBoxColumn>
+                                <DataGridTemplateColumn Header="原植物类型">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ComboBox IsEnabled="{Binding CardUI.SetEnabled, Converter={StaticResource Boolean2BooleanReConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  SelectedValue="{Binding CardUI.ID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding Source={x:Static local:ModifierViewModel.Plants}}" DisplayMemberPath="Value" SelectedValuePath="Key" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="新植物类型">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ComboBox IsEnabled="{Binding CardUI.SetEnabled, Converter={StaticResource Boolean2BooleanReConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding CardUI.NewID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding Source={x:Static local:ModifierViewModel.Plants}}" DisplayMemberPath="Value" SelectedValuePath="Key" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="自定义阳光">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <hc:NumericUpDown IsEnabled="{Binding CardUI.SetEnabled, Converter={StaticResource Boolean2BooleanReConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Maximum="2147483647" Minimum="-1" Increment="1" DecimalPlaces="0" Value="{Binding CardUI.Sun, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="自定义冷却时间">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <hc:NumericUpDown IsEnabled="{Binding CardUI.SetEnabled, Converter={StaticResource Boolean2BooleanReConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Maximum="10000" Minimum="-1" Increment="1" DecimalPlaces="2" Value="{Binding CardUI.CD, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </Grid>
                 </Border>
             </TabItem>
-            <TabItem Header="设置">
+            <TabItem Header="按键绑定">
+                <Border Background="#FF212125" Margin="0,8,0,0" BorderBrush="#FF2FA42F" BorderThickness="2,2,2,2">
+                    <Grid>
+                        <TextBlock TextWrapping="Wrap" Margin="10,10,10,317" Foreground="Cyan"><Run Text="部分功能需提前填好数据，游戏运行时其他软件中下列键位均失效"/><Run Text="，可能导致冲突"/><LineBreak/><Run Text="设置方法：调节为英文输入法，将鼠标指针放在对应条目的框上，按下要设置的键位即可"/><LineBreak/><Run Text="按键绑定控件"/><Run Text="来自于"/><Run Language="zh-cn" Text="FastHotKeyForWPF"/></TextBlock>
+                        <DataGrid ItemsSource="{Binding Hotkeys}" Margin="0,65,0,0" VerticalScrollBarVisibility="Visible" x:Name="Hotkeys" Background="#FF1A1A1A"  AutoGenerateColumns="False">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding Text}"/>
+                                <DataGridTemplateColumn>
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate DataType="local:HotkeyUIVM">
+                                            <fh:HotKeyBox CurrentKeyA="{Binding HotkeyUI.CurrentKeyA, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" CurrentKeyB="{Binding HotkeyUI.CurrentKeyB, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="200" Height="40" VerticalAlignment="Center" HorizontalAlignment="Left" Padding="0,10,0,10">
+                                                <hc:Interaction.Triggers>
+                                                    <hc:EventTrigger EventName="Handler">
+                                                        <hc:InvokeCommandAction Command="{Binding Command}"/>
+                                                    </hc:EventTrigger>
+                                                </hc:Interaction.Triggers>
+                                            </fh:HotKeyBox>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn>
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="清空" Command="{Binding Clear}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </Border>
+            </TabItem>
+            <TabItem Header="杂项">
                 <Border Background="#FF212125" Margin="0,8,0,0" BorderBrush="#FF2FA42F" BorderThickness="2,2,2,2">
                     <hc:ScrollViewer HorizontalScrollBarVisibility="Auto">
                         <StackPanel>
-                            <Expander Header="辅助功能" Width="700">
-                                <Grid>
-                                    <CheckBox x:Name="SaveAndResume" Content="关闭时保存现有设置（数值修改与游戏内词条修改除外）（待实现）" IsChecked="{Binding NeedSave}" Height="21" Margin="10,10,301,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" IsEnabled="False" />
+                            <CheckBox x:Name="SaveAndResume" Content="关闭时保存现有设置（数值修改与游戏内词条修改除外）" IsChecked="{Binding NeedSave}" Height="21" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" />
+                            <CheckBox x:Name="TopMostSprite" IsChecked="{Binding TopMostSprite}" Content="悬浮窗，双击使修改窗口前置，推荐全屏时使用" Height="21"  VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2"/>
 
-                                    <CheckBox x:Name="TopMostSprite" Content="悬浮窗，双击使修改窗口前置，推荐全屏时使用" Height="21" Margin="10,36,402,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2">
-                                        <b:Interaction.Triggers>
-                                            <b:PropertyChangedTrigger Binding="{Binding IsChecked, ElementName=TopMostSprite}">
-                                                <b:InvokeCommandAction Command="{Binding TopMostSpriteCommand}" CommandParameter="{Binding IsChecked, ElementName=TopMostSprite}" />
-                                            </b:PropertyChangedTrigger>
-                                        </b:Interaction.Triggers>
-                                    </CheckBox>
-                                </Grid>
+                            <Expander Header="本项目及所使用开源库许可协议(LICENSE)" >
+                                <TextBox IsReadOnly="True" Text="                                 Apache License&#xD;&#xA;                           Version 2.0, January 2004&#xD;&#xA;                        http://www.apache.org/licenses/&#xD;&#xA;&#xD;&#xA;   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION&#xD;&#xA;&#xD;&#xA;   1. Definitions.&#xD;&#xA;&#xD;&#xA;      &quot;License&quot; shall mean the terms and conditions for use, reproduction,&#xD;&#xA;      and distribution as defined by Sections 1 through 9 of this document.&#xD;&#xA;&#xD;&#xA;      &quot;Licensor&quot; shall mean the copyright owner or entity authorized by&#xD;&#xA;      the copyright owner that is granting the License.&#xD;&#xA;&#xD;&#xA;      &quot;Legal Entity&quot; shall mean the union of the acting entity and all&#xD;&#xA;      other entities that control, are controlled by, or are under common&#xD;&#xA;      control with that entity. For the purposes of this definition,&#xD;&#xA;      &quot;control&quot; means (i) the power, direct or indirect, to cause the&#xD;&#xA;      direction or management of such entity, whether by contract or&#xD;&#xA;      otherwise, or (ii) ownership of fifty percent (50%) or more of the&#xD;&#xA;      outstanding shares, or (iii) beneficial ownership of such entity.&#xD;&#xA;&#xD;&#xA;      &quot;You&quot; (or &quot;Your&quot;) shall mean an individual or Legal Entity&#xD;&#xA;      exercising permissions granted by this License.&#xD;&#xA;&#xD;&#xA;      &quot;Source&quot; form shall mean the preferred form for making modifications,&#xD;&#xA;      including but not limited to software source code, documentation&#xD;&#xA;      source, and configuration files.&#xD;&#xA;&#xD;&#xA;      &quot;Object&quot; form shall mean any form resulting from mechanical&#xD;&#xA;      transformation or translation of a Source form, including but&#xD;&#xA;      not limited to compiled object code, generated documentation,&#xD;&#xA;      and conversions to other media types.&#xD;&#xA;&#xD;&#xA;      &quot;Work&quot; shall mean the work of authorship, whether in Source or&#xD;&#xA;      Object form, made available under the License, as indicated by a&#xD;&#xA;      copyright notice that is included in or attached to the work&#xD;&#xA;      (an example is provided in the Appendix below).&#xD;&#xA;&#xD;&#xA;      &quot;Derivative Works&quot; shall mean any work, whether in Source or Object&#xD;&#xA;      form, that is based on (or derived from) the Work and for which the&#xD;&#xA;      editorial revisions, annotations, elaborations, or other modifications&#xD;&#xA;      represent, as a whole, an original work of authorship. For the purposes&#xD;&#xA;      of this License, Derivative Works shall not include works that remain&#xD;&#xA;      separable from, or merely link (or bind by name) to the interfaces of,&#xD;&#xA;      the Work and Derivative Works thereof.&#xD;&#xA;&#xD;&#xA;      &quot;Contribution&quot; shall mean any work of authorship, including&#xD;&#xA;      the original version of the Work and any modifications or additions&#xD;&#xA;      to that Work or Derivative Works thereof, that is intentionally&#xD;&#xA;      submitted to Licensor for inclusion in the Work by the copyright owner&#xD;&#xA;      or by an individual or Legal Entity authorized to submit on behalf of&#xD;&#xA;      the copyright owner. For the purposes of this definition, &quot;submitted&quot;&#xD;&#xA;      means any form of electronic, verbal, or written communication sent&#xD;&#xA;      to the Licensor or its representatives, including but not limited to&#xD;&#xA;      communication on electronic mailing lists, source code control systems,&#xD;&#xA;      and issue tracking systems that are managed by, or on behalf of, the&#xD;&#xA;      Licensor for the purpose of discussing and improving the Work, but&#xD;&#xA;      excluding communication that is conspicuously marked or otherwise&#xD;&#xA;      designated in writing by the copyright owner as &quot;Not a Contribution.&quot;&#xD;&#xA;&#xD;&#xA;      &quot;Contributor&quot; shall mean Licensor and any individual or Legal Entity&#xD;&#xA;      on behalf of whom a Contribution has been received by Licensor and&#xD;&#xA;      subsequently incorporated within the Work.&#xD;&#xA;&#xD;&#xA;   2. Grant of Copyright License. Subject to the terms and conditions of&#xD;&#xA;      this License, each Contributor hereby grants to You a perpetual,&#xD;&#xA;      worldwide, non-exclusive, no-charge, royalty-free, irrevocable&#xD;&#xA;      copyright license to reproduce, prepare Derivative Works of,&#xD;&#xA;      publicly display, publicly perform, sublicense, and distribute the&#xD;&#xA;      Work and such Derivative Works in Source or Object form.&#xD;&#xA;&#xD;&#xA;   3. Grant of Patent License. Subject to the terms and conditions of&#xD;&#xA;      this License, each Contributor hereby grants to You a perpetual,&#xD;&#xA;      worldwide, non-exclusive, no-charge, royalty-free, irrevocable&#xD;&#xA;      (except as stated in this section) patent license to make, have made,&#xD;&#xA;      use, offer to sell, sell, import, and otherwise transfer the Work,&#xD;&#xA;      where such license applies only to those patent claims licensable&#xD;&#xA;      by such Contributor that are necessarily infringed by their&#xD;&#xA;      Contribution(s) alone or by combination of their Contribution(s)&#xD;&#xA;      with the Work to which such Contribution(s) was submitted. If You&#xD;&#xA;      institute patent litigation against any entity (including a&#xD;&#xA;      cross-claim or counterclaim in a lawsuit) alleging that the Work&#xD;&#xA;      or a Contribution incorporated within the Work constitutes direct&#xD;&#xA;      or contributory patent infringement, then any patent licenses&#xD;&#xA;      granted to You under this License for that Work shall terminate&#xD;&#xA;      as of the date such litigation is filed.&#xD;&#xA;&#xD;&#xA;   4. Redistribution. You may reproduce and distribute copies of the&#xD;&#xA;      Work or Derivative Works thereof in any medium, with or without&#xD;&#xA;      modifications, and in Source or Object form, provided that You&#xD;&#xA;      meet the following conditions:&#xD;&#xA;&#xD;&#xA;      (a) You must give any other recipients of the Work or&#xD;&#xA;          Derivative Works a copy of this License; and&#xD;&#xA;&#xD;&#xA;      (b) You must cause any modified files to carry prominent notices&#xD;&#xA;          stating that You changed the files; and&#xD;&#xA;&#xD;&#xA;      (c) You must retain, in the Source form of any Derivative Works&#xD;&#xA;          that You distribute, all copyright, patent, trademark, and&#xD;&#xA;          attribution notices from the Source form of the Work,&#xD;&#xA;          excluding those notices that do not pertain to any part of&#xD;&#xA;          the Derivative Works; and&#xD;&#xA;&#xD;&#xA;      (d) If the Work includes a &quot;NOTICE&quot; text file as part of its&#xD;&#xA;          distribution, then any Derivative Works that You distribute must&#xD;&#xA;          include a readable copy of the attribution notices contained&#xD;&#xA;          within such NOTICE file, excluding those notices that do not&#xD;&#xA;          pertain to any part of the Derivative Works, in at least one&#xD;&#xA;          of the following places: within a NOTICE text file distributed&#xD;&#xA;          as part of the Derivative Works; within the Source form or&#xD;&#xA;          documentation, if provided along with the Derivative Works; or,&#xD;&#xA;          within a display generated by the Derivative Works, if and&#xD;&#xA;          wherever such third-party notices normally appear. The contents&#xD;&#xA;          of the NOTICE file are for informational purposes only and&#xD;&#xA;          do not modify the License. You may add Your own attribution&#xD;&#xA;          notices within Derivative Works that You distribute, alongside&#xD;&#xA;          or as an addendum to the NOTICE text from the Work, provided&#xD;&#xA;          that such additional attribution notices cannot be construed&#xD;&#xA;          as modifying the License.&#xD;&#xA;&#xD;&#xA;      You may add Your own copyright statement to Your modifications and&#xD;&#xA;      may provide additional or different license terms and conditions&#xD;&#xA;      for use, reproduction, or distribution of Your modifications, or&#xD;&#xA;      for any such Derivative Works as a whole, provided Your use,&#xD;&#xA;      reproduction, and distribution of the Work otherwise complies with&#xD;&#xA;      the conditions stated in this License.&#xD;&#xA;&#xD;&#xA;   5. Submission of Contributions. Unless You explicitly state otherwise,&#xD;&#xA;      any Contribution intentionally submitted for inclusion in the Work&#xD;&#xA;      by You to the Licensor shall be under the terms and conditions of&#xD;&#xA;      this License, without any additional terms or conditions.&#xD;&#xA;      Notwithstanding the above, nothing herein shall supersede or modify&#xD;&#xA;      the terms of any separate license agreement you may have executed&#xD;&#xA;      with Licensor regarding such Contributions.&#xD;&#xA;&#xD;&#xA;   6. Trademarks. This License does not grant permission to use the trade&#xD;&#xA;      names, trademarks, service marks, or product names of the Licensor,&#xD;&#xA;      except as required for reasonable and customary use in describing the&#xD;&#xA;      origin of the Work and reproducing the content of the NOTICE file.&#xD;&#xA;&#xD;&#xA;   7. Disclaimer of Warranty. Unless required by applicable law or&#xD;&#xA;      agreed to in writing, Licensor provides the Work (and each&#xD;&#xA;      Contributor provides its Contributions) on an &quot;AS IS&quot; BASIS,&#xD;&#xA;      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or&#xD;&#xA;      implied, including, without limitation, any warranties or conditions&#xD;&#xA;      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A&#xD;&#xA;      PARTICULAR PURPOSE. You are solely responsible for determining the&#xD;&#xA;      appropriateness of using or redistributing the Work and assume any&#xD;&#xA;      risks associated with Your exercise of permissions under this License.&#xD;&#xA;&#xD;&#xA;   8. Limitation of Liability. In no event and under no legal theory,&#xD;&#xA;      whether in tort (including negligence), contract, or otherwise,&#xD;&#xA;      unless required by applicable law (such as deliberate and grossly&#xD;&#xA;      negligent acts) or agreed to in writing, shall any Contributor be&#xD;&#xA;      liable to You for damages, including any direct, indirect, special,&#xD;&#xA;      incidental, or consequential damages of any character arising as a&#xD;&#xA;      result of this License or out of the use or inability to use the&#xD;&#xA;      Work (including but not limited to damages for loss of goodwill,&#xD;&#xA;      work stoppage, computer failure or malfunction, or any and all&#xD;&#xA;      other commercial damages or losses), even if such Contributor&#xD;&#xA;      has been advised of the possibility of such damages.&#xD;&#xA;&#xD;&#xA;   9. Accepting Warranty or Additional Liability. While redistributing&#xD;&#xA;      the Work or Derivative Works thereof, You may choose to offer,&#xD;&#xA;      and charge a fee for, acceptance of support, warranty, indemnity,&#xD;&#xA;      or other liability obligations and/or rights consistent with this&#xD;&#xA;      License. However, in accepting such obligations, You may act only&#xD;&#xA;      on Your own behalf and on Your sole responsibility, not on behalf&#xD;&#xA;      of any other Contributor, and only if You agree to indemnify,&#xD;&#xA;      defend, and hold each Contributor harmless for any liability&#xD;&#xA;      incurred by, or claims asserted against, such Contributor by reason&#xD;&#xA;      of your accepting any such warranty or additional liability.&#xD;&#xA;&#xD;&#xA;   END OF TERMS AND CONDITIONS&#xD;&#xA;&#xD;&#xA;   PVZRHTools&#xD;&#xA;   Copyright 2025 Infinite-75&#xD;&#xA;&#xD;&#xA;   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);&#xD;&#xA;   you may not use this file except in compliance with the License.&#xD;&#xA;   You may obtain a copy of the License at&#xD;&#xA;&#xD;&#xA;       http://www.apache.org/licenses/LICENSE-2.0&#xD;&#xA;&#xD;&#xA;   Unless required by applicable law or agreed to in writing, software&#xD;&#xA;   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,&#xD;&#xA;   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.&#xD;&#xA;   See the License for the specific language governing permissions and&#xD;&#xA;   limitations under the License.&#xD;&#xA;&#xD;&#xA;   https://github.com/Infinite-75/PVZRHTools&#xD;&#xA;&#xD;&#xA;   MelonLoader:Apache-2.0 license&#xD;&#xA;   HandyControl:MIT License&#xD;&#xA;   FastHotKeyForWPF:MIT License&#xD;&#xA;&#xD;&#xA;   此项目使用修改过的MelonLoader,构建版本中修改内容如下： &#xD;&#xA;   1.删除MelonLoader/Il2CppAssemblyGenerator文件夹以禁止下载Cpp2IL与Unity Runtime Libraries、连接远程API与构建缓存&#xD;&#xA;   2.附带了预构建好的融合版游戏运行缓存&#xD;&#xA;&#xD;&#xA;   File changes of MelonLoader in releases:&#xD;&#xA;   1.Delete everything in MelonLoader/Il2CppAssemblyGenerator to prevent downloading Cpp2IL and Unity Runtime Libraries, &#xD;&#xA;   connecting RemoteAPIs and generating unused libraries.&#xD;&#xA;   2.Add the built-in libraries for PVZ Fusion.&#xD;&#xA;&#xD;&#xA;====================================================&#xD;&#xA;&#xD;&#xA;Copies of the licenses of dependencies:&#xD;&#xA;&#xD;&#xA;For MelonLoader:&#xD;&#xA;   MelonLoader&#xD;&#xA;   Copyright 2020 - 2022 Lava Gang&#xD;&#xA;   &#xD;&#xA;   This product contains software (https://github.com/LavaGang/MelonLoader) developed&#xD;&#xA;   by Lava Gang, licensed under the Apache-2.0 license.&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;For HandyControl:&#xD;&#xA;  ﻿MIT License&#xD;&#xA;  &#xD;&#xA;  Copyright © HandyOrg 2018-2024&#xD;&#xA;&#xD;&#xA;  Permission is hereby granted, free of charge, to any person obtaining a copy&#xD;&#xA;  of this software and associated documentation files (the &quot;Software&quot;), to deal&#xD;&#xA;  in the Software without restriction, including without limitation the rights&#xD;&#xA;  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell&#xD;&#xA;  copies of the Software, and to permit persons to whom the Software is&#xD;&#xA;  furnished to do so, subject to the following conditions:&#xD;&#xA;&#xD;&#xA;  The above copyright notice and this permission notice shall be included in all&#xD;&#xA;  copies or substantial portions of the Software.&#xD;&#xA;  &#xD;&#xA;  THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR&#xD;&#xA;  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,&#xD;&#xA;  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE&#xD;&#xA;  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER&#xD;&#xA;  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,&#xD;&#xA;  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE&#xD;&#xA;  SOFTWARE.&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;For FastHotKeyForWPF:&#xD;&#xA;  MIT License&#xD;&#xA;&#xD;&#xA;  Copyright (c) [2024] [ChengduNeusoftUniversity-FengJunjie-Y22]&#xD;&#xA;  &#xD;&#xA;  Permission is hereby granted, free of charge, to any person obtaining a copy&#xD;&#xA;  of this software and associated documentation files (the &quot;Software&quot;), to deal&#xD;&#xA;  in the Software without restriction, including without limitation the rights&#xD;&#xA;  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell&#xD;&#xA;  copies of the Software, and to permit persons to whom the Software is&#xD;&#xA;  furnished to do so, subject to the following conditions:&#xD;&#xA;  &#xD;&#xA;  The above copyright notice and this permission notice shall be included in all&#xD;&#xA;  copies or substantial portions of the Software.&#xD;&#xA;  &#xD;&#xA;  THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR&#xD;&#xA;  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,&#xD;&#xA;  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE&#xD;&#xA;  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER&#xD;&#xA;  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,&#xD;&#xA;  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE&#xD;&#xA;  SOFTWARE.  "/>
                             </Expander>
-                            <Expander Header="按键绑定修改（待实现）" IsEnabled="False">
-                            </Expander>
+                            
                         </StackPanel>
                     </hc:ScrollViewer>
                 </Border>
