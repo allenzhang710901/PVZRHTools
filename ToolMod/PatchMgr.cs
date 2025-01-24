@@ -37,7 +37,7 @@ namespace ToolMod
     {
         public static void Postfix()
         {
-            if (NewZombieUpdateCD > 0 && NewZombieUpdateCD <= 30 && Board.Instance.newZombieWaveCountDown > NewZombieUpdateCD)
+            if (NewZombieUpdateCD > 0 && NewZombieUpdateCD < 30 && Board.Instance.newZombieWaveCountDown > NewZombieUpdateCD)
             {
                 Board.Instance.newZombieWaveCountDown = NewZombieUpdateCD;
             }
@@ -131,7 +131,7 @@ namespace ToolMod
     {
         public static void Postfix(GameObject __result)
         {
-            if (GargantuarPatch.flag)
+            if (GargantuarPatch.Flag)
             {
                 __result.AddComponent<ImpZombie>();
             }
@@ -139,7 +139,7 @@ namespace ToolMod
 
         public static void Prefix(ref int theZombieType)
         {
-            if (GargantuarPatch.flag)
+            if (GargantuarPatch.Flag)
             {
                 theZombieType = ImpToBeThrown;
             }
@@ -191,11 +191,11 @@ namespace ToolMod
     [HarmonyPatch(typeof(Gargantuar), "AnimThrow")]
     public static class GargantuarPatch
     {
-        public static void Postfix() => flag = false;
+        public static void Postfix() => Flag = false;
 
-        public static void Prefix() => flag = ImpToBeThrown is not 37;
+        public static void Prefix() => Flag = ImpToBeThrown is not 37;
 
-        public static bool flag = false;
+        public static bool Flag { get; set; } = false;
     }
 
     [HarmonyPatch(typeof(GloveMgr), "Update")]
@@ -257,7 +257,7 @@ namespace ToolMod
             }
             else
             {
-                __instance.fullCD = originalFullCD;
+                __instance.fullCD = OriginalFullCD;
             }
             if (HammerNoCD)
             {
@@ -274,7 +274,7 @@ namespace ToolMod
             }
         }
 
-        public static float originalFullCD;
+        public static float OriginalFullCD { get; set; }
     }
 
     [HarmonyPatch(typeof(HammerMgr), "Start")]
@@ -312,6 +312,20 @@ namespace ToolMod
             __instance.theStatus = ZombieStatus.Default;
             UnityEngine.Object.DestroyImmediate(__instance);
             return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(InGameBtn), "OnMouseUpAsButton")]
+    public static class InGameBtnPatch
+    {
+        public static void Postfix(InGameBtn __instance)
+        {
+            if (__instance.buttonNumber == 3)
+            {
+                TimeSlow = !TimeSlow;
+                TimeStop = false;
+                Time.timeScale = TimeSlow ? 0.2f : SyncSpeed;
+            }
         }
     }
 
@@ -391,7 +405,7 @@ namespace ToolMod
                     }
                 }
             }
-            HammerMgrPatchA.originalFullCD = UnityEngine.Object.FindObjectsOfTypeAll(Il2CppType.Of<HammerMgr>())[0].Cast<HammerMgr>().fullCD;
+            HammerMgrPatchA.OriginalFullCD = UnityEngine.Object.FindObjectsOfTypeAll(Il2CppType.Of<HammerMgr>())[0].Cast<HammerMgr>().fullCD;
         }
     }
 
@@ -471,39 +485,15 @@ namespace ToolMod
         }
     }
 
-    [HarmonyPatch(typeof(Plant), "Update")]
+    [HarmonyPatch(typeof(Plant), "PlantShootUpdate")]
     public static class PlantPatchB
     {
-        public static void Postfix(Plant __instance)
+        public static void Prefix(Plant __instance)
         {
-            if (FastShooting && __instance.thePlantAttackCountDown > 0.05f)
+            var s = __instance.TryCast<Shooter>();
+            if (FastShooting && s is not null)
             {
-                switch (__instance.thePlantType)
-                {
-                    case 914:
-                        {
-                            if (__instance.thePlantAttackCountDown > 0.6f)
-                            {
-                                __instance.thePlantAttackCountDown = 0.6f;
-                            }
-
-                            break;
-                        }
-                    case 28:
-                        {
-                            if (__instance.thePlantAttackCountDown > 0.3f)
-                            {
-                                __instance.thePlantAttackCountDown = 0.3f;
-                            }
-                            break;
-                        }
-                    default:
-                        {
-                            __instance.thePlantAttackCountDown = 0.05f;
-
-                            break;
-                        }
-                }
+                s.AnimShoot();
             }
         }
     }
@@ -609,7 +599,7 @@ namespace ToolMod
             text.color = new(0, 1, 1);
             obj.transform.SetParent(__instance.GameObject().transform);
             obj.transform.localScale = new(0.4f, 0.2f, 0.2f);
-            obj.transform.localPosition = new(100f, 2.4f, 0);
+            obj.transform.localPosition = new(100f, 2.2f, 0);
             obj.GetComponent<RectTransform>().sizeDelta = new(800, 50);
         }
     }
@@ -658,15 +648,15 @@ namespace ToolMod
     [HarmonyPatch(typeof(Squalour), "LourDie")]
     public static class SqualourPatch
     {
-        public static void Postfix() => GameAPP.developerMode = originalDevMode;
+        public static void Postfix() => GameAPP.developerMode = OriginalDevMode;
 
         public static void Prefix()
         {
-            originalDevMode = GameAPP.developerMode;
+            OriginalDevMode = GameAPP.developerMode;
             GameAPP.developerMode = true;
         }
 
-        public static bool originalDevMode = false;
+        public static bool OriginalDevMode { get; set; } = false;
     }
 
     [HarmonyPatch(typeof(UIMgr), "EnterMainMenu")]
@@ -682,10 +672,7 @@ namespace ToolMod
             obj.transform.SetParent(GameObject.Find("Leaves").transform);
             obj.transform.localScale = new(0.5f, 0.5f, 0.5f);
             obj.GetComponent<RectTransform>().sizeDelta = new(800, 50);
-            var t = obj.transform.position;
-            t.x = -5.5f;
-            t.y = -0.7f;
-            obj.transform.position = t;
+            obj.transform.localPosition = new(-345.5f, -42.6f, 0);
         }
     }
 
@@ -719,12 +706,12 @@ namespace ToolMod
         {
         }
 
-        public static implicit operator int(CardUIReplacer r) => r.originalID;
+        public static implicit operator int(CardUIReplacer r) => r.OriginalID;
 
         public void ChangeCard(int id, int cost, float cd)
         {
-            Card.theSeedType = id >= 0 ? id : originalID;
-            Card.theSeedCost = cost >= 0 ? cost : originalCost;
+            Card.theSeedType = id >= 0 ? id : OriginalID;
+            Card.theSeedCost = cost >= 0 ? cost : OriginalCost;
             if (cd >= 0.01)
             {
                 Card.fullCD = cd;
@@ -735,7 +722,7 @@ namespace ToolMod
             }
             else
             {
-                Card.fullCD = originalCD;
+                Card.fullCD = OriginalCD;
             }
             Lawnf.ChangeCardSprite(Card.theSeedType, Card.gameObject);
         }
@@ -744,9 +731,9 @@ namespace ToolMod
 
         public void Start()
         {
-            originalID = Card.theSeedType * 1;
-            originalCost = Card.theSeedCost * 1;
-            originalCD = Card.fullCD * 1;
+            OriginalID = Card.theSeedType * 1;
+            OriginalCost = Card.theSeedCost * 1;
+            OriginalCD = Card.fullCD * 1;
             //Replacers.Add(this);
             GameObject obj = new("ModifierCardCD");
             var text = obj.AddComponent<TextMeshProUGUI>();
@@ -772,9 +759,9 @@ namespace ToolMod
 
         public static List<CardUIReplacer> Replacers { get; set; } = [];
         public CardUI Card => gameObject.GetComponent<CardUI>();
-        public float originalCD { get; set; }
-        public int originalCost { get; set; }
-        public int originalID { get; set; }
+        public float OriginalCD { get; set; }
+        public int OriginalCost { get; set; }
+        public int OriginalID { get; set; }
     }
 
     [RegisterTypeInIl2Cpp]
@@ -837,8 +824,8 @@ namespace ToolMod
             if (!InGame()) return;
             DataSync.Instance.Value.SendData(new SyncTravelBuff()
             {
-                AdvInGame = GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().advancedUpgrades!.ToList(),
-                UltiInGame = GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().ultimateUpgrades!.ToList()
+                AdvInGame = [.. GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().advancedUpgrades!],
+                UltiInGame = [.. GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().ultimateUpgrades!]
             });
         }
 
@@ -908,7 +895,6 @@ namespace ToolMod
             {
                 Board.Instance.iceDoomFreezeTime = 1;
             }
-
             if (ZombieSea)
             {
                 if (++seaTime >= ZombieSeaCD &&
@@ -984,7 +970,7 @@ namespace ToolMod
         public static int LockSunCount { get; set; } = 500;
         public static bool MineNoCD { get; set; } = false;
         public static MelonLogger.Instance MLogger => Core.Instance.Value.LoggerInstance;
-        public static float NewZombieUpdateCD { get; set; } = -1;
+        public static float NewZombieUpdateCD { get; set; } = 30;
         public static bool NoHole { get; set; } = false;
         public static bool NoIceRoad { get; set; } = false;
         public static bool PresentFastOpen { get; set; } = false;
@@ -1017,9 +1003,8 @@ namespace ToolMod
         public static bool UnlockAllFusions { get; set; } = false;
         public static bool ZombieSea { get; set; } = false;
         public static int ZombieSeaCD { get; set; } = 40;
-        public static int garlicDayTime = 0;
-        public static int originalLevel;
-        public static float originalSpeed;
-        public static int seaTime = 0;
+        internal static int originalLevel;
+        private static int garlicDayTime = 0;
+        private static int seaTime = 0;
     }
 }

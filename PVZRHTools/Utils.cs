@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections;
 using System.Windows.Controls;
 using System.Windows;
+using System.Text.Json.Serialization;
+using ToolModData;
 
 namespace PVZRHTools
 {
@@ -55,5 +52,82 @@ namespace PVZRHTools
         // Using a DependencyProperty as the backing store for SelectedItems.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SelectedItemsProperty =
             DependencyProperty.RegisterAttached("SelectedItems", typeof(IList), typeof(SelectedItemsExt), new PropertyMetadata(OnSelectedItemsChanged));
+    }
+
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(BasicProperties))]
+    internal partial class BasicPropertiesSGC : JsonSerializerContext
+
+    {
+    }
+
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(CardProperties))]
+    internal partial class CardPropertiesSGC : JsonSerializerContext
+
+    {
+    }
+
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(Exit))]
+    internal partial class ExitSGC : JsonSerializerContext
+
+    {
+    }
+
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(GameModes))]
+    internal partial class GameModesSGC : JsonSerializerContext
+
+    {
+    }
+
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(InGameActions))]
+    internal partial class InGameActionsSGC : JsonSerializerContext
+
+    {
+    }
+
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(InitData))]
+    internal partial class InitDataSGC : JsonSerializerContext
+
+    {
+    }
+
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(ISyncData))]
+    internal partial class ISyncDataSGC : JsonSerializerContext
+
+    {
+    }
+
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(ModifierSaveModel))]
+    internal partial class ModifierSaveModelSGC : JsonSerializerContext
+
+    {
+    }
+
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(SyncAll))]
+    internal partial class SyncAllSGC : JsonSerializerContext
+
+    {
+    }
+
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(SyncTravelBuff))]
+    internal partial class SyncTravelBuffSGC : JsonSerializerContext
+
+    {
+    }
+
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(ValueProperties))]
+    internal partial class ValuePropertiesSGC : JsonSerializerContext
+
+    {
     }
 }

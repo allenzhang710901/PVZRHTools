@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+  <PublishTrimmed>true</PublishTrimmed>
+      <_SuppressWpfTrimError>true</_SuppressWpfTrimError>
+      <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+      <TrimMode>partial</TrimMode>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Pages\installLibrary.png" />
+    <None Remove="PVZRHTools.7z" />
+    <None Remove="PVZRHTools.zip" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="PVZRHTools.7z" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Pages\installLibrary.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SevenZipExtractor" Version="1.0.19" />
+  </ItemGroup>
+
+</Project>

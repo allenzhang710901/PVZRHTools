@@ -8,10 +8,11 @@ using System.IO;
 using FastHotKeyForWPF;
 using System.Windows.Input;
 using System.Text.Json.Serialization;
+using System.Linq;
 
 namespace PVZRHTools
 {
-    public partial class CardUI : ObservableObject
+    public partial class CardUI
     {
         public CardUI()
         {
@@ -27,65 +28,71 @@ namespace PVZRHTools
             Enabled = SetEnabled
         };
 
-        partial void OnSetEnabledChanged(bool value)
-        {
-            List<Card> cards = new();
-            foreach (var c in MainWindow.Instance!.ViewModel.CardReplaces)
-            {
-                cards.Add(c.CardUI.GetCard());
-            }
-            App.DataSync.Value.SendData(new CardProperties()
-            {
-                CardReplaces = cards
-            });
-        }
-
         public double CD { get; set; } = -1;
 
         public int ID { get; set; } = -1;
 
         public int NewID { get; set; } = -1;
 
-        public int Sun { get; set; } = -1;
+        public bool SetEnabled
+        {
+            get; set
+            {
+                field = value;
+                if (App.inited)
+                    App.DataSync.Value.SendData(new CardProperties() { CardReplaces = [.. from c in MainWindow.Instance!.ViewModel.CardReplaces select c.CardUI.GetCard()] });
+            }
+        }
 
-        [ObservableProperty]
-        private bool setEnabled;
+        public int Sun { get; set; } = -1;
     }
 
+    [JsonSourceGenerationOptions(WriteIndented = true)]
     public partial class CardUIVM : ObservableObject
     {
         public CardUIVM(CardUI CardUI) => this.CardUI = CardUI;
 
+        [ObservableProperty]
+        public partial CardUI CardUI { get; set; }
+
+        public double CD { get => CardUI.CD; set => SetProperty(CardUI.CD, value, CardUI, (t, e) => t.CD = e); }
+
+        public RelayCommand Clear => new(() =>
+        {
+            (Enabled, ID, NewID, CD, Sun) = (false, -1, -1, -1, -1);
+            OnPropertyChanged(new PropertyChangedEventArgs("IsChecked"));
+            OnPropertyChanged(new PropertyChangedEventArgs("IsEnabled"));
+            OnPropertyChanged(new PropertyChangedEventArgs("SelectedValue"));
+            OnPropertyChanged(new PropertyChangedEventArgs("Value"));
+        });
+
         public bool Enabled
         {
             get => CardUI.SetEnabled;
-            set
-            {
-                SetProperty(CardUI.SetEnabled, value, CardUI, (t, e) => t.SetEnabled = e);
-                OnPropertyChanged(new PropertyChangedEventArgs("IsChecked"));
-                OnPropertyChanged(new PropertyChangedEventArgs("IsEnabled"));
-            }
+            set => SetProperty(CardUI.SetEnabled, value, CardUI, (t, e) => t.SetEnabled = e);
         }
 
-        [ObservableProperty]
-        private CardUI cardUI;
+        public int ID { get => CardUI.ID; set => SetProperty(CardUI.ID, value, CardUI, (t, e) => t.ID = e); }
+
+        public int NewID { get => CardUI.NewID; set => SetProperty(CardUI.NewID, value, CardUI, (t, e) => t.NewID = e); }
+
+        public int Sun { get => CardUI.Sun; set => SetProperty(CardUI.Sun, value, CardUI, (t, e) => t.Sun = e); }
     }
 
     [Serializable]
-    public partial class HotkeyUI : ObservableObject, IAutoHotKeyProperty
+    public partial class HotkeyUI : IAutoHotKeyProperty
     {
         public event HotKeyEventHandler? Handler;
 
+        public uint CurrentKeyA { get; set; }
+
+        public Key CurrentKeyB { get; set; }
+
         [JsonIgnore]
         public int PoolID { get; set; }
-
-        [ObservableProperty]
-        private uint currentKeyA;
-
-        [ObservableProperty]
-        private Key currentKeyB;
     }
 
+    [JsonSourceGenerationOptions(WriteIndented = true)]
     [Serializable]
     public partial class HotkeyUIVM : ObservableObject, IAutoHotKeyUpdate, IAutoHotKeyProperty
     {
@@ -103,6 +110,7 @@ namespace PVZRHTools
 
         public void UpdateHotKey()
         {
+            GlobalHotKey.Add(CurrentKeyA, CurrentKeyB, (_, _) => Command!.Execute(null));
         }
 
         public void UpdateText()
@@ -115,20 +123,26 @@ namespace PVZRHTools
         [JsonIgnore]
         public RelayCommand? Command { get; set; }
 
-        [JsonIgnore]
-        public uint CurrentKeyA { get => HotkeyUI.CurrentKeyA; set => HotkeyUI.CurrentKeyA = value; }
+        public uint CurrentKeyA
+        {
+            get => HotkeyUI.CurrentKeyA;
+            set => SetProperty(HotkeyUI.CurrentKeyA, value, HotkeyUI, (t, e) => t.CurrentKeyA = e);
+        }
 
-        [JsonIgnore]
-        public Key CurrentKeyB { get => HotkeyUI.CurrentKeyB; set => HotkeyUI.CurrentKeyB = value; }
+        public Key CurrentKeyB
+        {
+            get => HotkeyUI.CurrentKeyB;
+            set => SetProperty(HotkeyUI.CurrentKeyB, value, HotkeyUI, (t, e) => t.CurrentKeyB = e);
+        }
+
+        [ObservableProperty]
+        public partial HotkeyUI HotkeyUI { get; set; }
 
         [JsonIgnore]
         public int PoolID { get => HotkeyUI.PoolID; set => HotkeyUI.PoolID = value; }
 
         [JsonIgnore]
         public string Text { get; init; } = "";
-
-        [ObservableProperty]
-        private HotkeyUI hotkeyUI;
     }
 
     public partial class ModifierViewModel : ObservableObject
@@ -144,10 +158,10 @@ namespace PVZRHTools
                 {-2,"-2 : 不修改" },
                 {-1,"-1 : 随机子弹" }
             };
-            Health1sts = new();
-            Health2nds = new();
-            HealthPlants = new();
-            HealthZombies = new();
+            Health1sts = [];
+            Health2nds = [];
+            HealthPlants = [];
+            HealthZombies = [];
             foreach (var kp in App.InitData!.Value.Plants)
             {
                 Plants.Add(kp.Key, kp.Value);
@@ -174,7 +188,7 @@ namespace PVZRHTools
             }
             GameSpeed = 3;
             ZombieSeaCD = 40;
-            ZombieSeaTypes = new();
+            ZombieSeaTypes = [];
             FieldString = "";
             ZombieFieldString = "";
             NewLevelName = "";
@@ -182,11 +196,12 @@ namespace PVZRHTools
             BulletDamageType = 0;
             LockPresent = -1;
             LockBulletType = -2;
-            ZombieSeaTypes = new();
-            TravelBuffs = new();
-            InGameBuffs = new();
+            ZombieSeaTypes = [];
+            TravelBuffs = [];
+            InGameBuffs = [];
             ImpToBeThrown = 37;
             Times = 1;
+            NewZombieUpdateCD = 30;
             int bi = 0;
             foreach (var b in App.InitData.Value.AdvBuffs)
             {
@@ -202,14 +217,14 @@ namespace PVZRHTools
             }
             TravelBuffs.ListChanged += (sender, e) => SyncTravelBuffs();
             InGameBuffs.ListChanged += (sender, e) => SyncInGameBuffs();
-            CardReplaces = new();
+            CardReplaces = [];
             for (int i = 0; i < 14; i++)
             {
                 CardReplaces.Add(new(new()));
             }
             CardReplaces.ListChanged += (sender, e) => SyncCards();
             SpeedValue = TickToSpeed((int)GameSpeed).ToString();
-            Hotkeys = new();
+            Hotkeys = [];
             foreach (var (h, hui) in from h in KeyCommands let hui = new HotkeyUI() select (h, hui))
             {
                 Hotkeys.Add(new HotkeyUIVM(hui)
@@ -223,7 +238,7 @@ namespace PVZRHTools
         public ModifierViewModel(List<HotkeyUIVM> hotkeys) : this()
         {
             int hi = 0;
-            Hotkeys = new();
+            Hotkeys = [];
             foreach (var (h, hui) in from h in KeyCommands let hui = new HotkeyUI() select (h, hui))
             {
                 Hotkeys.Add(new HotkeyUIVM(hotkeys[hi].HotkeyUI)
@@ -246,10 +261,10 @@ namespace PVZRHTools
                 {-2,"-2 : 不修改" },
                 {-1,"-1 : 随机子弹" }
             };
-            Health1sts = new();
-            Health2nds = new();
-            HealthPlants = new();
-            HealthZombies = new();
+            Health1sts = [];
+            Health2nds = [];
+            HealthPlants = [];
+            HealthZombies = [];
             foreach (var kp in App.InitData!.Value.Plants)
             {
                 Plants.Add(kp.Key, kp.Value);
@@ -274,9 +289,9 @@ namespace PVZRHTools
             {
                 Bullets2.Add(b.Key, b.Key.ToString() + " : " + b.Value);
             }
-            InGameBuffs = new();
+            InGameBuffs = [];
             CardNoInit = s.CardNoInit;
-            CardReplaces = new(s.CardReplaces);
+            CardReplaces = [.. s.CardReplaces];
             ChomperNoCD = s.ChomperNoCD;
             ClearOnWritingField = s.ClearOnWritingField;
             ClearOnWritingZombies = s.ClearOnWritingZombies;
@@ -328,7 +343,7 @@ namespace PVZRHTools
             SuperPresent = s.SuperPresent;
             Times = s.Times;
             TopMostSprite = s.TopMostSprite;
-            TravelBuffs = new(s.TravelBuffs);
+            TravelBuffs = [.. s.TravelBuffs];
             UltimateRamdomZombie = s.UltimateRamdomZombie;
             UndeadBullet = s.UndeadBullet;
             UnlockAllFusions = s.UnlockAllFusions;
@@ -336,12 +351,12 @@ namespace PVZRHTools
             ZombieSeaCD = s.ZombieSeaCD;
             ZombieSeaEnabled = s.ZombieSeaEnabled;
             ZombieType = s.ZombieType;
-            ZombieSeaTypes = new();
-            ZombieSeaTypes.AddRange(from zst in s.ZombieSeaTypes select new KeyValuePair<int, string>(zst, Zombies[zst]));
+            ZombieSeaTypes = [.. from zst in s.ZombieSeaTypes select new KeyValuePair<int, string>(zst, Zombies[zst])];
             HammerFullCD = s.HammerFullCD;
             HammerFullCDEnabled = s.HammerFullCDEnabled;
             GloveFullCD = s.GloveFullCD;
             GloveFullCDEnabled = s.GloveFullCDEnabled;
+            NewZombieUpdateCD = s.NewZombieUpdateCD;
             int bi = 0;
             foreach (var b in App.InitData.Value.AdvBuffs)
             {
@@ -358,7 +373,7 @@ namespace PVZRHTools
             CardReplaces.ListChanged += (sender, e) => SyncCards();
             SpeedValue = TickToSpeed((int)GameSpeed).ToString();
             int hi = 0;
-            Hotkeys = new();
+            Hotkeys = [];
             foreach (var (h, hui) in from h in KeyCommands let hui = new HotkeyUI() select (h, hui))
             {
                 Hotkeys.Add(new HotkeyUIVM(s.Hotkeys[hi].HotkeyUI)
@@ -368,98 +383,6 @@ namespace PVZRHTools
                 });
                 hi++;
             }
-        }
-
-        public void SyncAll()
-        {
-            if (!NeedSave) return;
-            List<bool> adv = new();
-            List<bool> ulti = new();
-            foreach (TravelBuffVM buff in TravelBuffs)
-            {
-                if (buff.TravelBuff.Index < App.InitData!.Value.AdvBuffs.Length)
-                {
-                    adv.Add(buff.TravelBuff.Enabled);
-                }
-                else
-                {
-                    ulti.Add(buff.TravelBuff.Enabled);
-                }
-            }
-            InGameActions iga = new()
-            {
-                NoFail = NoFail,
-                StopSummon = StopSummon,
-                ZombieSeaCD = (int)ZombieSeaCD,
-                ZombieSeaEnabled = ZombieSeaEnabled,
-                ZombieSeaTypes = new(),
-                ZombieType = ZombieType,
-            };
-            iga.ZombieSeaTypes.AddRange(from zst in ZombieSeaTypes select zst.Key);
-            List<Card> cards = new();
-            cards.AddRange(from c in CardReplaces select c.CardUI.GetCard());
-            SyncAll syncAll = new()
-            {
-                BasicProperties = new BasicProperties()
-                {
-                    CardNoInit = CardNoInit,
-                    ChomperNoCD = ChomperNoCD,
-                    CobCannonNoCD = CobCannonNoCD,
-                    DeveloperMode = DeveloperMode,
-                    DevLour = DevLour,
-                    FastShooting = FastShooting,
-                    FreePlanting = FreePlanting,
-                    GameSpeed = (int)GameSpeed,
-                    GarlicDay = GarlicDay,
-                    GloveNoCD = GloveNoCD,
-                    HammerNoCD = HammerNoCD,
-                    HardPlant = HardPlant,
-                    HyponoEmperorNoCD = HyponoEmperorNoCD,
-                    ImpToBeThrown = ImpToBeThrown,
-                    ItemExistForever = ItemExistForever,
-                    JackboxNotExplode = JackboxNotExplode,
-                    LockPresent = LockPresent,
-                    MineNoCD = MineNoCD,
-                    NoHole = NoHole,
-                    NoIceRoad = NoIceRoad,
-                    PlantingNoCD = PlantingNoCD,
-                    PresentFastOpen = PresentFastOpen,
-                    SuperPresent = SuperPresent,
-                    UltimateRamdomZombie = UltimateRamdomZombie,
-                    UndeadBullet = UndeadBullet,
-                    UnlockAllFusions = UnlockAllFusions,
-                    GloveFullCD = GloveFullCDEnabled ? (int)GloveFullCD : -1,
-                    HammerFullCD = HammerFullCDEnabled ? (int)HammerFullCD : -1,
-                },
-                CardProperties = new CardProperties() { CardReplaces = cards },
-                InGameActions = iga,
-                TravelBuffs = new SyncTravelBuff()
-                {
-                    AdvTravelBuff = adv,
-                    UltiTravelBuff = ulti
-                },
-                ValueProperties = new ValueProperties() { LockBulletType = LockBulletType },
-                GameModes = new GameModes()
-                {
-                    Exchange = Exchange,
-                    ScaredyDream = ScaredyDream,
-                    ColumnPlanting = ColumnPlanting,
-                    SeedRain = SeedRain,
-                    Shooting1 = Shooting1,
-                    Shooting2 = Shooting2,
-                    Shooting3 = Shooting3,
-                    Shooting4 = Shooting4,
-                }
-            };
-
-            App.DataSync.Value.SendData(syncAll);
-        }
-
-        public void SyncCards()
-        {
-            List<Card> cards = new();
-            cards.AddRange(from c in CardReplaces select c.CardUI.GetCard());
-            App.DataSync.Value.SendData(new CardProperties() { CardReplaces = cards });
         }
 
         #region Commands
@@ -490,6 +413,9 @@ namespace PVZRHTools
 
         [RelayCommand]
         public void CreateItem() => App.DataSync.Value.SendData(new InGameActions() { ItemType = ItemType, });
+
+        [RelayCommand]
+        public void CreateMower() => App.DataSync.Value.SendData(new InGameActions() { CreateMower = true });
 
         [RelayCommand]
         public void CreatePassiveMateorite() => App.DataSync.Value.SendData(new InGameActions() { CreatePassiveMateorite = true });
@@ -577,7 +503,7 @@ namespace PVZRHTools
             ModifierSaveModel s = new()
             {
                 CardNoInit = CardNoInit,
-                CardReplaces = new(CardReplaces),
+                CardReplaces = [.. CardReplaces],
                 ChomperNoCD = ChomperNoCD,
                 ClearOnWritingField = ClearOnWritingField,
                 ClearOnWritingZombies = ClearOnWritingZombies,
@@ -629,26 +555,27 @@ namespace PVZRHTools
                 SuperPresent = SuperPresent,
                 Times = Times,
                 TopMostSprite = TopMostSprite,
-                TravelBuffs = new(TravelBuffs),
+                TravelBuffs = [.. TravelBuffs],
                 UltimateRamdomZombie = UltimateRamdomZombie,
                 UndeadBullet = UndeadBullet,
                 UnlockAllFusions = UnlockAllFusions,
                 ZombieFieldString = ZombieFieldString,
                 ZombieSeaCD = ZombieSeaCD,
                 ZombieSeaEnabled = ZombieSeaEnabled,
-                ZombieSeaTypes = new(),
+                ZombieSeaTypes = [],
                 ZombieType = ZombieType,
                 GloveFullCD = GloveFullCD,
                 GloveFullCDEnabled = GloveFullCDEnabled,
                 HammerFullCD = HammerFullCD,
                 HammerFullCDEnabled = HammerFullCDEnabled,
-                Hotkeys = Hotkeys
+                Hotkeys = Hotkeys,
+                NewZombieUpdateCD = NewZombieUpdateCD,
             };
             if (ZombieSeaTypes.Count > 0)
             {
                 s.ZombieSeaTypes.AddRange(from zst in ZombieSeaTypes select zst.Key);
             }
-            File.WriteAllText("UserData/ModifierSettings.json", JsonSerializer.Serialize(s));
+            File.WriteAllText("UserData/ModifierSettings.json", JsonSerializer.Serialize(s, ModifierSaveModelSGC.Default.ModifierSaveModel));
         }
 
         [RelayCommand]
@@ -662,12 +589,107 @@ namespace PVZRHTools
         });
 
         [RelayCommand]
+        public void StartMower() => App.DataSync.Value.SendData(new InGameActions() { StartMower = true });
+
+        [RelayCommand]
         public void Sun() => App.DataSync.Value.SendData(new InGameActions() { CurrentSun = (int)NewSun });
+
+        public void SyncAll()
+        {
+            if (!NeedSave) return;
+            List<bool> adv = [];
+            List<bool> ulti = [];
+            foreach (TravelBuffVM buff in TravelBuffs)
+            {
+                if (buff.TravelBuff.Index < App.InitData!.Value.AdvBuffs.Length)
+                {
+                    adv.Add(buff.TravelBuff.Enabled);
+                }
+                else
+                {
+                    ulti.Add(buff.TravelBuff.Enabled);
+                }
+            }
+            InGameActions iga = new()
+            {
+                NoFail = NoFail,
+                StopSummon = StopSummon,
+                ZombieSeaCD = (int)ZombieSeaCD,
+                ZombieSeaEnabled = ZombieSeaEnabled,
+                ZombieSeaTypes = [],
+                ZombieType = ZombieType,
+            };
+            iga.ZombieSeaTypes.AddRange(from zst in ZombieSeaTypes select zst.Key);
+            List<Card> cards = [];
+            cards.AddRange(from c in CardReplaces select c.CardUI.GetCard());
+            SyncAll syncAll = new()
+            {
+                BasicProperties = new BasicProperties()
+                {
+                    CardNoInit = CardNoInit,
+                    ChomperNoCD = ChomperNoCD,
+                    CobCannonNoCD = CobCannonNoCD,
+                    DeveloperMode = DeveloperMode,
+                    DevLour = DevLour,
+                    FastShooting = FastShooting,
+                    FreePlanting = FreePlanting,
+                    GameSpeed = (int)GameSpeed,
+                    GarlicDay = GarlicDay,
+                    GloveNoCD = GloveNoCD,
+                    HammerNoCD = HammerNoCD,
+                    HardPlant = HardPlant,
+                    HyponoEmperorNoCD = HyponoEmperorNoCD,
+                    ImpToBeThrown = ImpToBeThrown,
+                    ItemExistForever = ItemExistForever,
+                    JackboxNotExplode = JackboxNotExplode,
+                    LockPresent = LockPresent,
+                    MineNoCD = MineNoCD,
+                    NoHole = NoHole,
+                    NoIceRoad = NoIceRoad,
+                    PlantingNoCD = PlantingNoCD,
+                    PresentFastOpen = PresentFastOpen,
+                    SuperPresent = SuperPresent,
+                    UltimateRamdomZombie = UltimateRamdomZombie,
+                    UndeadBullet = UndeadBullet,
+                    UnlockAllFusions = UnlockAllFusions,
+                    GloveFullCD = GloveFullCDEnabled ? (int)GloveFullCD : -1,
+                    HammerFullCD = HammerFullCDEnabled ? (int)HammerFullCD : -1,
+                    NewZombieUpdateCD = NewZombieUpdateCD,
+                },
+                CardProperties = new CardProperties() { CardReplaces = cards },
+                InGameActions = iga,
+                TravelBuffs = new SyncTravelBuff()
+                {
+                    AdvTravelBuff = adv,
+                    UltiTravelBuff = ulti
+                },
+                ValueProperties = new ValueProperties() { LockBulletType = LockBulletType },
+                GameModes = new GameModes()
+                {
+                    Exchange = Exchange,
+                    ScaredyDream = ScaredyDream,
+                    ColumnPlanting = ColumnPlanting,
+                    SeedRain = SeedRain,
+                    Shooting1 = Shooting1,
+                    Shooting2 = Shooting2,
+                    Shooting3 = Shooting3,
+                    Shooting4 = Shooting4,
+                }
+            };
+
+            App.DataSync.Value.SendData(syncAll);
+        }
+
+        public void SyncCards()
+        {
+            List<Card> cards = [.. from c in CardReplaces select c.CardUI.GetCard()];
+            App.DataSync.Value.SendData(new CardProperties() { CardReplaces = cards });
+        }
 
         public void SyncInGameBuffs()
         {
-            List<bool> adv = new();
-            List<bool> ulti = new();
+            List<bool> adv = [];
+            List<bool> ulti = [];
             foreach (TravelBuffVM buff in InGameBuffs)
             {
                 if (buff.TravelBuff.Index < App.InitData!.Value.AdvBuffs.Length)
@@ -688,8 +710,8 @@ namespace PVZRHTools
 
         public void SyncTravelBuffs()
         {
-            List<bool> adv = new();
-            List<bool> ulti = new();
+            List<bool> adv = [];
+            List<bool> ulti = [];
             foreach (TravelBuffVM buff in TravelBuffs)
             {
                 if (buff.TravelBuff.Index < App.InitData!.Value.AdvBuffs.Length)
@@ -744,7 +766,7 @@ namespace PVZRHTools
         public void ZombieSea()
         {
             if (!App.inited) return;
-            List<int> types = new();
+            List<int> types = [];
             foreach (var type in ZombieSeaTypes)
             {
                 types.Add(type.Key);
@@ -840,6 +862,8 @@ namespace PVZRHTools
 
         partial void OnMineNoCDChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { MineNoCD = value });
 
+        partial void OnNewZombieUpdateCDChanged(double value) => App.DataSync.Value.SendData(new BasicProperties() { NewZombieUpdateCD = value });
+
         partial void OnNoFailChanged(bool value) => App.DataSync.Value.SendData(new InGameActions() { NoFail = value });
 
         partial void OnNoHoleChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { NoHole = value });
@@ -923,11 +947,48 @@ namespace PVZRHTools
             {6, "超级机甲碎片" }
         };
 
-        public List<(string, Action)> KeyCommands => new()
-        {
+        public List<(string, Action)> KeyCommands =>
+        [
             ("手套无CD",()=>GloveNoCD=!GloveNoCD),
             ("锤子无CD",()=>HammerNoCD=!HammerNoCD),
-        };
+            ("植物卡槽无CD",()=>PlantingNoCD=!PlantingNoCD),
+            ("自由种植",()=>FreePlanting=!FreePlanting),
+            ("解锁全部融合配方",()=>UnlockAllFusions=!UnlockAllFusions),
+            ("游戏加速",() => GameSpeed=GameSpeed<9?++GameSpeed:GameSpeed),
+            ("游戏减速",()=>GameSpeed=GameSpeed>1?--GameSpeed:GameSpeed),
+            ("胆小菇之梦",()=>ScaredyDream=!ScaredyDream),
+            ("排山倒海",()=>ColumnPlanting=!ColumnPlanting),
+            ("植物攻击无间隔",()=>FastShooting=!FastShooting),
+            ("植物无敌",()=>HardPlant=!HardPlant),
+            ("生成植物",CreatePlant),
+            ("生成僵尸",CreateZombie),
+            ("生成物品",CreateItem),
+            ("生成究极陨星",CreateUltimateMateorite),
+            ("斗蛐蛐快速布阵",SimplePresents),
+            ("植物布阵",WriteField),
+            ("僵尸布阵",WriteZombies),
+            ("读取场上植物代码",CopyFieldScripts),
+            ("读取场上僵尸代码",CopyZombieScripts),
+            ("极限僵尸海",()=>ZombieSeaEnabled=!ZombieSeaEnabled),
+            ("清空全部植物",ClearAllPlants),
+            ("秒杀全部僵尸",KillAllZombies),
+            ("清除所有冰道",ClearIceRoads),
+            ("魅惑所有僵尸",MindCtrl),
+            ("清除所有坑洞",ClearAllHoles),
+            ("直接过关",Win),
+            ("生成下一波僵尸",NextWave),
+            ("暂停出怪",()=>StopSummon=!StopSummon),
+            ("僵尸进家不死",()=>NoFail=!NoFail),
+            ("启动所有小推车",StartMower),
+            ("生成小推车",CreateMower),
+            ("修改关卡名称",LevelName),
+            ("显示字幕",ShowingText),
+            ("显示悬浮窗",()=>TopMostSprite=!TopMostSprite),
+            ("显示修改窗口", () => {
+                MainWindow.Instance!.Topmost = true;
+                MainWindow.Instance!.Topmost = false;
+            }),
+        ];
 
         public Dictionary<int, string> Plants2 => App.InitData!.Value.Plants;
 
@@ -940,241 +1001,244 @@ namespace PVZRHTools
         #region Properties
 
         [ObservableProperty]
-        private int bulletDamageType;
+        public partial int BulletDamageType { get; set; }
 
         [ObservableProperty]
-        private double bulletDamageValue;
+        public partial double BulletDamageValue { get; set; }
 
         [ObservableProperty]
-        private bool cardNoInit;
+        public partial bool CardNoInit { get; set; }
 
         [ObservableProperty]
-        private BindingList<CardUIVM> cardReplaces;
+        public partial BindingList<CardUIVM> CardReplaces { get; set; }
 
         [ObservableProperty]
-        private bool chomperNoCD;
+        public partial bool ChomperNoCD { get; set; }
 
         [ObservableProperty]
-        private bool clearOnWritingField;
+        public partial bool ClearOnWritingField { get; set; }
 
         [ObservableProperty]
-        private bool clearOnWritingZombies;
+        public partial bool ClearOnWritingZombies { get; set; }
 
         [ObservableProperty]
-        private bool cobCannonNoCD;
+        public partial bool CobCannonNoCD { get; set; }
 
         [ObservableProperty]
-        private double col;
+        public partial double Col { get; set; }
 
         [ObservableProperty]
-        private bool columnPlanting;
+        public partial bool ColumnPlanting { get; set; }
 
         [ObservableProperty]
-        private bool developerMode;
+        public partial bool DeveloperMode { get; set; }
 
         [ObservableProperty]
-        private bool devLour;
+        public partial bool DevLour { get; set; }
 
         [ObservableProperty]
-        private bool exchange;
+        public partial bool Exchange { get; set; }
 
         [ObservableProperty]
-        private bool fastShooting;
+        public partial bool FastShooting { get; set; }
 
         [ObservableProperty]
-        private string fieldString;
+        public partial string FieldString { get; set; }
 
         [ObservableProperty]
-        private bool freeCD;
+        public partial bool FreeCD { get; set; }
 
         [ObservableProperty]
-        private bool freePlanting;
+        public partial bool FreePlanting { get; set; }
 
         [ObservableProperty]
-        private double gameSpeed;
+        public partial double GameSpeed { get; set; }
 
         [ObservableProperty]
-        private bool garlicDay;
+        public partial bool GarlicDay { get; set; }
 
         [ObservableProperty]
-        private double gloveFullCD;
+        public partial double GloveFullCD { get; set; }
 
         [ObservableProperty]
-        private bool gloveFullCDEnabled;
+        public partial bool GloveFullCDEnabled { get; set; }
 
         [ObservableProperty]
-        private bool gloveNoCD;
+        public partial bool GloveNoCD { get; set; }
 
         [ObservableProperty]
-        private double hammerFullCD;
+        public partial double HammerFullCD { get; set; }
 
         [ObservableProperty]
-        private bool hammerFullCDEnabled;
+        public partial bool HammerFullCDEnabled { get; set; }
 
         [ObservableProperty]
-        private bool hammerNoCD;
+        public partial bool HammerNoCD { get; set; }
 
         [ObservableProperty]
-        private bool hardPlant;
+        public partial bool HardPlant { get; set; }
 
         [ObservableProperty]
-        private int health1stType;
+        public partial int Health1stType { get; set; }
 
         [ObservableProperty]
-        private double health1stValue;
+        public partial double Health1stValue { get; set; }
 
         [ObservableProperty]
-        private int health2ndType;
+        public partial int Health2ndType { get; set; }
 
         [ObservableProperty]
-        private double health2ndValue;
+        public partial double Health2ndValue { get; set; }
 
         [ObservableProperty]
-        private int healthPlantType;
+        public partial int HealthPlantType { get; set; }
 
         [ObservableProperty]
-        private double healthPlantValue;
+        public partial double HealthPlantValue { get; set; }
 
         [ObservableProperty]
-        private int healthZombieType;
+        public partial int HealthZombieType { get; set; }
 
         [ObservableProperty]
-        private double healthZombieValue;
+        public partial double HealthZombieValue { get; set; }
 
         [ObservableProperty]
-        private List<HotkeyUIVM> hotkeys;
+        public partial List<HotkeyUIVM> Hotkeys { get; set; }
 
         [ObservableProperty]
-        private bool hyponoEmperorNoCD;
+        public partial bool HyponoEmperorNoCD { get; set; }
 
         [ObservableProperty]
-        private int impToBeThrown;
+        public partial int ImpToBeThrown { get; set; }
 
         [ObservableProperty]
-        private BindingList<TravelBuffVM> inGameBuffs;
+        public partial BindingList<TravelBuffVM> InGameBuffs { get; set; }
 
         [ObservableProperty]
-        private bool isMindCtrl;
+        public partial bool IsMindCtrl { get; set; }
 
         [ObservableProperty]
-        private bool itemExistForever;
+        public partial bool ItemExistForever { get; set; }
 
         [ObservableProperty]
-        private int itemType;
+        public partial int ItemType { get; set; }
 
         [ObservableProperty]
-        private bool jackboxNotExplode;
+        public partial bool JackboxNotExplode { get; set; }
 
         [ObservableProperty]
-        private int lockBulletType;
+        public partial int LockBulletType { get; set; }
 
         [ObservableProperty]
-        private bool lockMoney;
+        public partial bool LockMoney { get; set; }
 
         [ObservableProperty]
-        private int lockPresent;
+        public partial int LockPresent { get; set; }
 
         [ObservableProperty]
-        private bool lockSun;
+        public partial bool LockSun { get; set; }
 
         [ObservableProperty]
-        private bool mineNoCD;
+        public partial bool MineNoCD { get; set; }
 
         [ObservableProperty]
-        private bool needSave;
+        public partial bool NeedSave { get; set; }
 
         [ObservableProperty]
-        private string newLevelName;
+        public partial string NewLevelName { get; set; }
 
         [ObservableProperty]
-        private double newMoney;
+        public partial double NewMoney { get; set; }
 
         [ObservableProperty]
-        private double newSun;
+        public partial double NewSun { get; set; }
 
         [ObservableProperty]
-        private bool noFail;
+        public partial double NewZombieUpdateCD { get; set; }
 
         [ObservableProperty]
-        private bool noHole;
+        public partial bool NoFail { get; set; }
 
         [ObservableProperty]
-        private bool noIceRoad;
+        public partial bool NoHole { get; set; }
 
         [ObservableProperty]
-        private bool plantingNoCD;
+        public partial bool NoIceRoad { get; set; }
 
         [ObservableProperty]
-        private int plantType;
+        public partial bool PlantingNoCD { get; set; }
 
         [ObservableProperty]
-        private bool presentFastOpen;
+        public partial int PlantType { get; set; }
 
         [ObservableProperty]
-        private double row;
+        public partial bool PresentFastOpen { get; set; }
 
         [ObservableProperty]
-        private bool scaredyDream;
+        public partial double Row { get; set; }
 
         [ObservableProperty]
-        private bool seedRain;
+        public partial bool ScaredyDream { get; set; }
 
         [ObservableProperty]
-        private bool shooting1;
+        public partial bool SeedRain { get; set; }
 
         [ObservableProperty]
-        private bool shooting2;
+        public partial bool Shooting1 { get; set; }
 
         [ObservableProperty]
-        private bool shooting3;
+        public partial bool Shooting2 { get; set; }
 
         [ObservableProperty]
-        private bool shooting4;
+        public partial bool Shooting3 { get; set; }
 
         [ObservableProperty]
-        private string showText;
+        public partial bool Shooting4 { get; set; }
 
         [ObservableProperty]
-        private string speedValue;
+        public partial string ShowText { get; set; }
 
         [ObservableProperty]
-        private bool stopSummon;
+        public partial string SpeedValue { get; set; }
 
         [ObservableProperty]
-        private bool superPresent;
+        public partial bool StopSummon { get; set; }
 
         [ObservableProperty]
-        private double times;
+        public partial bool SuperPresent { get; set; }
 
         [ObservableProperty]
-        private bool topMostSprite;
+        public partial double Times { get; set; }
 
         [ObservableProperty]
-        private BindingList<TravelBuffVM> travelBuffs;
+        public partial bool TopMostSprite { get; set; }
 
         [ObservableProperty]
-        private bool ultimateRamdomZombie;
+        public partial BindingList<TravelBuffVM> TravelBuffs { get; set; }
 
         [ObservableProperty]
-        private bool undeadBullet;
+        public partial bool UltimateRamdomZombie { get; set; }
 
         [ObservableProperty]
-        private bool unlockAllFusions;
+        public partial bool UndeadBullet { get; set; }
 
         [ObservableProperty]
-        private string zombieFieldString;
+        public partial bool UnlockAllFusions { get; set; }
 
         [ObservableProperty]
-        private double zombieSeaCD;
+        public partial string ZombieFieldString { get; set; }
 
         [ObservableProperty]
-        private bool zombieSeaEnabled;
+        public partial double ZombieSeaCD { get; set; }
 
         [ObservableProperty]
-        private List<KeyValuePair<int, string>> zombieSeaTypes;
+        public partial bool ZombieSeaEnabled { get; set; }
 
         [ObservableProperty]
-        private int zombieType;
+        public partial List<KeyValuePair<int, string>> ZombieSeaTypes { get; set; }
+
+        [ObservableProperty]
+        public partial int ZombieType { get; set; }
 
         #endregion Properties
     }
@@ -1191,14 +1255,15 @@ namespace PVZRHTools
         public TravelBuff()
         { }
 
+        [ObservableProperty]
+        public partial bool Enabled { get; set; }
+
         public int Index { get; set; }
         public bool InGame { get; set; }
         public string Text { get; set; } = "";
-
-        [ObservableProperty]
-        private bool enabled;
     }
 
+    [JsonSourceGenerationOptions(WriteIndented = true)]
     public partial class TravelBuffVM : ObservableObject
     {
         public TravelBuffVM(TravelBuff TravelBuff) => this.TravelBuff = TravelBuff;
@@ -1214,6 +1279,6 @@ namespace PVZRHTools
         }
 
         [ObservableProperty]
-        private TravelBuff travelBuff;
+        public partial TravelBuff TravelBuff { get; set; }
     }
 }

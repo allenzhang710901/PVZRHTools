@@ -50,7 +50,7 @@ namespace PVZRHTools
                 if (e.Args[0] == CommandLineToken)
                 {
                     DataSync = new(new DataSync(Convert.ToInt32(e.Args[1])));
-                    InitData = JsonSerializer.Deserialize<InitData>(File.ReadAllText("./PVZRHTools/InitData.json"));
+                    InitData = JsonSerializer.Deserialize(File.ReadAllText("./PVZRHTools/InitData.json"), InitDataSGC.Default.InitData);
                 }
                 else
                 {
@@ -70,7 +70,9 @@ namespace PVZRHTools
         }
 
         public static Lazy<DataSync> DataSync { get; set; }
+
         public static InitData? InitData { get; set; }
+
         public static bool inited = false;
     }
 }

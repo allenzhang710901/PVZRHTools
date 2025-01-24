@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace PVZRHTools
@@ -51,6 +52,7 @@ namespace PVZRHTools
         public string NewLevelName { get; set; }
         public double NewMoney { get; set; }
         public double NewSun { get; set; }
+        public double NewZombieUpdateCD { get; set; }
         public bool NoFail { get; set; }
         public bool NoHole { get; set; }
         public bool NoIceRoad { get; set; }

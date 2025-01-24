@@ -145,6 +145,7 @@ namespace ToolMod
                 if (p.ImpToBeThrown is not null) ImpToBeThrown = (int)p.ImpToBeThrown;
                 if (p.HammerFullCD is not null) HammerFullCD = (double)p.HammerFullCD;
                 if (p.GloveFullCD is not null) GloveFullCD = (double)p.GloveFullCD;
+                if (p.NewZombieUpdateCD is not null) NewZombieUpdateCD = (float)p.NewZombieUpdateCD;
                 return;
             }
             if (data is SyncTravelBuff s)
@@ -350,6 +351,10 @@ namespace ToolMod
                     {
                         try { ((Zombie)zombies[i])?.Die(); } catch { }
                     }
+                    for (int j = Board.Instance.zombieArray.Count; j >= 0; j--)
+                    {
+                        try { (Board.Instance.zombieArray[j])?.Die(); } catch { }
+                    }
                     Board.Instance.zombieArray.Clear();
                 }
                 if (iga.ClearAllHoles is not null)
@@ -527,6 +532,21 @@ namespace ToolMod
                     catch (JsonException) { MLogger.Error("布阵代码存在错误！"); }
                     catch (NotSupportedException) { MLogger.Error("布阵代码存在错误！"); }
                 }
+                if (iga.StartMower is not null)
+                {
+                    foreach (var i in FindObjectsOfTypeAll(Il2CppType.Of<Mower>()))
+                    {
+                        try
+                        {
+                            i.TryCast<Mower>()!.StartMove();
+                        }
+                        catch { }
+                    }
+                }
+                if (iga.CreateMower is not null)
+                {
+                    GameAPP.board.GetComponent<InitBoard>().InitMower();
+                }
             }
             if (data is GameModes ga)
             {
@@ -658,14 +678,11 @@ namespace ToolMod
             _ => 1f
         };
 
-        public void Awake()
+        public void Awake() => Task.Run(() =>
         {
-            Task.Run(() =>
-            {
-                Thread.Sleep(3000);
-                DataSync.Instance.Value.SendData(new SyncAll());
-            });
-        }
+            Thread.Sleep(3000);
+            DataSync.Instance.Value.SendData(new SyncAll());
+        });
 
         public void Update()
         {
@@ -691,8 +708,10 @@ namespace ToolMod
             });
         }
 
+        public static string Data { get; set; } = "";
+
         public static List<GameObject> Items =>
-        [
+                [
             Resources.Load<GameObject>("Items/Fertilize/Ferilize"),
             Resources.Load<GameObject>("Items/Bucket"),
             Resources.Load<GameObject>("Items/Helmet"),
@@ -701,7 +720,5 @@ namespace ToolMod
             Resources.Load<GameObject>("Items/Machine"),
             Resources.Load<GameObject>("Items/SuperMachine"),
         ];
-
-        public static string Data = "";
     }
 }

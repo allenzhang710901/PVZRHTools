@@ -10,7 +10,7 @@ using ToolModData;
 using UnityEngine;
 using static ToolModData.Modifier;
 
-[assembly: MelonInfo(typeof(ToolPlugin.Core), "ToolPlugin", "3.10", "Infinite75", null)]
+[assembly: MelonInfo(typeof(ToolPlugin.Core), "ToolPlugin", "2.1.6-3.9", "Infinite75", null)]
 [assembly: MelonGame("LanPiaoPiao", "PlantsVsZombiesRH")]
 [assembly: MelonPlatformDomain(MelonPlatformDomainAttribute.CompatibleDomains.IL2CPP)]
 
@@ -52,7 +52,7 @@ namespace ToolPlugin
                 {
                     if (zombie is not null) zombies.Add((int)zombie["theZombieType"]!, (int)zombie["theZombieType"]! + " : " + (string)zombie["name"]!);
                 }
-                //TODO:Delete in 2.1.7/2.2
+                //TODO:Delete in 2.2
                 zombies.Add(44, "44：僵王博士");
                 zombies.Add(114, "114：铁桶铁门铁豌豆僵尸");
                 List<string> advBuffs = [];
@@ -102,10 +102,10 @@ namespace ToolPlugin
             if (UnityInformationHandler.GameVersion != "2.1.6")
             {
                 string caption = "修改器启动错误";
-                MessageBox(0, "游戏版本错误，修改器仅支持2.2版本。你需要自行更换游戏版本。请勿向修改器作者反馈此问题，看到也不会回复。", caption, 0U);
+                MessageBox(0, "游戏版本错误，修改器仅支持2.1.6版本。你需要自行更换游戏版本。请勿向修改器作者反馈此问题，看到也不会回复。", caption, 0U);
                 Environment.Exit(0);
             }
-            LoggerInstance.Msg("游戏版本2.2：Version Check OK");
+            LoggerInstance.Msg("游戏版本2.1.6：Version Check OK");
 
             if (!Directory.Exists("./PVZRHTools"))
             {

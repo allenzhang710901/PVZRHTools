@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization.Metadata;
 using System.Windows;
 using ToolModData;
 
@@ -38,7 +39,7 @@ namespace PVZRHTools
                 {
                     case 4:
                         {
-                            SyncTravelBuff s = JsonSerializer.Deserialize<SyncTravelBuff>(json);
+                            SyncTravelBuff s = JsonSerializer.Deserialize(json, SyncTravelBuffSGC.Default.SyncTravelBuff);
                             Application.Current.Dispatcher.Invoke(() =>
                             {
                                 if (s.AdvInGame is not null && s.UltiInGame is not null)
@@ -59,7 +60,7 @@ namespace PVZRHTools
                         }
                     case 6:
                         {
-                            InGameActions iga = JsonSerializer.Deserialize<InGameActions>(json);
+                            InGameActions iga = JsonSerializer.Deserialize(json, InGameActionsSGC.Default.InGameActions);
                             if (iga.WriteField is not null)
                             {
                                 Application.Current.Dispatcher.Invoke(() => Clipboard.SetDataObject(iga.WriteField));
@@ -77,7 +78,7 @@ namespace PVZRHTools
                         }
                     case 16:
                         {
-                            Application.Current.Dispatcher.Invoke(new Action(delegate { Application.Current.Shutdown(); }));
+                            Application.Current.Dispatcher.Invoke(new Action(Application.Current.Shutdown));
                             break;
                         }
                 }
@@ -86,28 +87,51 @@ namespace PVZRHTools
             {
                 File.WriteAllText("./ModifierError.txt", ex.Message + ex.StackTrace);
                 MessageBox.Show(ex.ToString());
-                Application.Current.Dispatcher.Invoke(new Action(delegate { Application.Current.Shutdown(); }));
+                Application.Current.Dispatcher.Invoke(new Action(Application.Current.Shutdown));
             }
         }
 
         public void Receive(IAsyncResult ar)
         {
-            Socket? socket = ar.AsyncState as Socket;
-            if (socket is not null)
+            try
             {
-                int bytes = socket.EndReceive(ar);
-                ar.AsyncWaitHandle.Close();
-                ProcessData(Encoding.UTF8.GetString(buffer, 0, bytes));
-                buffer = new byte[1024 * 64];
-                socket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, new(Receive), socket);
+                Socket? socket = ar.AsyncState as Socket;
+                if (socket is not null)
+                {
+                    int bytes = socket.EndReceive(ar);
+                    ar.AsyncWaitHandle.Close();
+                    ProcessData(Encoding.UTF8.GetString(buffer, 0, bytes));
+                    buffer = new byte[1024 * 64];
+                    socket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, new(Receive), socket);
+                }
+            }
+            catch (SocketException)
+            {
+                Application.Current.Shutdown();
+            }
+            catch (ObjectDisposedException)
+            {
+                Application.Current.Shutdown();
             }
         }
 
-        public void SendData<T>(T data)
+        public void SendData<T>(T data) where T : ISyncData
         {
             if (!App.inited) return;
             if (!Enabled) return;
-            modifierSocket.Send(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(data)));
+            JsonTypeInfo jti = data.ID switch
+            {
+                6 => InGameActionsSGC.Default.InGameActions,
+                2 => BasicPropertiesSGC.Default.BasicProperties,
+                5 => CardPropertiesSGC.Default.CardProperties,
+                16 => ExitSGC.Default.Exit,
+                7 => GameModesSGC.Default.GameModes,
+                15 => SyncAllSGC.Default.SyncAll,
+                4 => SyncTravelBuffSGC.Default.SyncTravelBuff,
+                1 => ValuePropertiesSGC.Default.ValueProperties,
+                _ => throw new InvalidOperationException()
+            };
+            modifierSocket.Send(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(data, jti)));
             Thread.Sleep(5);
         }
 

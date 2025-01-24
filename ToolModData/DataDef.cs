@@ -33,7 +33,9 @@
         public bool? JackboxNotExplode { get; set; }
         public int? LockPresent { get; set; }
         public bool? MineNoCD { get; set; }
+        public double? NewZombieUpdateCD { get; set; }
         public bool? NoHole { get; set; }
+
         public bool? NoIceRoad { get; set; }
         public bool? PlantingNoCD { get; set; }
         public bool? PresentFastOpen { get; set; }
@@ -110,6 +112,7 @@
         public bool? ClearOnWritingZombies { get; set; }
         public int? Column { get; set; }
         public bool? CreateActiveMateorite { get; set; }
+        public bool? CreateMower { get; set; }
         public bool? CreatePassiveMateorite { get; set; }
         public bool? CreateUltimateMateorite { get; set; }
         public int? CurrentMoney { get; set; }
@@ -126,6 +129,7 @@
         public bool? ReadZombies { get; set; }
         public int? Row { get; set; }
         public string? ShowText { get; set; }
+        public bool? StartMower { get; set; }
         public bool? StopSummon { get; set; }
         public bool? SummonMindControlledZombies { get; set; }
         public int? Times { get; set; }
