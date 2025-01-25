@@ -10,7 +10,7 @@ using ToolModData;
 using UnityEngine;
 using static ToolModData.Modifier;
 
-[assembly: MelonInfo(typeof(ToolPlugin.Core), "ToolPlugin", "2.1.6-3.9", "Infinite75", null)]
+[assembly: MelonInfo(typeof(ToolPlugin.Core), "ToolPlugin", "2.2-3.10", "Infinite75", null)]
 [assembly: MelonGame("LanPiaoPiao", "PlantsVsZombiesRH")]
 [assembly: MelonPlatformDomain(MelonPlatformDomainAttribute.CompatibleDomains.IL2CPP)]
 
@@ -52,9 +52,6 @@ namespace ToolPlugin
                 {
                     if (zombie is not null) zombies.Add((int)zombie["theZombieType"]!, (int)zombie["theZombieType"]! + " : " + (string)zombie["name"]!);
                 }
-                //TODO:Delete in 2.2
-                zombies.Add(44, "44：僵王博士");
-                zombies.Add(114, "114：铁桶铁门铁豌豆僵尸");
                 List<string> advBuffs = [];
                 foreach (var adv in TravelMgr.advancedBuffs)
                 {
@@ -65,8 +62,13 @@ namespace ToolPlugin
                 {
                     ultiBuffs.Add(ulti.Value);
                 }
+                List<string> debuffs = [];
+                foreach (var de in TravelMgr.debuffs)
+                {
+                    debuffs.Add(de.Value);
+                }
                 Dictionary<int, string> bullets = [];
-                foreach (var type in Enum.GetValues(typeof(CreateBullet.BulletType)))
+                foreach (var type in Enum.GetValues(typeof(BulletType)))
                 {
                     if ((int)type is 25 or 26 or 27) continue;
                     bullets.Add((int)type, $"{type}");
@@ -91,7 +93,8 @@ namespace ToolPlugin
                     Bullets = bullets,
                     FirstArmors = firsts,
                     SecondArmors = seconds,
-                };
+                    Debuffs = [.. debuffs],
+                };//debuff
                 File.WriteAllText("./PVZRHTools/InitData.json", JsonSerializer.Serialize(InitData));
             }
         }
@@ -99,24 +102,24 @@ namespace ToolPlugin
         public override void OnPreInitialization()
         {
             Console.OutputEncoding = Encoding.UTF8;
-            if (UnityInformationHandler.GameVersion != "2.1.6")
+            if (UnityInformationHandler.GameVersion != "2.2")
             {
                 string caption = "修改器启动错误";
-                MessageBox(0, "游戏版本错误，修改器仅支持2.1.6版本。你需要自行更换游戏版本。请勿向修改器作者反馈此问题，看到也不会回复。", caption, 0U);
+                MessageBox(0, "游戏版本错误，修改器仅支持2.2版本。你需要自行更换游戏版本。请勿向修改器作者反馈此问题，看到也不会回复。", caption, 0U);
                 Environment.Exit(0);
             }
-            LoggerInstance.Msg("游戏版本2.1.6：Version Check OK");
+            LoggerInstance.Msg("游戏版本2.2：Version Check OK");
 
             if (!Directory.Exists("./PVZRHTools"))
             {
                 string caption = "修改器启动错误";
-                MessageBox(0, "PVZRHTools文件夹丢失或名称错误或解压位置错误，请仔细检查解压时是否存在纰漏。", caption, 0U);
+                MessageBox(0, "PVZRHTools文件夹丢失或名称错误或解压位置错误，请检查是否受杀毒软件影响。", caption, 0U);
                 Environment.Exit(0);
             }
             else if (!File.Exists("./PVZRHTools/InitData.json") || !File.Exists("./PVZRHTools/PVZRHTools.exe"))
             {
                 string caption = "修改器启动错误";
-                MessageBox(0, "PVZRHTools文件夹中核心文件丢失，请仔细检查解压时是否存在纰漏。", caption, 0U);
+                MessageBox(0, "PVZRHTools文件夹中核心文件丢失，请检查是否受杀毒软件影响。", caption, 0U);
                 Environment.Exit(0);
             }
             LoggerInstance.Msg("PVZRHTools文件夹：Files Check OK");
@@ -148,7 +151,7 @@ namespace ToolPlugin
             }
         }
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         internal static extern IntPtr MessageBox(int hWnd, string text, string caption, uint type);
 
         public static InitData InitData { get; set; }

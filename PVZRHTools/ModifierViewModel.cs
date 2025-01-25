@@ -8,7 +8,6 @@ using System.IO;
 using FastHotKeyForWPF;
 using System.Windows.Input;
 using System.Text.Json.Serialization;
-using System.Linq;
 
 namespace PVZRHTools
 {
@@ -47,13 +46,10 @@ namespace PVZRHTools
         public int Sun { get; set; } = -1;
     }
 
-    [JsonSourceGenerationOptions(WriteIndented = true)]
-    public partial class CardUIVM : ObservableObject
+    public partial class CardUIVM(CardUI CardUI) : ObservableObject
     {
-        public CardUIVM(CardUI CardUI) => this.CardUI = CardUI;
-
         [ObservableProperty]
-        public partial CardUI CardUI { get; set; }
+        public partial CardUI CardUI { get; set; } = CardUI;
 
         public double CD { get => CardUI.CD; set => SetProperty(CardUI.CD, value, CardUI, (t, e) => t.CD = e); }
 
@@ -199,24 +195,35 @@ namespace PVZRHTools
             ZombieSeaTypes = [];
             TravelBuffs = [];
             InGameBuffs = [];
+            Debuffs = [];
+            InGameDebuffs = [];
             ImpToBeThrown = 37;
             Times = 1;
             NewZombieUpdateCD = 30;
             int bi = 0;
             foreach (var b in App.InitData.Value.AdvBuffs)
             {
-                TravelBuffs.Add(new(new(bi, b, false)));
-                InGameBuffs.Add(new(new(bi, b, true)));
+                TravelBuffs.Add(new(new(bi, b, false, false)));
+                InGameBuffs.Add(new(new(bi, b, true, false)));
                 bi++;
             }
             foreach (var b in App.InitData.Value.UltiBuffs)
             {
-                TravelBuffs.Add(new(new(bi, b, false)));
-                InGameBuffs.Add(new(new(bi, b, true)));
+                TravelBuffs.Add(new(new(bi, b, false, false)));
+                InGameBuffs.Add(new(new(bi, b, true, false)));
                 bi++;
+            }
+            int di = 0;
+            foreach (var d in App.InitData.Value.Debuffs)
+            {
+                Debuffs.Add(new(new(di, d, true, true)));
+                InGameDebuffs.Add(new(new(di, d, true, true)));
+                di++;
             }
             TravelBuffs.ListChanged += (sender, e) => SyncTravelBuffs();
             InGameBuffs.ListChanged += (sender, e) => SyncInGameBuffs();
+            Debuffs.ListChanged += (_, _) => SyncTravelBuffs();
+            InGameDebuffs.ListChanged += (_, _) => SyncInGameBuffs();
             CardReplaces = [];
             for (int i = 0; i < 14; i++)
             {
@@ -290,6 +297,7 @@ namespace PVZRHTools
                 Bullets2.Add(b.Key, b.Key.ToString() + " : " + b.Value);
             }
             InGameBuffs = [];
+            InGameDebuffs = [];
             CardNoInit = s.CardNoInit;
             CardReplaces = [.. s.CardReplaces];
             ChomperNoCD = s.ChomperNoCD;
@@ -298,6 +306,7 @@ namespace PVZRHTools
             CobCannonNoCD = s.CobCannonNoCD;
             Col = s.Col;
             ColumnPlanting = s.ColumnPlanting;
+            Debuffs = [.. s.Debuffs];
             DeveloperMode = s.DeveloperMode;
             DevLour = s.DevLour;
             Exchange = s.Exchange;
@@ -360,16 +369,23 @@ namespace PVZRHTools
             int bi = 0;
             foreach (var b in App.InitData.Value.AdvBuffs)
             {
-                InGameBuffs.Add(new(new(bi, b, true)));
+                InGameBuffs.Add(new(new(bi, b, true, false)));
                 bi++;
             }
             foreach (var b in App.InitData.Value.UltiBuffs)
             {
-                InGameBuffs.Add(new(new(bi, b, true)));
+                InGameBuffs.Add(new(new(bi, b, true, false)));
                 bi++;
+            }
+            int di = 0;
+            foreach (var d in App.InitData.Value.Debuffs)
+            {
+                InGameDebuffs.Add(new(new(di, d, true, true)));
             }
             TravelBuffs.ListChanged += (sender, e) => SyncTravelBuffs();
             InGameBuffs.ListChanged += (sender, e) => SyncInGameBuffs();
+            Debuffs.ListChanged += (_, _) => SyncTravelBuffs();
+            InGameDebuffs.ListChanged += (_, _) => SyncInGameBuffs();
             CardReplaces.ListChanged += (sender, e) => SyncCards();
             SpeedValue = TickToSpeed((int)GameSpeed).ToString();
             int hi = 0;
@@ -443,6 +459,30 @@ namespace PVZRHTools
         });
 
         [RelayCommand]
+        public void DebuffSelectAll()
+        {
+            NeedSync = false;
+            foreach (var t in Debuffs)
+            {
+                t.Enabled = true;
+            }
+            NeedSync = true;
+            SyncTravelBuffs();
+        }
+
+        [RelayCommand]
+        public void DebuffUnselectAll()
+        {
+            NeedSync = false;
+            foreach (TravelBuffVM t in Debuffs)
+            {
+                t.Enabled = false;
+            }
+            NeedSync = true;
+            SyncTravelBuffs();
+        }
+
+        [RelayCommand]
         public void Health1st() => App.DataSync.Value.SendData(new ValueProperties() { FirstArmorsHealth = new(Health1stType, (int)Health1stValue) });
 
         [RelayCommand]
@@ -481,6 +521,32 @@ namespace PVZRHTools
         }
 
         [RelayCommand]
+        public void InGameDebuffSelectAll()
+        {
+            if (!App.inited) return;
+            NeedSync = false;
+            foreach (var t in InGameDebuffs)
+            {
+                t.Enabled = true;
+            }
+            NeedSync = true;
+            SyncInGameBuffs();
+        }
+
+        [RelayCommand]
+        public void InGameDebuffUnselectAll()
+        {
+            if (!App.inited) return;
+            NeedSync = false;
+            foreach (var t in InGameDebuffs)
+            {
+                t.Enabled = false;
+            }
+            NeedSync = true;
+            SyncInGameBuffs();
+        }
+
+        [RelayCommand]
         public void KillAllZombies() => App.DataSync.Value.SendData(new InGameActions() { ClearAllZombies = true });
 
         [RelayCommand]
@@ -510,6 +576,7 @@ namespace PVZRHTools
                 CobCannonNoCD = CobCannonNoCD,
                 Col = Col,
                 ColumnPlanting = ColumnPlanting,
+                Debuffs = [.. Debuffs],
                 DeveloperMode = DeveloperMode,
                 DevLour = DevLour,
                 Exchange = Exchange,
@@ -599,6 +666,7 @@ namespace PVZRHTools
             if (!NeedSave) return;
             List<bool> adv = [];
             List<bool> ulti = [];
+            List<bool> deb = [];
             foreach (TravelBuffVM buff in TravelBuffs)
             {
                 if (buff.TravelBuff.Index < App.InitData!.Value.AdvBuffs.Length)
@@ -609,6 +677,10 @@ namespace PVZRHTools
                 {
                     ulti.Add(buff.TravelBuff.Enabled);
                 }
+            }
+            foreach (var d in Debuffs)
+            {
+                deb.Add(d.TravelBuff.Enabled);
             }
             InGameActions iga = new()
             {
@@ -661,7 +733,8 @@ namespace PVZRHTools
                 TravelBuffs = new SyncTravelBuff()
                 {
                     AdvTravelBuff = adv,
-                    UltiTravelBuff = ulti
+                    UltiTravelBuff = ulti,
+                    Debuffs = deb
                 },
                 ValueProperties = new ValueProperties() { LockBulletType = LockBulletType },
                 GameModes = new GameModes()
@@ -690,6 +763,7 @@ namespace PVZRHTools
         {
             List<bool> adv = [];
             List<bool> ulti = [];
+            List<bool> deb = [];
             foreach (TravelBuffVM buff in InGameBuffs)
             {
                 if (buff.TravelBuff.Index < App.InitData!.Value.AdvBuffs.Length)
@@ -701,10 +775,16 @@ namespace PVZRHTools
                     ulti.Add(buff.TravelBuff.Enabled);
                 }
             }
+            foreach (var d in InGameDebuffs)
+            {
+                deb.Add(d.TravelBuff.Enabled);
+            }
+
             App.DataSync.Value.SendData(new SyncTravelBuff()
             {
                 AdvInGame = adv,
-                UltiInGame = ulti
+                UltiInGame = ulti,
+                DebuffsInGame = deb
             });
         }
 
@@ -712,6 +792,7 @@ namespace PVZRHTools
         {
             List<bool> adv = [];
             List<bool> ulti = [];
+            List<bool> deb = [];
             foreach (TravelBuffVM buff in TravelBuffs)
             {
                 if (buff.TravelBuff.Index < App.InitData!.Value.AdvBuffs.Length)
@@ -723,10 +804,15 @@ namespace PVZRHTools
                     ulti.Add(buff.TravelBuff.Enabled);
                 }
             }
+            foreach (var d in Debuffs)
+            {
+                deb.Add(d.TravelBuff.Enabled);
+            }
             App.DataSync.Value.SendData(new SyncTravelBuff()
             {
                 AdvTravelBuff = adv,
-                UltiTravelBuff = ulti
+                UltiTravelBuff = ulti,
+                Debuffs = deb
             });
         }
 
@@ -1031,6 +1117,9 @@ namespace PVZRHTools
         public partial bool ColumnPlanting { get; set; }
 
         [ObservableProperty]
+        public partial BindingList<TravelBuffVM> Debuffs { get; set; }
+
+        [ObservableProperty]
         public partial bool DeveloperMode { get; set; }
 
         [ObservableProperty]
@@ -1113,6 +1202,9 @@ namespace PVZRHTools
 
         [ObservableProperty]
         public partial BindingList<TravelBuffVM> InGameBuffs { get; set; }
+
+        [ObservableProperty]
+        public partial BindingList<TravelBuffVM> InGameDebuffs { get; set; }
 
         [ObservableProperty]
         public partial bool IsMindCtrl { get; set; }
@@ -1245,15 +1337,18 @@ namespace PVZRHTools
 
     public partial class TravelBuff : ObservableObject, INotifyPropertyChanged
     {
-        public TravelBuff(int index, string text, bool inGame)
+        public TravelBuff(int index, string text, bool inGame, bool debuff)
         {
             Text = text;
             Index = index;
             InGame = inGame;
+            Debuff = debuff;
         }
 
         public TravelBuff()
         { }
+
+        public bool Debuff { get; set; }
 
         [ObservableProperty]
         public partial bool Enabled { get; set; }
@@ -1263,11 +1358,8 @@ namespace PVZRHTools
         public string Text { get; set; } = "";
     }
 
-    [JsonSourceGenerationOptions(WriteIndented = true)]
-    public partial class TravelBuffVM : ObservableObject
+    public partial class TravelBuffVM(TravelBuff TravelBuff) : ObservableObject
     {
-        public TravelBuffVM(TravelBuff TravelBuff) => this.TravelBuff = TravelBuff;
-
         public bool Enabled
         {
             get => TravelBuff.Enabled;
@@ -1279,6 +1371,6 @@ namespace PVZRHTools
         }
 
         [ObservableProperty]
-        public partial TravelBuff TravelBuff { get; set; }
+        public partial TravelBuff TravelBuff { get; set; } = TravelBuff;
     }
 }

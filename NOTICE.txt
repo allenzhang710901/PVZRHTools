@@ -18,6 +18,7 @@
    MelonLoader:Apache-2.0 license
    HandyControl:MIT License
    FastHotKeyForWPF:MIT License
+   SevenZipExtractor:MIT License
 
    此项目使用MelonLoader,构建版本中修改内容如下： 
    1.删除MelonLoader/Il2CppAssemblyGenerator文件夹以禁止下载Cpp2IL与Unity Runtime Libraries、连接远程API与构建缓存
@@ -84,3 +85,25 @@ For FastHotKeyForWPF(https://github.com/Axvser/FastHotKeyForWPF):
   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.  
+
+
+For SevenZipExtractor:(https://github.com/adoconnection/SevenZipExtractor)
+  Copyright (c) 2017 Alexander Selishchev
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.

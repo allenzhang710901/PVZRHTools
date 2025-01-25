@@ -25,7 +25,7 @@ public static class ModifierVersion
 } 
 <#+
     int major = 3;
-    int minor = 9;
+    int minor = 10;
     int build = 1;
-    string gameVersion="2.1.6";
+    string gameVersion="2.2";
 #>
