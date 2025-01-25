@@ -31,14 +31,15 @@ namespace ToolMod
             {
                 if (v.PlantsHealth is not null)
                 {
-                    HealthPlants[(MixData.PlantType)v.PlantsHealth.Value.Key] = v.PlantsHealth.Value.Value;
+                    HealthPlants[(PlantType)v.PlantsHealth.Value.Key] = v.PlantsHealth.Value.Value;
                     if (InGame())
                     {
                         foreach (var pl in Board.Instance.plantArray)
                         {
-                            if (HealthPlants[(MixData.PlantType)pl.thePlantType] >= 0 && pl.thePlantMaxHealth != HealthPlants[(MixData.PlantType)pl.thePlantType])
+                            if (HealthPlants[(PlantType)pl.thePlantType] >= 0)
                             {
-                                pl.thePlantMaxHealth = HealthPlants[(MixData.PlantType)pl.thePlantType];
+                                pl.thePlantMaxHealth = HealthPlants[(PlantType)pl.thePlantType];
+                                if (pl.thePlantHealth > pl.thePlantMaxHealth) pl.thePlantHealth = pl.thePlantHealth;
                                 pl.UpdateHealthText();
                             }
                         }
@@ -46,14 +47,15 @@ namespace ToolMod
                 }
                 if (v.ZombiesHealth is not null)
                 {
-                    HealthZombies[(ZombietType)v.ZombiesHealth.Value.Key] = v.ZombiesHealth.Value.Value;
+                    HealthZombies[(ZombieType)v.ZombiesHealth.Value.Key] = v.ZombiesHealth.Value.Value;
                     if (InGame())
                     {
                         foreach (var z in Board.Instance.zombieArray)
                         {
-                            if (HealthZombies[(ZombietType)z.theZombieType] >= 0 && z.theMaxHealth != HealthZombies[(ZombietType)z.theZombieType])
+                            if (HealthZombies[(ZombieType)z.theZombieType] >= 0)
                             {
-                                z.theMaxHealth = HealthZombies[(ZombietType)z.theZombieType];
+                                z.theMaxHealth = HealthZombies[(ZombieType)z.theZombieType];
+                                if (z.theHealth > z.theMaxHealth) z.theHealth = z.theMaxHealth;
                             }
                             z.UpdateHealthText();
                         }
@@ -66,9 +68,10 @@ namespace ToolMod
                     {
                         foreach (var z in Board.Instance.zombieArray)
                         {
-                            if (Health1st[z.theFirstArmorType] >= 0 && z.theMaxHealth != Health1st[z.theFirstArmorType])
+                            if (Health1st[z.theFirstArmorType] >= 0)
                             {
                                 z.theFirstArmorMaxHealth = Health1st[z.theFirstArmorType];
+                                if (z.theFirstArmorHealth > z.theFirstArmorMaxHealth) z.theFirstArmorHealth = z.theFirstArmorMaxHealth;
                             }
                             z.UpdateHealthText();
                         }
@@ -81,9 +84,10 @@ namespace ToolMod
                     {
                         foreach (var z in Board.Instance.zombieArray)
                         {
-                            if (Health2nd[z.theSecondArmorType] >= 0 && z.theMaxHealth != Health2nd[z.theSecondArmorType])
+                            if (Health2nd[z.theSecondArmorType] >= 0)
                             {
                                 z.theSecondArmorMaxHealth = Health2nd[z.theSecondArmorType];
+                                if (z.theSecondArmorHealth > z.theSecondArmorMaxHealth) z.theSecondArmorHealth = z.theSecondArmorMaxHealth;
                             }
                             z.UpdateHealthText();
                         }
@@ -91,7 +95,7 @@ namespace ToolMod
                 }
                 if (v.BulletsDamage is not null)
                 {
-                    BulletDamage[(CreateBullet.BulletType)v.BulletsDamage.Value.Key] = v.BulletsDamage.Value.Value;
+                    BulletDamage[(BulletType)v.BulletsDamage.Value.Key] = v.BulletsDamage.Value.Value;
                 }
                 if (v.LockBulletType is not null)
                 {
@@ -114,15 +118,12 @@ namespace ToolMod
                 if (p.UnlockAllFusions is not null)
                 {
                     UnlockAllFusions = (bool)p.UnlockAllFusions;
-                    try
+                    if (InGame())
                     {
-                        _ = FindObjectsOfTypeAll(Il2CppType.Of<PresentCard>()).All((obj) =>
-                        {
-                            obj.TryCast<PresentCard>()!.gameObject.SetActive(UnlockAllFusions);
-                            return true;
-                        });
+                        var t = Board.Instance!.boardTag;
+                        t.enableTravelPlant = UnlockAllFusions || originalTravel;
+                        Board.Instance.boardTag = t;
                     }
-                    catch { }
                 }
                 if (p.SuperPresent is not null) SuperPresent = (bool)p.SuperPresent;
                 if (p.UltimateRamdomZombie is not null) UltimateRamdomZombie = (bool)p.UltimateRamdomZombie;
@@ -158,6 +159,10 @@ namespace ToolMod
                 {
                     UltiBuffs = [.. s.UltiTravelBuff];
                 }
+                if (s.Debuffs is not null)
+                {
+                    Debuffs = [.. s.Debuffs];
+                }
                 if (InGame())
                 {
                     if (s.AdvInGame is not null)
@@ -167,6 +172,10 @@ namespace ToolMod
                     if (s.UltiInGame is not null)
                     {
                         InGameUltiBuffs = [.. s.UltiInGame];
+                    }
+                    if (s.DebuffsInGame is not null)
+                    {
+                        InGameDebuffs = [.. s.DebuffsInGame];
                     }
                     UpdateInGameBuffs();
                 }
@@ -183,6 +192,36 @@ namespace ToolMod
             }
             if (data is InGameActions iga)
             {
+                if (iga.ZombieSeaEnabled is not null
+                && iga.ZombieSeaCD is not null
+                && iga.ZombieSeaTypes is not null)
+                {
+                    ZombieSea = (bool)iga.ZombieSeaEnabled;
+                    ZombieSeaCD = (int)iga.ZombieSeaCD;
+                    SeaTypes = iga.ZombieSeaTypes;
+                }
+                if (iga.LockSun is not null
+                && iga.CurrentSun is not null)
+                {
+                    LockSun = (bool)iga.LockSun;
+                    LockSunCount = (int)iga.CurrentSun;
+                }
+                if (iga.LockMoney is not null
+                  && iga.CurrentMoney is not null)
+                {
+                    LockMoney = (bool)iga.LockMoney;
+                    LockMoneyCount = (int)iga.CurrentMoney;
+                }
+                if (iga.NoFail is not null)
+                {
+                    EnableAll<GameLose>(!(bool)iga.NoFail);
+                }
+                if (iga.StopSummon is not null)
+                {
+                    StopSummon = (bool)iga.StopSummon;
+                }
+                if (!InGame()) return;
+
                 if (iga.Row is not null && iga.Column is not null && iga.PlantType is not null && iga.Times is not null)
                 {
                     int id = (int)iga.PlantType;
@@ -198,7 +237,7 @@ namespace ToolMod
                             {
                                 for (int j = 0; j < Board.Instance.columnNum; j++)
                                 {
-                                    CreatePlant.Instance.SetPlant(j, i, id);
+                                    CreatePlant.Instance.SetPlant(j, i, (PlantType)id);
                                 }
                             }
                             continue;
@@ -207,7 +246,7 @@ namespace ToolMod
                         {
                             for (int j = 0; j < Board.Instance!.columnNum; j++)
                             {
-                                CreatePlant.Instance.SetPlant(c - 1, j, id);
+                                CreatePlant.Instance.SetPlant(c - 1, j, (PlantType)id);
                             }
                             continue;
                         }
@@ -215,13 +254,13 @@ namespace ToolMod
                         {
                             for (int j = 0; j < Board.Instance!.columnNum; j++)
                             {
-                                CreatePlant.Instance.SetPlant(j, r - 1, id);
+                                CreatePlant.Instance.SetPlant(j, r - 1, (PlantType)id);
                             }
                             continue;
                         }
                         if (c > 0 && r > 0 && c <= Board.Instance!.columnNum && r <= Board.Instance.rowNum)
                         {
-                            CreatePlant.Instance.SetPlant(c - 1, r - 1, id);
+                            CreatePlant.Instance.SetPlant(c - 1, r - 1, (PlantType)id);
                         }
                         continue;
                     }
@@ -246,11 +285,11 @@ namespace ToolMod
                                 {
                                     if (!(bool)iga.SummonMindControlledZombies)
                                     {
-                                        CreateZombie.Instance.SetZombie(i, id, -5f + (j) * 1.37f);
+                                        CreateZombie.Instance.SetZombie(i, (ZombieType)id, -5f + (j) * 1.37f);
                                     }
                                     else
                                     {
-                                        CreateZombie.Instance.SetZombieWithMindControl(i, id, -5f + (j) * 1.37f);
+                                        CreateZombie.Instance.SetZombieWithMindControl(i, (ZombieType)id, -5f + (j) * 1.37f);
                                     }
                                 }
                             }
@@ -262,11 +301,11 @@ namespace ToolMod
                             {
                                 if (!(bool)iga.SummonMindControlledZombies)
                                 {
-                                    CreateZombie.Instance.SetZombie(j, id, -5f + (c - 1) * 1.37f);
+                                    CreateZombie.Instance.SetZombie(j, (ZombieType)id, -5f + (c - 1) * 1.37f);
                                 }
                                 else
                                 {
-                                    CreateZombie.Instance.SetZombieWithMindControl(j, id, -5f + (c - 1) * 1.37f);
+                                    CreateZombie.Instance.SetZombieWithMindControl(j, (ZombieType)id, -5f + (c - 1) * 1.37f);
                                 }
                             }
                             continue;
@@ -277,11 +316,11 @@ namespace ToolMod
                             {
                                 if (!(bool)iga.SummonMindControlledZombies)
                                 {
-                                    CreateZombie.Instance.SetZombie(r - 1, id, -5f + (j) * 1.37f);
+                                    CreateZombie.Instance.SetZombie(r - 1, (ZombieType)id, -5f + (j) * 1.37f);
                                 }
                                 else
                                 {
-                                    CreateZombie.Instance.SetZombieWithMindControl(r - 1, id, -5f + (j) * 1.37f);
+                                    CreateZombie.Instance.SetZombieWithMindControl(r - 1, (ZombieType)id, -5f + (j) * 1.37f);
                                 }
                             }
                             continue;
@@ -290,11 +329,11 @@ namespace ToolMod
                         {
                             if (!(bool)iga.SummonMindControlledZombies)
                             {
-                                CreateZombie.Instance.SetZombie(r - 1, id, -5f + (c - 1) * 1.37f);
+                                CreateZombie.Instance.SetZombie(r - 1, (ZombieType)id, -5f + (c - 1) * 1.37f);
                             }
                             else
                             {
-                                CreateZombie.Instance.SetZombieWithMindControl(r - 1, id, -5f + (c - 1) * 1.37f);
+                                CreateZombie.Instance.SetZombieWithMindControl(r - 1, (ZombieType)id, -5f + (c - 1) * 1.37f);
                             }
                             continue;
                         }
@@ -324,18 +363,7 @@ namespace ToolMod
                 {
                     Board.Instance.theMoney = (int)iga.CurrentMoney;
                 }
-                if (iga.LockSun is not null
-                  && iga.CurrentSun is not null)
-                {
-                    LockSun = (bool)iga.LockSun;
-                    LockSunCount = (int)iga.CurrentSun;
-                }
-                if (iga.LockMoney is not null
-                  && iga.CurrentMoney is not null)
-                {
-                    LockMoney = (bool)iga.LockMoney;
-                    LockMoneyCount = (int)iga.CurrentMoney;
-                }
+
                 if (iga.ClearAllPlants is not null)
                 {
                     for (int i = Board.Instance.plantArray.Count - 1; i >= 0; i--)
@@ -367,7 +395,15 @@ namespace ToolMod
                 }
                 if (iga.MindControlAllZombies is not null)
                 {
-                    Board.Instance.zombieArray?.ForEach((Il2CppSystem.Action<Zombie>)(zombie => zombie?.SetMindControl()));
+                    Il2CppReferenceArray<UnityEngine.Object> zombies = FindObjectsOfTypeAll(Il2CppType.Of<Zombie>());
+                    for (int i = zombies.Count - 1; i >= 0; i--)
+                    {
+                        try { ((Zombie)zombies[i])?.SetMindControl(); } catch { }
+                    }
+                    for (int j = Board.Instance.zombieArray.Count; j >= 0; j--)
+                    {
+                        try { (Board.Instance.zombieArray[j])?.SetMindControl(); } catch { }
+                    }
                 }
                 if (iga.Win is not null)
                 {
@@ -401,25 +437,10 @@ namespace ToolMod
                         Board.Instance.iceRoadFadeTime[i] = 0f;
                     }
                 }
-                if (iga.NoFail is not null)
-                {
-                    EnableAll<GameLose>(!(bool)iga.NoFail);
-                }
-                if (iga.StopSummon is not null)
-                {
-                    StopSummon = (bool)iga.StopSummon;
-                }
+
                 if (iga.NextWave is not null)
                 {
                     Board.Instance.newZombieWaveCountDown = 0;
-                }
-                if (iga.ZombieSeaEnabled is not null
-                  && iga.ZombieSeaCD is not null
-                  && iga.ZombieSeaTypes is not null)
-                {
-                    ZombieSea = (bool)iga.ZombieSeaEnabled;
-                    ZombieSeaCD = (int)iga.ZombieSeaCD;
-                    SeaTypes = iga.ZombieSeaTypes;
                 }
                 if (iga.WriteField is not null
                     && iga.ClearOnWritingField is not null)
@@ -440,9 +461,9 @@ namespace ToolMod
 
                             foreach (var plant in plants)
                             {
-                                var pl = CreatePlant.Instance.SetPlant(plant.Column, plant.Row, plant.ID);
+                                var pl = CreatePlant.Instance.SetPlant(plant.Column, plant.Row, (PlantType)plant.ID);
                                 if (pl is null) continue;
-                                if (pl.GetComponent<Plant>().isLily) pl.GetComponent<Plant>().theLilyType = plant.LilyType;
+                                if (pl.GetComponent<Plant>().isLily) pl.GetComponent<Plant>().theLilyType = (PlantType)plant.LilyType;
                             }
                         }
                     }
@@ -460,19 +481,19 @@ namespace ToolMod
                         {
                             bases.Add(new()
                             {
-                                ID = plant.thePlantType,
+                                ID = (int)plant.thePlantType,
                                 Row = plant.thePlantRow,
                                 Column = plant.thePlantColumn,
-                                LilyType = plant.theLilyType
+                                LilyType = (int)plant.theLilyType
                             });
                             continue;
                         }
                         plants.Add(new()
                         {
-                            ID = plant.thePlantType,
+                            ID = (int)plant.thePlantType,
                             Row = plant.thePlantRow,
                             Column = plant.thePlantColumn,
-                            LilyType = plant.theLilyType
+                            LilyType = (int)plant.theLilyType
                         });
                     }
                     bases.AddRange(plants);
@@ -484,7 +505,7 @@ namespace ToolMod
                 if (iga.Card is not null
                   && iga.PlantType is not null)
                 {
-                    Lawnf.SetDroppedCard(new(0f, 0f), (int)iga.PlantType).GameObject().transform.SetParent(GameObject.Find("InGameUIFHD").transform);
+                    Lawnf.SetDroppedCard(new(0f, 0f), (PlantType)iga.PlantType).GameObject().transform.SetParent(GameObject.Find("InGameUIFHD").transform);
                 }
                 if (iga.ReadZombies is not null)
                 {
@@ -495,7 +516,7 @@ namespace ToolMod
                         {
                             zombies.Add(new()
                             {
-                                ID = zombie.theZombieType,
+                                ID = (int)zombie.theZombieType,
                                 X = zombie.gameObject.transform.position.x,
                                 Row = zombie.theZombieRow
                             });
@@ -525,7 +546,7 @@ namespace ToolMod
                             }
                             foreach (var z in fieldZombies)
                             {
-                                CreateZombie.Instance.SetZombie(z.Row, z.ID, z.X);
+                                CreateZombie.Instance.SetZombie(z.Row, (ZombieType)z.ID, z.X);
                             }
                         }
                     }
@@ -613,7 +634,6 @@ namespace ToolMod
                         }
                     case 6:
                         {
-                            if (!InGame()) break;
                             ProcessData(JsonSerializer.Deserialize<InGameActions>(json));
                             break;
                         }

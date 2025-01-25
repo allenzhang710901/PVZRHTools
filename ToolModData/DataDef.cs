@@ -151,6 +151,7 @@
     {
         public string[] AdvBuffs { get; set; }
         public Dictionary<int, string> Bullets { get; set; }
+        public string[] Debuffs { get; set; }
         public Dictionary<int, string> FirstArmors { get; set; }
         public Dictionary<int, string> Plants { get; set; }
         public Dictionary<int, string> SecondArmors { get; set; }
@@ -188,6 +189,8 @@
     {
         public List<bool>? AdvInGame { get; set; }
         public List<bool>? AdvTravelBuff { get; set; }
+        public List<bool>? Debuffs { get; set; }
+        public List<bool>? DebuffsInGame { get; set; }
         public readonly int ID => 4;
         public List<bool>? UltiInGame { get; set; }
         public List<bool>? UltiTravelBuff { get; set; }
@@ -220,6 +223,6 @@
     public static class Modifier
     {
         public static string CommandLineToken => "PVZRHTools";
-        public static bool Dev => true;
+        public static bool Dev => false;
     }
 }

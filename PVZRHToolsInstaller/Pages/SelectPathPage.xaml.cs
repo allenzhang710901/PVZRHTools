@@ -78,7 +78,7 @@ namespace PVZRHToolsInstaller.Pages
                 NextStep.IsEnabled = false;
                 ErrorMessage.Content = "错误：不要选取安装过修改器/BepInEx/MelonLoader的游戏！";
             }
-            else if (hashCode != "43F84511DF2B9BB169BE52ED49A41CF3EBCA5E0F336636C8107B4FA20B822469")
+            else if (hashCode != "90CA592E94E8528D200C8ABDB803A1B58CDE0CF02C985568B75885C036BF664E")
             {
                 NextStep.IsEnabled = false;
                 ErrorMessage.Content = "错误：游戏版本错误！请使用融2.2版本的游戏！";

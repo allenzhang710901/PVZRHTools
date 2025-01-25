@@ -8,7 +8,6 @@ using ToolModData;
 using Unity.VisualScripting;
 using UnityEngine;
 using static ToolMod.PatchConfig;
-using System.Linq;
 
 namespace ToolMod
 {
@@ -18,11 +17,13 @@ namespace ToolMod
         public static void Postfix()
         {
             var t = Board.Instance.boardTag;
+            originalTravel = t.enableTravelPlant;
             t.isScaredyDream |= PatchConfig.GameModes.ScaredyDream;
             t.isColumn |= PatchConfig.GameModes.ColumnPlanting;
             t.isSeedRain |= PatchConfig.GameModes.SeedRain;
             t.isShooting |= PatchConfig.GameModes.IsShooting();
             t.isExchange |= PatchConfig.GameModes.Exchange;
+            t.enableTravelPlant |= UnlockAllFusions;
             Board.Instance.boardTag = t;
         }
 
@@ -95,11 +96,19 @@ namespace ToolMod
     [HarmonyPatch(typeof(CreateBullet), "SetBullet")]
     public static class CreateBulletPatch
     {
+        public static void Postfix(Bullet __result)
+        {
+            if (BulletDamage[(BulletType)__result.theBulletType] >= 0)
+            {
+                __result.theBulletDamage = BulletDamage[(BulletType)__result.theBulletType];
+            }
+        }
+
         public static void Prefix(ref int theBulletType)
         {
             if (LockBulletType == -1)
             {
-                theBulletType = (int)Enum.GetValues<CreateBullet.BulletType>()[UnityEngine.Random.Range(0, Enum.GetValues<CreateBullet.BulletType>().Length)];
+                theBulletType = (int)Enum.GetValues<BulletType>()[UnityEngine.Random.Range(0, Enum.GetValues<BulletType>().Length)];
             }
             if (LockBulletType >= 0)
             {
@@ -108,6 +117,7 @@ namespace ToolMod
         }
     }
 
+    /*
     [HarmonyPatch(typeof(CreatePlant), "Lim")]
     public static class CreatePlantPatchA
     {
@@ -119,6 +129,7 @@ namespace ToolMod
     {
         public static void Postfix(ref bool __result) => __result = !UnlockAllFusions && __result;
     }
+    */
 
     [HarmonyPatch(typeof(CreatePlant), "SetPlant")]
     public static class CreatePlantPatchC
@@ -137,11 +148,12 @@ namespace ToolMod
             }
         }
 
-        public static void Prefix(ref int theZombieType)
+        public static void Prefix(ref ZombieType theZombieType)
         {
             if (GargantuarPatch.Flag)
             {
-                theZombieType = ImpToBeThrown;
+                theZombieType = (ZombieType)ImpToBeThrown;
+                MLogger.Msg(theZombieType.ToString());
             }
         }
     }
@@ -239,10 +251,10 @@ namespace ToolMod
         }
     }
 
-    [HarmonyPatch(typeof(GridItem), "CreateGridItem")]
+    [HarmonyPatch(typeof(GridItem), "SetGridItem")]
     public static class GridItemPatch
     {
-        public static bool Prefix(ref int theType) => theType >= 3 || !NoHole;
+        public static bool Prefix(ref GridItemType theType) => (int)theType >= 3 || !NoHole;
     }
 
     [HarmonyPatch(typeof(HammerMgr), "Update")]
@@ -326,7 +338,13 @@ namespace ToolMod
                 TimeStop = false;
                 Time.timeScale = TimeSlow ? 0.2f : SyncSpeed;
             }
+            if (__instance.buttonNumber == 13)
+            {
+                BottomEnabled = GameObject.Find("InGameUIFHD").GetComponent<InGameUIMgr>().Bottom.active;
+            }
         }
+
+        public static bool BottomEnabled { get; set; } = false;
     }
 
     [HarmonyPatch(typeof(InGameText), "EnableText")]
@@ -334,7 +352,6 @@ namespace ToolMod
     {
         public static void Postfix()
         {
-            //游戏->修改窗口
             for (int i = 0; i < InGameAdvBuffs.Length; i++)
             {
                 if (InGameAdvBuffs[i] != GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().advancedUpgrades[i])
@@ -415,11 +432,11 @@ namespace ToolMod
         public static void Postfix()
         {
             GameAPP.gameAPP.GetOrAddComponent<TravelMgr>();
-            InGameAdvBuffs = new bool[34];
-            InGameUltiBuffs = new bool[20];
+            InGameAdvBuffs = new bool[TravelMgr.advancedBuffs.Count];
+            InGameUltiBuffs = new bool[TravelMgr.ultimateBuffs.Count];
+            InGameDebuffs = new bool[TravelMgr.debuffs.Count];
             Board.Instance.freeCD = FreeCD;
             var advs = GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().advancedUpgrades;
-
             for (int i = 0; i < advs.Count; i++)
             {
                 if (GameAPP.theBoardType == 3 && Board.Instance.theCurrentSurvivalRound != 1) break;
@@ -431,8 +448,15 @@ namespace ToolMod
                 if (GameAPP.theBoardType == 3 && Board.Instance.theCurrentSurvivalRound != 1) break;
                 ultis[i] = UltiBuffs[i] || ultis[i];
             }
+            var deb = GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().debuff;
+            for (int i = 0; i < deb.Count; i++)
+            {
+                if (GameAPP.theBoardType == 3 && Board.Instance.theCurrentSurvivalRound != 1) break;
+                deb[i] = Debuffs[i] || deb[i];
+            }
             InGameAdvBuffs = GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().advancedUpgrades;
             InGameUltiBuffs = GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().ultimateUpgrades;
+            InGameDebuffs = GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().debuff;
             ChangeCard();
             SyncInGameBuffs();
         }
@@ -485,6 +509,20 @@ namespace ToolMod
         }
     }
 
+    [HarmonyPatch(typeof(Plant), "Start")]
+    public static class PlantPatchA
+    {
+        public static void Postfix(Plant __instance)
+        {
+            if (HealthPlants[(PlantType)__instance.thePlantType] >= 0 && __instance.thePlantMaxHealth != HealthPlants[(PlantType)__instance.thePlantType])
+            {
+                __instance.thePlantMaxHealth = HealthPlants[(PlantType)__instance.thePlantType];
+                __instance.thePlantHealth = __instance.thePlantMaxHealth;
+                __instance.UpdateHealthText();
+            }
+        }
+    }
+
     [HarmonyPatch(typeof(Plant), "PlantShootUpdate")]
     public static class PlantPatchB
     {
@@ -512,21 +550,22 @@ namespace ToolMod
         }
     }
 
-    [HarmonyPatch(typeof(Plant), "Awake")]
+    [HarmonyPatch(typeof(Plant), "Update")]
     public static class PlantPatchD
     {
         public static void Postfix(Plant __instance)
         {
-            if (__instance.TryCast<CobCannon>() && CobCannonNoCD
+            if (__instance.TryCast<CobCannon>() is not null && CobCannonNoCD
                 && __instance.attributeCountdown > 0.1f)
             {
                 __instance.attributeCountdown = 0.1f;
-            }
+            }/*
             if (HealthPlants[(MixData.PlantType)__instance.thePlantType] >= 0 && __instance.thePlantMaxHealth != HealthPlants[(MixData.PlantType)__instance.thePlantType])
             {
                 __instance.thePlantMaxHealth = HealthPlants[(MixData.PlantType)__instance.thePlantType];
+                if (__instance.thePlantHealth >= __instance.thePlantMaxHealth) __instance.thePlantHealth = __instance.thePlantMaxHealth;
                 __instance.UpdateHealthText();
-            }
+            }*/
         }
     }
 
@@ -561,11 +600,11 @@ namespace ToolMod
 
             if (LockPresent >= 0)
             {
-                CreatePlant.Instance.SetPlant(__instance.thePlantColumn, __instance.thePlantRow, LockPresent);
-                if (CreatePlant.Instance.IsPuff(LockPresent))
+                CreatePlant.Instance.SetPlant(__instance.thePlantColumn, __instance.thePlantRow, (PlantType)LockPresent);
+                if (CreatePlant.Instance.IsPuff((PlantType)LockPresent))
                 {
-                    CreatePlant.Instance.SetPlant(__instance.thePlantColumn, __instance.thePlantRow, LockPresent);
-                    CreatePlant.Instance.SetPlant(__instance.thePlantColumn, __instance.thePlantRow, LockPresent);
+                    CreatePlant.Instance.SetPlant(__instance.thePlantColumn, __instance.thePlantRow, (PlantType)LockPresent);
+                    CreatePlant.Instance.SetPlant(__instance.thePlantColumn, __instance.thePlantRow, (PlantType)LockPresent);
                 }
 
                 return false;
@@ -584,7 +623,7 @@ namespace ToolMod
     {
         public static void Postfix(Present __instance)
         {
-            if (PresentFastOpen && __instance.thePlantType != 245) __instance.AnimEvent();
+            if (PresentFastOpen && (int)__instance.thePlantType != 245) __instance.AnimEvent();
         }
     }
 
@@ -633,11 +672,11 @@ namespace ToolMod
             {
                 if (!__instance.isMindControlled)
                 {
-                    __result = CreateZombie.Instance.SetZombie(__instance.theZombieRow, id, __instance.GameObject().transform.position.x);
+                    __result = CreateZombie.Instance.SetZombie(__instance.theZombieRow, (ZombieType)id, __instance.GameObject().transform.position.x);
                 }
                 else
                 {
-                    __result = CreateZombie.Instance.SetZombieWithMindControl(__instance.theZombieRow, id, __instance.GameObject().transform.position.x);
+                    __result = CreateZombie.Instance.SetZombieWithMindControl(__instance.theZombieRow, (ZombieType)id, __instance.GameObject().transform.position.x);
                 }
                 return false;
             }
@@ -676,22 +715,25 @@ namespace ToolMod
         }
     }
 
-    [HarmonyPatch(typeof(Zombie), "Awake")]
+    [HarmonyPatch(typeof(Zombie), "Start")]
     public static class ZombiePatch
     {
         public static void Postfix(Zombie __instance)
         {
-            if (HealthZombies[(ZombietType)__instance.theZombieType] >= 0 && __instance.theMaxHealth != HealthZombies[(ZombietType)__instance.theZombieType])
+            if (HealthZombies[(ZombieType)__instance.theZombieType] >= 0)
             {
-                __instance.theMaxHealth = HealthZombies[(ZombietType)__instance.theZombieType];
+                __instance.theMaxHealth = HealthZombies[(ZombieType)__instance.theZombieType];
+                __instance.theHealth = __instance.theMaxHealth;
             }
             if (Health1st[__instance.theFirstArmorType] >= 0 && __instance.theMaxHealth != Health1st[__instance.theFirstArmorType])
             {
                 __instance.theFirstArmorMaxHealth = Health1st[__instance.theFirstArmorType];
+                __instance.theFirstArmorHealth = __instance.theFirstArmorMaxHealth;
             }
             if (Health2nd[__instance.theSecondArmorType] >= 0 && __instance.theMaxHealth != Health2nd[__instance.theSecondArmorType])
             {
                 __instance.theSecondArmorMaxHealth = Health2nd[__instance.theSecondArmorType];
+                __instance.theSecondArmorHealth = __instance.theSecondArmorMaxHealth;
             }
             __instance.UpdateHealthText();
         }
@@ -724,7 +766,7 @@ namespace ToolMod
             {
                 Card.fullCD = OriginalCD;
             }
-            Lawnf.ChangeCardSprite(Card.theSeedType, Card.gameObject);
+            Lawnf.ChangeCardSprite((PlantType)Card.theSeedType, Card.gameObject);
         }
 
         public void Resume() => ChangeCard(-1, -1, -1);
@@ -769,11 +811,11 @@ namespace ToolMod
     {
         static PatchConfig()
         {
-            foreach (var p in Enum.GetValues<MixData.PlantType>())
+            foreach (var p in Enum.GetValues<PlantType>())
             {
                 HealthPlants.Add(p, -1);
             }
-            foreach (var z in Enum.GetValues<ZombietType>())
+            foreach (var z in Enum.GetValues<ZombieType>())
             {
                 HealthZombies.Add(z, -1);
             }
@@ -785,7 +827,7 @@ namespace ToolMod
             {
                 Health2nd.Add(s, -1);
             }
-            foreach (var b in Enum.GetValues<CreateBullet.BulletType>())
+            foreach (var b in Enum.GetValues<BulletType>())
             {
                 BulletDamage.Add(b, -1);
             }
@@ -825,7 +867,8 @@ namespace ToolMod
             DataSync.Instance.Value.SendData(new SyncTravelBuff()
             {
                 AdvInGame = [.. GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().advancedUpgrades!],
-                UltiInGame = [.. GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().ultimateUpgrades!]
+                UltiInGame = [.. GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().ultimateUpgrades!],
+                DebuffsInGame = [.. GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().debuff!]
             });
         }
 
@@ -852,13 +895,14 @@ namespace ToolMod
                     {
                         Time.timeScale = SyncSpeed;
                     }
-                    if (TimeStop && !TimeSlow)
-                    {
-                        Time.timeScale = 0;
-                    }
+
                     if (!TimeStop && TimeSlow)
                     {
                         Time.timeScale = 0.2f;
+                    }
+                    if (InGameBtnPatch.BottomEnabled || (TimeStop && !TimeSlow))
+                    {
+                        Time.timeScale = 0;
                     }
                     if (GameModes.Shooting1)
                     {
@@ -876,6 +920,9 @@ namespace ToolMod
                     {
                         GameAPP.theBoardLevel = 88;
                     }
+                    var t = Board.Instance.boardTag;
+                    t.enableTravelPlant = t.enableTravelPlant || UnlockAllFusions;
+                    Board.Instance.boardTag = t;
                 }
                 catch (NullReferenceException) { }
             if (!InGame()) return;
@@ -906,7 +953,7 @@ namespace ToolMod
                         if (j < 0) continue;
                         for (int i = 0; i < Board.Instance.rowNum; i++)
                         {
-                            CreateZombie.Instance.SetZombie(i, j);
+                            CreateZombie.Instance.SetZombie(i, (ZombieType)j);
                         }
                         seaTime = 0;
                     }
@@ -933,14 +980,19 @@ namespace ToolMod
             {
                 GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().ultimateUpgrades![i] = InGameUltiBuffs[i];
             }
+            for (int i = 0; i < GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().debuff.Count; i++)
+            {
+                GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().debuff![i] = InGameDebuffs[i];
+            }
         }
 
-        public static bool[] AdvBuffs { get; set; } = new bool[34];
-        public static Dictionary<CreateBullet.BulletType, int> BulletDamage { get; set; } = [];
+        public static bool[] AdvBuffs { get; set; } = new bool[TravelMgr.advancedBuffs.Count];
+        public static Dictionary<BulletType, int> BulletDamage { get; set; } = [];
         public static bool CardNoInit { get; set; } = false;
         public static List<ToolModData.Card> CardReplaces { get; set; } = [];
         public static bool ChomperNoCD { get; set; } = false;
         public static bool CobCannonNoCD { get; set; } = false;
+        public static bool[] Debuffs { get; set; } = new bool[TravelMgr.debuffs.Count];
         public static bool DevLour { get; set; } = false;
         public static bool FastShooting { get; set; } = false;
         public static bool FreeCD { get; set; } = false;
@@ -954,12 +1006,13 @@ namespace ToolMod
         public static bool HardPlant { get; set; } = false;
         public static Dictionary<Zombie.FirstArmorType, int> Health1st { get; set; } = [];
         public static Dictionary<Zombie.SecondArmorType, int> Health2nd { get; set; } = [];
-        public static Dictionary<MixData.PlantType, int> HealthPlants { get; set; } = [];
-        public static Dictionary<ZombietType, int> HealthZombies { get; set; } = [];
+        public static Dictionary<PlantType, int> HealthPlants { get; set; } = [];
+        public static Dictionary<ZombieType, int> HealthZombies { get; set; } = [];
         public static bool HyponoEmperorNoCD { get; set; } = false;
         public static int ImpToBeThrown { get; set; } = 37;
-        public static bool[] InGameAdvBuffs { get; set; } = new bool[34];
-        public static bool[] InGameUltiBuffs { get; set; } = new bool[20];
+        public static bool[] InGameAdvBuffs { get; set; } = new bool[TravelMgr.advancedBuffs.Count];
+        public static bool[] InGameDebuffs { get; set; } = new bool[TravelMgr.debuffs.Count];
+        public static bool[] InGameUltiBuffs { get; set; } = new bool[TravelMgr.ultimateBuffs.Count];
         public static bool ItemExistForever { get; set; } = false;
         public static bool JackboxNotExplode { get; set; } = false;
         public static int LockBulletType { get; set; } = -2;
@@ -997,13 +1050,14 @@ namespace ToolMod
         public static float SyncSpeed { get; set; } = -1;
         public static bool TimeSlow { get; set; } = false;
         public static bool TimeStop { get; set; } = false;
-        public static bool[] UltiBuffs { get; set; } = new bool[20];
+        public static bool[] UltiBuffs { get; set; } = new bool[TravelMgr.ultimateBuffs.Count];
         public static bool UltimateRamdomZombie { get; set; } = false;
         public static bool UndeadBullet { get; set; } = false;
         public static bool UnlockAllFusions { get; set; } = false;
         public static bool ZombieSea { get; set; } = false;
         public static int ZombieSeaCD { get; set; } = 40;
         internal static int originalLevel;
+        internal static bool originalTravel;
         private static int garlicDayTime = 0;
         private static int seaTime = 0;
     }

@@ -11,12 +11,17 @@
       <_SuppressWpfTrimError>true</_SuppressWpfTrimError>
       <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
       <TrimMode>partial</TrimMode>
+      <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="Pages\installLibrary.png" />
     <None Remove="PVZRHTools.7z" />
     <None Remove="PVZRHTools.zip" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="icon.ico" />
   </ItemGroup>
 
   <ItemGroup>

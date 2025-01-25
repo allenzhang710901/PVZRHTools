@@ -20,6 +20,7 @@ namespace PVZRHTools
         public bool CobCannonNoCD { get; set; }
         public double Col { get; set; }
         public bool ColumnPlanting { get; set; }
+        public List<TravelBuffVM> Debuffs { get; set; }
         public bool DeveloperMode { get; set; }
         public bool DevLour { get; set; }
         public bool Exchange { get; set; }
