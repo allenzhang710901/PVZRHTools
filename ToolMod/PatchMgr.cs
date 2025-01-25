@@ -753,6 +753,7 @@ namespace ToolMod
         public void ChangeCard(int id, int cost, float cd)
         {
             Card.theSeedType = id >= 0 ? id : OriginalID;
+            Card.thePlantType = id >= 0 ? (PlantType)id : (PlantType)OriginalID;
             Card.theSeedCost = cost >= 0 ? cost : OriginalCost;
             if (cd >= 0.01)
             {
