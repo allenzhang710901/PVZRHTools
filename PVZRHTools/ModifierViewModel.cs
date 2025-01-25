@@ -106,7 +106,7 @@ namespace PVZRHTools
 
         public void UpdateHotKey()
         {
-            GlobalHotKey.Add(CurrentKeyA, CurrentKeyB, (_, _) => Command!.Execute(null));
+            GlobalHotKey.Add(CurrentKeyA, KeyHelper.KeyToNormalKeys[CurrentKeyB], (_, _) => Command!.Execute(null));
         }
 
         public void UpdateText()

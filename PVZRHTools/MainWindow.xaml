@@ -200,9 +200,8 @@
                                         <Button x:Name="ClearAllPlants" Content="清除全部植物" Command="{Binding ClearAllPlantsCommand}" Style="{DynamicResource ButtonGroupItemHorizontalFirst}" />
                                         <Button x:Name="KillAllZombies" Content="秒杀全部僵尸" Command="{Binding KillAllZombiesCommand}" Style="{DynamicResource ButtonGroupItemDefault}" />
                                         <Button x:Name="ClearIce" Content="清除所有冰道" Command="{Binding ClearIceRoadsCommand}" Style="{DynamicResource ButtonGroupItemDefault}" />
-                                        <Button x:Name="MindCtrlAll" Content="魅惑全部僵尸" Command="{Binding MindCtrlAllCommand}" Style="{DynamicResource ButtonGroupItemDefault}" />
+                                        <Button x:Name="MindCtrlAll" Content="魅惑全部僵尸" Command="{Binding MindCtrlCommand}" Style="{DynamicResource ButtonGroupItemDefault}" />
                                         <Button x:Name="ClearAllHoles" Content="清除所有坑洞" Command="{Binding ClearAllHolesCommand}" Style="{DynamicResource ButtonGroupItemDefault}" />
-                                        <Button x:Name="Win" Content="直接过关" Command="{Binding WinCommand}" Style="{DynamicResource ButtonGroupItemHorizontalLast}" />
                                     </hc:ButtonGroup>
                                     <Button x:Name="ChangeLevelName" Content="修改关卡名称" HorizontalAlignment="Left" Height="30" Margin="12,136,0,0" VerticalAlignment="Top" Width="106" Command="{Binding LevelNameCommand}" />
                                     <TextBox x:Name="LevelName" HorizontalAlignment="Left" Margin="133,138,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="229" Height="20" Text="{Binding NewLevelName}" />
@@ -313,7 +312,7 @@
             <TabItem Header="卡槽替换">
                 <Border Background="#FF212125" Margin="0,8,0,0" BorderBrush="#FF2FA42F" BorderThickness="2,2,2,2">
                     <Grid>
-                        <Label Content="设为负数表示不修改，条目生效时无法编辑数值" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                        <Label Content="设为负数表示不修改，条目生效时无法编辑数值。由于0 : 豌豆射手替换时会引发严重问题，已被禁用，勾选后将不会生效" HorizontalAlignment="Left" VerticalAlignment="Top" />
                         <DataGrid hc:DataGridAttach.ShowRowNumber="True" VerticalScrollBarVisibility="Visible" x:Name="CardReplaces" Background="#FF1A1A1A" ItemsSource="{Binding CardReplaces}" AutoGenerateColumns="False" Margin="0,28,0,0" CanUserAddRows="False" CanUserDeleteRows="False"  CanUserResizeRows="False" CanUserSortColumns="False" CanUserResizeColumns="False" CanUserReorderColumns="False">
                             <DataGrid.Columns>
                                 <DataGridCheckBoxColumn Header="是否应用" Binding="{Binding Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">

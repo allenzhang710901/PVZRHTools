@@ -48,11 +48,17 @@
     [Serializable]
     public struct Card
     {
-        public float CD { get; set; }
-        public bool Enabled { get; set; }
-        public int ID { get; set; }
-        public int NewID { get; set; }
-        public int Sun { get; set; }
+        public Card()
+        {
+        }
+
+        public float CD { get; set; } = -1;
+        public bool Enabled { get; set; } = false;
+
+        public int ID { get; set; } = -1;
+        public int NewID { get; set; } = -1;
+
+        public int Sun { get; set; } = -1;
     }
 
     /// <summary>

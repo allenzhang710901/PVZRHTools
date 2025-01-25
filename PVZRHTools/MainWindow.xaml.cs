@@ -5,6 +5,7 @@ using System.IO;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Input;
+using System.Linq;
 
 namespace PVZRHTools
 {
@@ -57,15 +58,17 @@ namespace PVZRHTools
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
-            GlobalHotKey.Destroy();
             ViewModel.Save();
+            GlobalHotKey.Destroy();
             Application.Current.Shutdown();
         }
 
         protected override void OnSourceInitialized(EventArgs e)
         {
             GlobalHotKey.Awake();
-            foreach (var hvm in ViewModel.Hotkeys)
+            foreach (var hvm in from hvm in ViewModel.Hotkeys
+                                where hvm.CurrentKeyB != Key.None
+                                select hvm)
             {
                 hvm.UpdateHotKey();
             }

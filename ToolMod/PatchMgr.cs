@@ -7,7 +7,11 @@ using MelonLoader;
 using ToolModData;
 using Unity.VisualScripting;
 using UnityEngine;
+using static MelonLoader.MelonLogger;
 using static ToolMod.PatchConfig;
+using System.Linq;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace ToolMod
 {
@@ -45,12 +49,6 @@ namespace ToolMod
         }
     }
 
-    [HarmonyPatch(typeof(Board), "OnDestroy")]
-    public static class BoardPatchC
-    {
-        public static void Prefix() => CardUIReplacer.Replacers.Clear();
-    }
-
     [HarmonyPatch(typeof(Bucket), "Update")]
     public static class BucketPatch
     {
@@ -73,12 +71,6 @@ namespace ToolMod
             }
             return true;
         }
-    }
-
-    [HarmonyPatch(typeof(CardUI), "Awake")]
-    public static class CardUIPatch
-    {
-        public static void Postfix(CardUI __instance) => CardUIReplacer.Replacers.Add(__instance.gameObject.GetOrAddComponent<CardUIReplacer>());
     }
 
     [HarmonyPatch(typeof(Chomper), "Update")]
@@ -431,6 +423,24 @@ namespace ToolMod
     {
         public static void Postfix()
         {
+            var cs = UnityEngine.Object.FindObjectsOfTypeAll(Il2CppType.Of<CardUIReplacer>());
+            for (int i = cs.Count - 1; i >= 0; i--)
+            {
+                if (cs[i] is not null)
+                {
+                    UnityEngine.Object.Destroy(cs[i]);
+                }
+            }
+            CardUIReplacer.Replacers = [];
+            foreach (var c in UnityEngine.Object.FindObjectsOfTypeAll(Il2CppType.Of<CardUI>()))
+            {
+                if (c.GameObject().TryGetComponent<CardUIReplacer>(out var cuir))
+                {
+                    UnityEngine.Object.Destroy(cuir);
+                }
+
+                CardUIReplacer.Replacers.Add(c.GameObject().AddComponent<CardUIReplacer>());
+            }
             GameAPP.gameAPP.GetOrAddComponent<TravelMgr>();
             InGameAdvBuffs = new bool[TravelMgr.advancedBuffs.Count];
             InGameUltiBuffs = new bool[TravelMgr.ultimateBuffs.Count];
@@ -720,9 +730,9 @@ namespace ToolMod
     {
         public static void Postfix(Zombie __instance)
         {
-            if (HealthZombies[(ZombieType)__instance.theZombieType] >= 0)
+            if (HealthZombies[__instance.theZombieType] >= 0)
             {
-                __instance.theMaxHealth = HealthZombies[(ZombieType)__instance.theZombieType];
+                __instance.theMaxHealth = HealthZombies[__instance.theZombieType];
                 __instance.theHealth = __instance.theMaxHealth;
             }
             if (Health1st[__instance.theFirstArmorType] >= 0 && __instance.theMaxHealth != Health1st[__instance.theFirstArmorType])
@@ -748,12 +758,12 @@ namespace ToolMod
         {
         }
 
-        public static implicit operator int(CardUIReplacer r) => r.OriginalID;
+        //public static implicit operator int(CardUIReplacer r) => (int)r.OriginalID;
 
         public void ChangeCard(int id, int cost, float cd)
         {
-            Card.theSeedType = id >= 0 ? id : OriginalID;
-            Card.thePlantType = id >= 0 ? (PlantType)id : (PlantType)OriginalID;
+            Card.theSeedType = id >= 0 ? id : (int)OriginalID * 1;
+            Card.thePlantType = id >= 0 ? (PlantType)id : OriginalID;
             Card.theSeedCost = cost >= 0 ? cost : OriginalCost;
             if (cd >= 0.01)
             {
@@ -767,17 +777,24 @@ namespace ToolMod
             {
                 Card.fullCD = OriginalCD;
             }
-            Lawnf.ChangeCardSprite((PlantType)Card.theSeedType, Card.gameObject);
+            Lawnf.ChangeCardSprite(Card.thePlantType, Card.gameObject);
         }
 
         public void Resume() => ChangeCard(-1, -1, -1);
 
         public void Start()
         {
-            OriginalID = Card.theSeedType * 1;
+            OriginalID = (PlantType)int.Parse(((int)Card.thePlantType).ToString());
             OriginalCost = Card.theSeedCost * 1;
             OriginalCD = Card.fullCD * 1;
             //Replacers.Add(this);
+            foreach (var re in CardReplaces)
+            {
+                if (re.Enabled && re.ID != 0 && re.ID == (int)Card.thePlantType)
+                {
+                    ChangeCard(re.NewID, re.Sun, re.CD);
+                }
+            }
             GameObject obj = new("ModifierCardCD");
             var text = obj.AddComponent<TextMeshProUGUI>();
             text.font = Resources.Load<TMP_FontAsset>("Fonts/ContinuumBold SDF");
@@ -804,7 +821,7 @@ namespace ToolMod
         public CardUI Card => gameObject.GetComponent<CardUI>();
         public float OriginalCD { get; set; }
         public int OriginalCost { get; set; }
-        public int OriginalID { get; set; }
+        public PlantType OriginalID { get; set; }
     }
 
     [RegisterTypeInIl2Cpp]
@@ -846,7 +863,7 @@ namespace ToolMod
             foreach (var (c, r) in from c in CardUIReplacer.Replacers
                                    where c is not null
                                    from r in CardReplaces
-                                   where r.ID == c
+                                   where r.ID == (int)c.OriginalID && r.ID != 0
                                    select (c, r))
             {
                 if (r.Enabled)

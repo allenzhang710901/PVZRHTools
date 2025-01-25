@@ -13,10 +13,7 @@
 		<RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
 		<LangVersion>preview</LangVersion>
 		<IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
-		<PublishTrimmed>true</PublishTrimmed>
-		<_SuppressWpfTrimError>true</_SuppressWpfTrimError>
 		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-		<TrimMode>partial</TrimMode>
 		<JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
 	</PropertyGroup>
 

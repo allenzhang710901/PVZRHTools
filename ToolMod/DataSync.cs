@@ -61,6 +61,10 @@ namespace ToolMod
             {
                 Application.Quit();
             }
+            catch (NullReferenceException)
+            {
+                Application.Quit();
+            }
             catch (Exception e)
             {
                 Core.Instance.Value.LoggerInstance.Error(e);

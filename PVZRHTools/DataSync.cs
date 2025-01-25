@@ -57,6 +57,16 @@ namespace PVZRHTools
                                     }
                                     Enabled = true;
                                 }
+                                if (s.DebuffsInGame is not null)
+                                {
+                                    Enabled = false;
+                                    for (int i = 0; i < s.DebuffsInGame.Count; i++)
+                                    {
+                                        MainWindow.Instance!.ViewModel.InGameDebuffs[i].Enabled = s.DebuffsInGame[i];
+                                    }
+
+                                    Enabled = true;
+                                }
                             });
                             break;
                         }

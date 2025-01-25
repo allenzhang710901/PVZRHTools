@@ -186,7 +186,8 @@ namespace ToolMod
                 if (ca.CardReplaces is not null)
                 {
                     CardReplaces = ca.CardReplaces;
-                    ChangeCard();
+                    if (InGame())
+                        ChangeCard();
                 }
                 return;
             }
