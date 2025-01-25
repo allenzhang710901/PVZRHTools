@@ -223,6 +223,6 @@
     public static class Modifier
     {
         public static string CommandLineToken => "PVZRHTools";
-        public static bool Dev => false;
+        public static bool Dev { get; set; } = false;
     }
 }

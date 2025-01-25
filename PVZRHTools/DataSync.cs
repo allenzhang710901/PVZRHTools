@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics.Metrics;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -6,6 +7,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization.Metadata;
 using System.Windows;
+using System.Windows.Threading;
 using ToolModData;
 
 namespace PVZRHTools
@@ -63,17 +65,17 @@ namespace PVZRHTools
                             InGameActions iga = JsonSerializer.Deserialize(json, InGameActionsSGC.Default.InGameActions);
                             if (iga.WriteField is not null)
                             {
-                                Application.Current.Dispatcher.Invoke(() => Clipboard.SetDataObject(iga.WriteField));
+                                Application.Current.Dispatcher.Invoke(() => MainWindow.Instance!.ViewModel.FieldString = iga.WriteField);
                             }
                             if (iga.WriteZombies is not null)
                             {
-                                Application.Current.Dispatcher.Invoke(() => Clipboard.SetDataObject(iga.WriteZombies));
+                                Application.Current.Dispatcher.Invoke(() => MainWindow.Instance!.ViewModel.ZombieFieldString = iga.WriteZombies);
                             }
                             break;
                         }
                     case 15:
                         {
-                            Application.Current.Dispatcher.Invoke(() => ((ModifierViewModel)MainWindow.Instance!.DataContext).SyncAll());
+                            Application.Current.Dispatcher.Invoke(() => MainWindow.Instance!.ViewModel.SyncAll());
                             break;
                         }
                     case 16:

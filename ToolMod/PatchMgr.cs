@@ -667,8 +667,8 @@ namespace ToolMod
         {
             if (!UltimateRamdomZombie) return true;
             if (Board.Instance is not null && Board.Instance.isEveStarted) return true;
-            int id = UnityEngine.Random.RandomRangeInt(200, 216);
-            if (UnityEngine.Random.RandomRangeInt(0, 6) == 1)
+            int id = UnityEngine.Random.RandomRangeInt(200, 223);
+            if (UnityEngine.Random.RandomRangeInt(0, 5) == 1)
             {
                 if (!__instance.isMindControlled)
                 {
