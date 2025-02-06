@@ -3,6 +3,9 @@ using System.Windows.Controls;
 using System.Windows;
 using System.Text.Json.Serialization;
 using ToolModData;
+using System.ComponentModel;
+using System.Globalization;
+using System.Resources;
 
 namespace PVZRHTools
 {
@@ -26,16 +29,15 @@ namespace PVZRHTools
 
         public static void OnSelectedItemsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var listBox = d as ListBox;
-            if ((listBox != null) && (listBox.SelectionMode == SelectionMode.Multiple))
+            if ((d is ListBox listBox) && (listBox.SelectionMode is SelectionMode.Multiple))
             {
-                if (e.OldValue != null)
+                if (e.OldValue is not null)
                 {
                     listBox.SelectionChanged -= OnlistBoxSelectionChanged;
                 }
                 IList collection = (e.NewValue as IList)!;
                 listBox.SelectedItems.Clear();
-                if (collection != null)
+                if (collection is not null)
                 {
                     foreach (object item in collection)
                     {
@@ -85,6 +87,13 @@ namespace PVZRHTools
     [JsonSourceGenerationOptions(WriteIndented = true)]
     [JsonSerializable(typeof(InGameActions))]
     internal partial class InGameActionsSGC : JsonSerializerContext
+
+    {
+    }
+
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(InGameHotkeys))]
+    internal partial class InGameHotkeysSGC : JsonSerializerContext
 
     {
     }

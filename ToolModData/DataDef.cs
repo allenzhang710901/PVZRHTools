@@ -19,7 +19,7 @@
         public bool? DevLour { get; set; }
         public bool? FastShooting { get; set; }
         public bool? FreePlanting { get; set; }
-        public int? GameSpeed { get; set; }
+        public double? GameSpeed { get; set; }
         public bool? GarlicDay { get; set; }
         public double? GloveFullCD { get; set; }
         public bool? GloveNoCD { get; set; }
@@ -35,12 +35,12 @@
         public bool? MineNoCD { get; set; }
         public double? NewZombieUpdateCD { get; set; }
         public bool? NoHole { get; set; }
-
         public bool? NoIceRoad { get; set; }
         public bool? PlantingNoCD { get; set; }
         public bool? PresentFastOpen { get; set; }
         public bool? SuperPresent { get; set; }
         public bool? UltimateRamdomZombie { get; set; }
+        public bool? UltimateSuperGatling { get; set; }
         public bool? UndeadBullet { get; set; }
         public bool? UnlockAllFusions { get; set; }
     }
@@ -131,9 +131,11 @@
         public bool? NextWave { get; set; }
         public bool? NoFail { get; set; }
         public int? PlantType { get; set; }
+        public bool? PlantVase { get; set; }
         public bool? ReadField { get; set; }
         public bool? ReadZombies { get; set; }
         public int? Row { get; set; }
+        public bool? SetAward { get; set; }
         public string? ShowText { get; set; }
         public bool? StartMower { get; set; }
         public bool? StopSummon { get; set; }
@@ -144,8 +146,16 @@
         public string? WriteZombies { get; set; }
         public int? ZombieSeaCD { get; set; }
         public bool? ZombieSeaEnabled { get; set; }
+        public bool? ZombieSeaLowEnabled { get; set; }
         public List<int>? ZombieSeaTypes { get; set; }
         public int? ZombieType { get; set; }
+        public bool? ZombieVase { get; set; }
+    }
+
+    public struct InGameHotkeys : ISyncData
+    {
+        public readonly int ID => 3;
+        public List<int> KeyCodes { get; set; }
     }
 
     /// <summary>

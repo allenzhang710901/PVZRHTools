@@ -9,7 +9,7 @@ using System.Text.Json.Nodes;
 using ToolModData;
 using Unity.VisualScripting;
 using UnityEngine;
-using static ToolMod.PatchConfig;
+using static ToolMod.PatchMgr;
 using static ToolModData.Modifier;
 
 namespace ToolMod
@@ -36,9 +36,9 @@ namespace ToolMod
                     {
                         foreach (var pl in Board.Instance.plantArray)
                         {
-                            if (HealthPlants[(PlantType)pl.thePlantType] >= 0)
+                            if (HealthPlants[pl.thePlantType] >= 0)
                             {
-                                pl.thePlantMaxHealth = HealthPlants[(PlantType)pl.thePlantType];
+                                pl.thePlantMaxHealth = HealthPlants[pl.thePlantType];
                                 if (pl.thePlantHealth > pl.thePlantMaxHealth) pl.thePlantHealth = pl.thePlantHealth;
                                 pl.UpdateHealthText();
                             }
@@ -52,9 +52,9 @@ namespace ToolMod
                     {
                         foreach (var z in Board.Instance.zombieArray)
                         {
-                            if (HealthZombies[(ZombieType)z.theZombieType] >= 0)
+                            if (HealthZombies[z.theZombieType] >= 0)
                             {
-                                z.theMaxHealth = HealthZombies[(ZombieType)z.theZombieType];
+                                z.theMaxHealth = HealthZombies[z.theZombieType];
                                 if (z.theHealth > z.theMaxHealth) z.theHealth = z.theMaxHealth;
                             }
                             z.UpdateHealthText();
@@ -105,8 +105,8 @@ namespace ToolMod
             }
             if (data is BasicProperties p)
             {
-                if (p.DeveloperMode is not null) { GameAPP.developerMode = (bool)p.DeveloperMode; };
-                if (p.GameSpeed is not null) SyncSpeed = TickToSpeed((int)p.GameSpeed);
+                if (p.DeveloperMode is not null) GameAPP.developerMode = (bool)p.DeveloperMode;
+                if (p.GameSpeed is not null) SyncSpeed = (float)p.GameSpeed;
                 if (p.GloveNoCD is not null) GloveNoCD = (bool)p.GloveNoCD;
                 if (p.HammerNoCD is not null) HammerNoCD = (bool)p.HammerNoCD;
                 if (p.PlantingNoCD is not null && Board.Instance is not null)
@@ -147,6 +147,15 @@ namespace ToolMod
                 if (p.HammerFullCD is not null) HammerFullCD = (double)p.HammerFullCD;
                 if (p.GloveFullCD is not null) GloveFullCD = (double)p.GloveFullCD;
                 if (p.NewZombieUpdateCD is not null) NewZombieUpdateCD = (float)p.NewZombieUpdateCD;
+                if (p.UltimateSuperGatling is not null) UltimateSuperGatling = (bool)p.UltimateSuperGatling;
+                return;
+            }
+            if (data is InGameHotkeys h)
+            {
+                for (int index = 0; index < h.KeyCodes.Count; index++)
+                {
+                    Core.KeyBindings.Value[index].Value = (KeyCode)h.KeyCodes[index];
+                }
                 return;
             }
             if (data is SyncTravelBuff s)
@@ -195,11 +204,13 @@ namespace ToolMod
             {
                 if (iga.ZombieSeaEnabled is not null
                 && iga.ZombieSeaCD is not null
-                && iga.ZombieSeaTypes is not null)
+                && iga.ZombieSeaTypes is not null
+                && iga.ZombieSeaLowEnabled is not null)
                 {
                     ZombieSea = (bool)iga.ZombieSeaEnabled;
                     ZombieSeaCD = (int)iga.ZombieSeaCD;
                     SeaTypes = iga.ZombieSeaTypes;
+                    ZombieSeaLow = (bool)iga.ZombieSeaLowEnabled;
                 }
                 if (iga.LockSun is not null
                 && iga.CurrentSun is not null)
@@ -242,7 +253,8 @@ namespace ToolMod
                                 }
                             }
                             continue;
-                        };
+                        }
+                        ;
                         if (r == 0 && c != 0)
                         {
                             for (int j = 0; j < Board.Instance!.columnNum; j++)
@@ -295,7 +307,8 @@ namespace ToolMod
                                 }
                             }
                             continue;
-                        };
+                        }
+                        ;
                         if (r == 0 && c != 0)
                         {
                             for (int j = 0; j < Board.Instance.rowNum; j++)
@@ -340,6 +353,77 @@ namespace ToolMod
                         }
                     }
                 }
+                if (iga.Row is not null && iga.Column is not null && iga.PlantType is not null && iga.PlantVase is not null)
+                {
+                    int id = (int)iga.PlantType;
+                    int r = (int)iga.Row;
+                    int c = (int)iga.Column;
+                    if (r * r + c * c == 0)
+                    {
+                        for (int i = 0; i < Board.Instance!.rowNum; i++)
+                        {
+                            for (int j = 0; j < Board.Instance.columnNum; j++)
+                            {
+                                GridItem.SetGridItem(j, i, GridItemType.ScaryPot).thePlantType = (PlantType)id;
+                            }
+                        }
+                    }
+                        ;
+                    if (r == 0 && c != 0)
+                    {
+                        for (int j = 0; j < Board.Instance!.columnNum; j++)
+                        {
+                            GridItem.SetGridItem(c - 1, j, GridItemType.ScaryPot).thePlantType = (PlantType)id;
+                        }
+                    }
+                    if (c == 0 && r != 0)
+                    {
+                        for (int j = 0; j < Board.Instance!.columnNum; j++)
+                        {
+                            GridItem.SetGridItem(j, r - 1, GridItemType.ScaryPot).thePlantType = (PlantType)id;
+                        }
+                    }
+                    if (c > 0 && r > 0 && c <= Board.Instance!.columnNum && r <= Board.Instance.rowNum)
+                    {
+                        GridItem.SetGridItem(c - 1, r - 1, GridItemType.ScaryPot).thePlantType = (PlantType)id;
+                    }
+                }
+                if (iga.Row is not null && iga.Column is not null && iga.ZombieType is not null && iga.ZombieVase is not null)
+                {
+                    int id = (int)iga.ZombieType;
+                    int r = (int)iga.Row;
+                    int c = (int)iga.Column;
+                    if (r * r + c * c == 0)
+                    {
+                        for (int i = 0; i < Board.Instance!.rowNum; i++)
+                        {
+                            for (int j = 0; j < Board.Instance.columnNum; j++)
+                            {
+                                GridItem.SetGridItem(j, i, GridItemType.ScaryPot).theZombieType = (ZombieType)id;
+                            }
+                        }
+                    }
+                        ;
+                    if (r == 0 && c != 0)
+                    {
+                        for (int j = 0; j < Board.Instance!.columnNum; j++)
+                        {
+                            GridItem.SetGridItem(c - 1, j, GridItemType.ScaryPot).theZombieType = (ZombieType)id;
+                        }
+                    }
+                    if (c == 0 && r != 0)
+                    {
+                        for (int j = 0; j < Board.Instance!.columnNum; j++)
+                        {
+                            GridItem.SetGridItem(j, r - 1, GridItemType.ScaryPot).theZombieType = (ZombieType)id;
+                        }
+                    }
+                    if (c > 0 && r > 0 && c <= Board.Instance!.columnNum && r <= Board.Instance.rowNum)
+                    {
+                        GridItem.SetGridItem(c - 1, r - 1, GridItemType.ScaryPot).theZombieType = (ZombieType)id;
+                    }
+                }
+
                 if (iga.ItemType is not null)
                 {
                     Instantiate(Items[(int)iga.ItemType]).transform.SetParent(GameAPP.board.transform);
@@ -416,12 +500,12 @@ namespace ToolMod
                     var uimgr = GameObject.Find("InGameUIFHD").GetComponent<InGameUIMgr>();
                     uimgr.ChangeString(new([
                         uimgr.LevelName1.GetComponent<TextMeshProUGUI>(),
-                                    uimgr.LevelName2.GetComponent<TextMeshProUGUI>(),
-                                    uimgr.LevelName3.GetComponent<TextMeshProUGUI>(),
-                                    uimgr.LevelName1.transform.GetChild(0).GameObject().GetComponent<TextMeshProUGUI>(),
-                                    uimgr.LevelName2.transform.GetChild(0).GameObject().GetComponent<TextMeshProUGUI>(),
-                                    uimgr.LevelName3.transform.GetChild(0).GameObject().GetComponent<TextMeshProUGUI>(),
-                                    ]), iga.ChangeLevelName);
+                        uimgr.LevelName2.GetComponent<TextMeshProUGUI>(),
+                        uimgr.LevelName3.GetComponent<TextMeshProUGUI>(),
+                        uimgr.LevelName1.transform.GetChild(0).GameObject().GetComponent<TextMeshProUGUI>(),
+                        uimgr.LevelName2.transform.GetChild(0).GameObject().GetComponent<TextMeshProUGUI>(),
+                        uimgr.LevelName3.transform.GetChild(0).GameObject().GetComponent<TextMeshProUGUI>(),
+                        ]), iga.ChangeLevelName);
                 }
                 if (iga.ShowText is not null)
                 {
@@ -443,10 +527,12 @@ namespace ToolMod
                 {
                     Board.Instance.newZombieWaveCountDown = 0;
                 }
+                //感谢@高数带我飞(Github:https://github.com/LibraHp/)的植物阵容码导出和解码代码
+                //现在此修改器和高数带我飞的修改器植物阵容码可以互通了
                 if (iga.WriteField is not null
                     && iga.ClearOnWritingField is not null)
                 {
-                    try
+                    /*try
                     {
                         var plants = JsonSerializer.Deserialize<List<PlantInfo>>(iga.WriteField);
                         if (plants is not null)
@@ -469,11 +555,39 @@ namespace ToolMod
                         }
                     }
                     catch (JsonException) { MLogger.Error("布阵代码存在错误！"); }
-                    catch (NotSupportedException) { MLogger.Error("布阵代码存在错误！"); }
+                    catch (NotSupportedException) { MLogger.Error("布阵代码存在错误！"); }*/
+                    if ((bool)iga.ClearOnWritingField)
+                    {
+                        for (int i = Board.Instance.plantArray.Count - 1; i >= 0; i--)
+                        {
+                            try
+                            {
+                                Board.Instance.plantArray[i]?.Die();
+                            }
+                            catch { }
+                        }
+                        Board.Instance.plantArray.Clear();
+                    }
+                    //from Gaoshu
+                    string lineupCode = DecompressString(iga.WriteField);
+                    string[] plantEntries = lineupCode.Split(';');
+                    foreach (string entry in plantEntries)
+                    {
+                        string[] plantData = entry.Split(',');
+                        if (plantData.Length == 3)
+                        {
+                            if (int.TryParse(plantData[0], out int column) &&
+                                int.TryParse(plantData[1], out int row) &&
+                                int.TryParse(plantData[2], out int plantType))
+                            {
+                                CreatePlant.Instance.SetPlant(column, row, (PlantType)plantType, null, default, false, true);
+                            }
+                        }
+                    }
                 }
                 if (iga.ReadField is not null)
                 {
-                    List<PlantInfo> bases = [];
+                    /*List<PlantInfo> bases = [];
                     List<PlantInfo> plants = [];
                     foreach (var plant in Board.Instance.plantArray)
                     {
@@ -501,6 +615,21 @@ namespace ToolMod
                     DataSync.Instance.Value.SendData(new InGameActions()
                     {
                         WriteField = JsonSerializer.Serialize(bases)
+                    });*/
+
+                    //from Gaoshu
+                    List<string> lineupData = [];
+                    foreach (Plant plant in Board.Instance.plantArray)
+                    {
+                        // 格式为 "行,列,类型"
+                        if (plant == null) continue;
+                        string plantData = $"{plant.thePlantColumn},{plant.thePlantRow},{(int)plant.thePlantType}";
+                        lineupData.Add(plantData);
+                    }
+                    string lineupCode = string.Join(";", lineupData);
+                    DataSync.Instance.Value.SendData(new InGameActions()
+                    {
+                        WriteField = CompressString(lineupCode)
                     });
                 }
                 if (iga.Card is not null
@@ -569,33 +698,41 @@ namespace ToolMod
                 {
                     GameAPP.board.GetComponent<InitBoard>().InitMower();
                 }
+                if (iga.SetAward is not null)
+                {
+                    Lawnf.SetAward(Board.Instance, Vector2.zero);
+                }
             }
+
             if (data is GameModes ga)
             {
-                PatchConfig.GameModes = ga;
+                PatchMgr.GameModes = ga;
+
                 if (InGame())
                 {
                     originalLevel = GameAPP.theBoardLevel;
                     var t = Board.Instance.boardTag;
-                    t.isScaredyDream = PatchConfig.GameModes.ScaredyDream;
-                    t.isColumn = PatchConfig.GameModes.ColumnPlanting;
-                    t.isSeedRain = PatchConfig.GameModes.SeedRain;
-                    t.isShooting = PatchConfig.GameModes.IsShooting();
-                    t.isExchange = PatchConfig.GameModes.Exchange;
+                    t.isScaredyDream = PatchMgr.GameModes.ScaredyDream;
+                    t.isColumn = PatchMgr.GameModes.ColumnPlanting;
+                    t.isSeedRain = PatchMgr.GameModes.SeedRain;
+                    t.isShooting = PatchMgr.GameModes.IsShooting();
+                    t.isExchange = PatchMgr.GameModes.Exchange;
                     Board.Instance.boardTag = t;
-                    if (PatchConfig.GameModes.Shooting1)
+                    if (PatchMgr.GameModes.Shooting1)
                     {
                         GameAPP.theBoardLevel = 40;
                     }
-                    if (PatchConfig.GameModes.Shooting2)
+
+                    if (PatchMgr.GameModes.Shooting2)
                     {
                         GameAPP.theBoardLevel = 72;
                     }
-                    if (PatchConfig.GameModes.Shooting3)
+
+                    if (PatchMgr.GameModes.Shooting3)
                     {
                         GameAPP.theBoardLevel = 84;
                     }
-                    if (PatchConfig.GameModes.Shooting4)
+                    if (PatchMgr.GameModes.Shooting4)
                     {
                         GameAPP.theBoardLevel = 88;
                     }
@@ -621,6 +758,11 @@ namespace ToolMod
                     case 2:
                         {
                             ProcessData(JsonSerializer.Deserialize<BasicProperties>(json));
+                            break;
+                        }
+                    case 3:
+                        {
+                            ProcessData(JsonSerializer.Deserialize<InGameHotkeys>(json));
                             break;
                         }
                     case 4:
@@ -670,35 +812,6 @@ namespace ToolMod
             }
         }
 
-        public static int SpeedToTick(float scale) => scale switch
-        {
-            0 => 0,
-            0.2f => 1,
-            0.5f => 2,
-            2 => 4,
-            3 => 5,
-            4 => 6,
-            6 => 7,
-            8 => 8,
-            16 => 9,
-            _ => 3
-        };
-
-        public static float TickToSpeed(int speed) => speed switch
-        {
-            0 => 0f,
-            1 => 0.2f,
-            2 => 0.5f,
-            3 => 1f,
-            4 => 2f,
-            5 => 3f,
-            6 => 4f,
-            7 => 6f,
-            8 => 8f,
-            9 => 16f,
-            _ => 1f
-        };
-
         public void Awake() => Task.Run(() =>
         {
             Thread.Sleep(3000);
@@ -717,22 +830,19 @@ namespace ToolMod
             }
         }
 
-        protected static void EnableAll<T>(bool enabled) where T : Component
+        protected static void EnableAll<T>(bool enabled) where T : Component => _ = FindObjectsOfTypeAll(Il2CppType.Of<T>()).All((c) =>
         {
-            _ = FindObjectsOfTypeAll(Il2CppType.Of<T>()).All((c) =>
-            {
-                var v = ((c?.Cast<T>())?.gameObject.GetComponent<BoxCollider2D>());
-                var v2 = ((c?.Cast<T>())?.gameObject.GetComponent<PolygonCollider2D>());
-                if (v is not null) v.enabled = enabled;
-                if (v2 is not null) v2.enabled = enabled;
-                return true;
-            });
-        }
+            var v = ((c?.Cast<T>())?.gameObject.GetComponent<BoxCollider2D>());
+            var v2 = ((c?.Cast<T>())?.gameObject.GetComponent<PolygonCollider2D>());
+            if (v is not null) v.enabled = enabled;
+            if (v2 is not null) v2.enabled = enabled;
+            return true;
+        });
 
         public static string Data { get; set; } = "";
 
         public static List<GameObject> Items =>
-                [
+        [
             Resources.Load<GameObject>("Items/Fertilize/Ferilize"),
             Resources.Load<GameObject>("Items/Bucket"),
             Resources.Load<GameObject>("Items/Helmet"),

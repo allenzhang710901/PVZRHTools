@@ -29,9 +29,6 @@ namespace PVZRHToolsInstaller.Pages
             InitializeComponent();
         }
 
-        [GeneratedRegex(@"[\u4e00-\u9fa5]+")]
-        private static partial Regex CheckChinese();
-
         private void Close_Click(object sender, RoutedEventArgs e) => App.Current.Shutdown();
 
         private void FilePath_TextChanged(object sender, TextChangedEventArgs e)
@@ -68,20 +65,15 @@ namespace PVZRHToolsInstaller.Pages
             byte[] hashByte = sha256.ComputeHash(stream);
             stream.Close();
             var hashCode = BitConverter.ToString(hashByte).Replace("-", "");
-            if (CheckChinese().IsMatch(path))
-            {
-                NextStep.IsEnabled = false;
-                ErrorMessage.Content = "错误：运行目录含有中文！";
-            }
-            else if (Directory.Exists(folder + "\\MelonLoader") || Directory.Exists(folder + "\\BepInEx"))
+            if (Directory.Exists(folder + "\\MelonLoader") || Directory.Exists(folder + "\\BepInEx"))
             {
                 NextStep.IsEnabled = false;
                 ErrorMessage.Content = "错误：不要选取安装过修改器/BepInEx/MelonLoader的游戏！";
             }
-            else if (hashCode != "90CA592E94E8528D200C8ABDB803A1B58CDE0CF02C985568B75885C036BF664E")
+            else if (hashCode != "53DC563F4A63F4F3C337B59C2192974B211A11DF9DF5672601ECBFE1EE1A670C")
             {
                 NextStep.IsEnabled = false;
-                ErrorMessage.Content = "错误：游戏版本错误！请使用融2.2版本的游戏！";
+                ErrorMessage.Content = "错误：游戏版本错误！请使用2.2.1版本的游戏！";
             }
             else
             {

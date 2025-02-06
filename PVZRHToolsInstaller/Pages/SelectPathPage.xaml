@@ -1,23 +1,22 @@
 ﻿<Page x:Class="PVZRHToolsInstaller.Pages.SelectPathPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:PVZRHToolsInstaller.Pages"
-      mc:Ignorable="d" 
+      mc:Ignorable="d"
       Height="462" d:DesignWidth="800"
       Title="SelectPathPage">
 
     <DockPanel>
-        <Label Content="安装PVZRHTools by b站@Infinite75" DockPanel.Dock="Top" Height="60" VerticalAlignment="Top" FontSize="36"/>
-        <Label Content="选择游戏本体exe来安装修改器&#xD;&#xA;要求：&#xD;&#xA;1.运行目录不含有中文&#xD;&#xA;2.使用融合版2.2版本&#xD;&#xA;3.未安装其他修改器、BepInEx或MelonLoader" DockPanel.Dock="Top" Height="191" FontSize="28" Foreground="Red" VerticalAlignment="Top"/>
+        <Label Content="安装PVZRHTools by b站@Infinite75" DockPanel.Dock="Top" Height="60" VerticalAlignment="Top" FontSize="36" />
+        <Label Content="选择游戏本体exe来安装修改器&#xD;&#xA;要求：&#xD;&#xA;1.运行目录不含有中文&#xD;&#xA;2.使用融合版2.2.1版本&#xD;&#xA;3.未安装其他修改器、BepInEx或MelonLoader" DockPanel.Dock="Top" Height="191" FontSize="28" Foreground="Red" VerticalAlignment="Top" />
         <Grid Width="800">
-            <TextBox x:Name="FilePath" HorizontalAlignment="Left" Height="34" Margin="34,30,0,0" TextWrapping="Wrap" Text="{Binding SelectedFilePath}" VerticalAlignment="Top" Width="589" FontSize="22" TextChanged="FilePath_TextChanged"/>
-            <Button x:Name="SelectFile" Content="选择文件..." Margin="628,30,34,147" Click="SelectFile_Click"/>
-            <Label x:Name="ErrorMessage" Margin="0,89,0,67" Foreground="Red" FontSize="28"/>
-            <Button x:Name="NextStep" Content="下一步" Margin="472,157,190,20" Click="NextStep_Click" FontSize="16" IsEnabled="False"/>
-            <Button x:Name="Close" Content="关闭" Margin="628,157,34,20" Click="Close_Click" FontSize="16"/>
+            <TextBox x:Name="FilePath" HorizontalAlignment="Left" Height="34" Margin="34,30,0,0" TextWrapping="Wrap" Text="{Binding SelectedFilePath}" VerticalAlignment="Top" Width="589" FontSize="22" TextChanged="FilePath_TextChanged" />
+            <Button x:Name="SelectFile" Content="选择文件..." Margin="628,30,34,147" Click="SelectFile_Click" />
+            <Label x:Name="ErrorMessage" Margin="0,89,0,67" Foreground="Red" FontSize="28" />
+            <Button x:Name="NextStep" Content="下一步" Margin="472,157,190,20" Click="NextStep_Click" FontSize="16" IsEnabled="False" />
+            <Button x:Name="Close" Content="关闭" Margin="628,157,34,20" Click="Close_Click" FontSize="16" />
         </Grid>
-
     </DockPanel>
 </Page>

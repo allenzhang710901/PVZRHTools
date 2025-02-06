@@ -2,6 +2,7 @@
 using Il2CppTMPro;
 using MelonLoader;
 using MelonLoader.InternalUtils;
+using MelonLoader.Utils;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
@@ -10,7 +11,7 @@ using ToolModData;
 using UnityEngine;
 using static ToolModData.Modifier;
 
-[assembly: MelonInfo(typeof(ToolPlugin.Core), "ToolPlugin", "2.2-3.10", "Infinite75", null)]
+[assembly: MelonInfo(typeof(ToolPlugin.Core), "ToolPlugin", "2.2.1-3.11", "Infinite75", null)]
 [assembly: MelonGame("LanPiaoPiao", "PlantsVsZombiesRH")]
 [assembly: MelonPlatformDomain(MelonPlatformDomainAttribute.CompatibleDomains.IL2CPP)]
 
@@ -105,7 +106,7 @@ namespace ToolPlugin
             if (UnityInformationHandler.GameVersion != "2.2")
             {
                 string caption = "修改器启动错误";
-                MessageBox(0, "游戏版本错误，修改器仅支持2.2版本。你需要自行更换游戏版本。请勿向修改器作者反馈此问题，看到也不会回复。", caption, 0U);
+                MessageBox(0, "游戏版本错误，修改器仅支持2.2.1版本。你需要自行更换游戏版本。请勿向修改器作者反馈此问题，看到也不会回复。", caption, 0U);
                 Environment.Exit(0);
             }
             LoggerInstance.Msg("游戏版本2.2：Version Check OK");
@@ -123,32 +124,6 @@ namespace ToolPlugin
                 Environment.Exit(0);
             }
             LoggerInstance.Msg("PVZRHTools文件夹：Files Check OK");
-        }
-
-        public override void OnUpdate()
-        {
-            if (GameAPP.theGameStatus is 0 or 2 or 3)
-            {
-                try
-                {
-                    var slow = GameObject.Find("InGameUIFHD").GetComponent<InGameUIMgr>().SlowTrigger.transform;
-                    slow.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text = $"时停(x{Time.timeScale})";
-                    slow.GetChild(1).gameObject.GetComponent<TextMeshProUGUI>().text = $"时停(x{Time.timeScale})";
-                }
-                catch { }
-
-                if (Input.GetKeyDown(KeyCode.Tab))
-                {
-                    if (GameAPP.canvas.GetComponent<Canvas>().sortingLayerName == "Default")
-                    {
-                        GameAPP.canvas.GetComponent<Canvas>().sortingLayerName = "UI";
-                    }
-                    else
-                    {
-                        GameAPP.canvas.GetComponent<Canvas>().sortingLayerName = "Default";
-                    }
-                }
-            }
         }
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]

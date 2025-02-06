@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.Metrics;
-using System.IO;
+﻿using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -7,7 +6,6 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization.Metadata;
 using System.Windows;
-using System.Windows.Threading;
 using ToolModData;
 
 namespace PVZRHTools
@@ -117,11 +115,15 @@ namespace PVZRHTools
                     socket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, new(Receive), socket);
                 }
             }
+            catch (InvalidOperationException)
+            {
+                Application.Current.Shutdown();
+            }
             catch (SocketException)
             {
                 Application.Current.Shutdown();
             }
-            catch (ObjectDisposedException)
+            catch (NullReferenceException)
             {
                 Application.Current.Shutdown();
             }
@@ -133,14 +135,15 @@ namespace PVZRHTools
             if (!Enabled) return;
             JsonTypeInfo jti = data.ID switch
             {
-                6 => InGameActionsSGC.Default.InGameActions,
+                1 => ValuePropertiesSGC.Default.ValueProperties,
                 2 => BasicPropertiesSGC.Default.BasicProperties,
+                3 => InGameHotkeysSGC.Default.InGameHotkeys,
+                4 => SyncTravelBuffSGC.Default.SyncTravelBuff,
                 5 => CardPropertiesSGC.Default.CardProperties,
-                16 => ExitSGC.Default.Exit,
+                6 => InGameActionsSGC.Default.InGameActions,
                 7 => GameModesSGC.Default.GameModes,
                 15 => SyncAllSGC.Default.SyncAll,
-                4 => SyncTravelBuffSGC.Default.SyncTravelBuff,
-                1 => ValuePropertiesSGC.Default.ValueProperties,
+                16 => ExitSGC.Default.Exit,
                 _ => throw new InvalidOperationException()
             };
             modifierSocket.Send(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(data, jti)));

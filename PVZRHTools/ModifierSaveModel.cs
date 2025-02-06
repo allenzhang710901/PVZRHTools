@@ -74,11 +74,13 @@ namespace PVZRHTools
         public bool TopMostSprite { get; set; }
         public List<TravelBuffVM> TravelBuffs { get; set; }
         public bool UltimateRamdomZombie { get; set; }
+        public bool UltimateSuperGatling { get; set; }
         public bool UndeadBullet { get; set; }
         public bool UnlockAllFusions { get; set; }
         public string ZombieFieldString { get; set; }
         public double ZombieSeaCD { get; set; }
         public bool ZombieSeaEnabled { get; set; }
+        public bool ZombieSeaLowEnabled { get; set; }
         public List<int> ZombieSeaTypes { get; set; }
         public int ZombieType { get; set; }
     }

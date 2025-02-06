@@ -41,6 +41,7 @@
 		<PackageReference Include="FastHotKeyForWPF" Version="2.4.0" />
 		<PackageReference Include="HandyControl" Version="3.5.1" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.1" />
+		<PackageReference Include="Tommy" Version="3.1.2" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\ToolModData\ToolModData.csproj" />
@@ -55,6 +56,11 @@
 		<Resource Include="PVZRHTools\icon.png" />
 	</ItemGroup>
 	<ItemGroup>
+		<Compile Update="Lang.Designer.cs">
+		  <DesignTime>True</DesignTime>
+		  <AutoGen>True</AutoGen>
+		  <DependentUpon>Lang.resx</DependentUpon>
+		</Compile>
 		<Compile Update="Version.cs">
 			<DependentUpon>Version.tt</DependentUpon>
 			<DesignTime>True</DesignTime>
@@ -70,6 +76,12 @@
 	</ItemGroup>
 	<ItemGroup>
 		<Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+	</ItemGroup>
+	<ItemGroup>
+	  <EmbeddedResource Update="Lang.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>Lang.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
 	</ItemGroup>
 	<Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v17.0\TextTemplating\Microsoft.TextTemplating.targets" />
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">

@@ -243,12 +243,6 @@
 		<Reference Include="UnityEngine.ClothModule">
 			<HintPath>..\..\..\pvz\rhex\MelonLoader\Il2CppAssemblies\UnityEngine.ClothModule.dll</HintPath>
 		</Reference>
-		<Reference Include="UnityEngine.ClusterInputModule">
-			<HintPath>..\..\..\pvz\rhex\MelonLoader\Il2CppAssemblies\UnityEngine.ClusterInputModule.dll</HintPath>
-		</Reference>
-		<Reference Include="UnityEngine.ClusterRendererModule">
-			<HintPath>..\..\..\pvz\rhex\MelonLoader\Il2CppAssemblies\UnityEngine.ClusterRendererModule.dll</HintPath>
-		</Reference>
 		<Reference Include="UnityEngine.ContentLoadModule">
 			<HintPath>..\..\..\pvz\rhex\MelonLoader\Il2CppAssemblies\UnityEngine.ContentLoadModule.dll</HintPath>
 		</Reference>
@@ -299,9 +293,6 @@
 		</Reference>
 		<Reference Include="UnityEngine.LocalizationModule">
 			<HintPath>..\..\..\pvz\rhex\MelonLoader\Il2CppAssemblies\UnityEngine.LocalizationModule.dll</HintPath>
-		</Reference>
-		<Reference Include="UnityEngine.NVIDIAModule">
-			<HintPath>..\..\..\pvz\rhex\MelonLoader\Il2CppAssemblies\UnityEngine.NVIDIAModule.dll</HintPath>
 		</Reference>
 		<Reference Include="UnityEngine.ParticleSystemModule">
 			<HintPath>..\..\..\pvz\rhex\MelonLoader\Il2CppAssemblies\UnityEngine.ParticleSystemModule.dll</HintPath>
@@ -416,9 +407,6 @@
 		</Reference>
 		<Reference Include="UnityEngine.VideoModule">
 			<HintPath>..\..\..\pvz\rhex\MelonLoader\Il2CppAssemblies\UnityEngine.VideoModule.dll</HintPath>
-		</Reference>
-		<Reference Include="UnityEngine.VirtualTexturingModule">
-			<HintPath>..\..\..\pvz\rhex\MelonLoader\Il2CppAssemblies\UnityEngine.VirtualTexturingModule.dll</HintPath>
 		</Reference>
 		<Reference Include="UnityEngine.VRModule">
 			<HintPath>..\..\..\pvz\rhex\MelonLoader\Il2CppAssemblies\UnityEngine.VRModule.dll</HintPath>

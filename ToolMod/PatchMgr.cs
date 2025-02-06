@@ -7,14 +7,33 @@ using MelonLoader;
 using ToolModData;
 using Unity.VisualScripting;
 using UnityEngine;
-using static MelonLoader.MelonLogger;
-using static ToolMod.PatchConfig;
-using System.Linq;
-using System.Text.Json.Serialization;
-using System.Text.Json;
+using static ToolMod.PatchMgr;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.IO.Compression;
+using System.Text;
 
 namespace ToolMod
 {
+    [HarmonyPatch(typeof(AlmanacCardZombie), "OnMouseDown")]
+    public static class AlmanacCardZombiePatch
+    {
+        public static void Postfix(AlmanacCardZombie __instance) => ZombieType = __instance.theZombieType;
+
+        public static ZombieType ZombieType { get; set; } = ZombieType.Nothing;
+    }
+
+    [HarmonyPatch(typeof(AlmanacPlantCtrl), "GetSeedType")]
+    public static class AlmanacPlantCtrlPatch
+    {
+        public static void Postfix(AlmanacPlantCtrl __instance)
+        {
+            SeedType = __instance.plantSelected;
+        }
+
+        public static int SeedType { get; set; } = -1;
+    }
+
     [HarmonyPatch(typeof(Board), "Awake")]
     public static class BoardPatchA
     {
@@ -22,11 +41,11 @@ namespace ToolMod
         {
             var t = Board.Instance.boardTag;
             originalTravel = t.enableTravelPlant;
-            t.isScaredyDream |= PatchConfig.GameModes.ScaredyDream;
-            t.isColumn |= PatchConfig.GameModes.ColumnPlanting;
-            t.isSeedRain |= PatchConfig.GameModes.SeedRain;
-            t.isShooting |= PatchConfig.GameModes.IsShooting();
-            t.isExchange |= PatchConfig.GameModes.Exchange;
+            t.isScaredyDream |= PatchMgr.GameModes.ScaredyDream;
+            t.isColumn |= PatchMgr.GameModes.ColumnPlanting;
+            t.isSeedRain |= PatchMgr.GameModes.SeedRain;
+            t.isShooting |= PatchMgr.GameModes.IsShooting();
+            t.isExchange |= PatchMgr.GameModes.Exchange;
             t.enableTravelPlant |= UnlockAllFusions;
             Board.Instance.boardTag = t;
         }
@@ -55,6 +74,18 @@ namespace ToolMod
         public static void Postfix(Bucket __instance)
         {
             if (ItemExistForever) __instance.existTime = 0.1f;
+        }
+    }
+
+    [HarmonyPatch(typeof(Bullet), "Update")]
+    public static class BulletPatchA
+    {
+        public static void Postfix(Bullet __instance)
+        {
+            if (BulletDamage[(BulletType)__instance.theBulletType] >= 0 && __instance.theBulletDamage != BulletDamage[(BulletType)__instance.theBulletType])
+            {
+                __instance.theBulletDamage = BulletDamage[(BulletType)__instance.theBulletType];
+            }
         }
     }
 
@@ -108,20 +139,6 @@ namespace ToolMod
             }
         }
     }
-
-    /*
-    [HarmonyPatch(typeof(CreatePlant), "Lim")]
-    public static class CreatePlantPatchA
-    {
-        public static void Postfix(ref bool __result) => __result = !UnlockAllFusions && __result;
-    }
-
-    [HarmonyPatch(typeof(CreatePlant), "LimTravel")]
-    public static class CreatePlantPatchB
-    {
-        public static void Postfix(ref bool __result) => __result = !UnlockAllFusions && __result;
-    }
-    */
 
     [HarmonyPatch(typeof(CreatePlant), "SetPlant")]
     public static class CreatePlantPatchC
@@ -188,7 +205,7 @@ namespace ToolMod
             GameObject obj = new("Modifier");
             UnityEngine.Object.DontDestroyOnLoad(obj);
             obj.AddComponent<DataProcessor>();
-            obj.AddComponent<PatchConfig>();
+            obj.AddComponent<PatchMgr>();
         }
     }
 
@@ -313,9 +330,13 @@ namespace ToolMod
     {
         public static bool Prefix(ImpZombie __instance)
         {
-            __instance.theStatus = ZombieStatus.Default;
-            UnityEngine.Object.DestroyImmediate(__instance);
-            return false;
+            if (ImpToBeThrown != 37)
+            {
+                __instance.theStatus = ZombieStatus.Default;
+                UnityEngine.Object.DestroyImmediate(__instance);
+                return false;
+            }
+            return true;
         }
     }
 
@@ -368,19 +389,19 @@ namespace ToolMod
     {
         public static void Postfix()
         {
-            if (PatchConfig.GameModes.Shooting1)
+            if (PatchMgr.GameModes.Shooting1)
             {
                 GameAPP.theBoardLevel = 40;
             }
-            if (PatchConfig.GameModes.Shooting2)
+            if (PatchMgr.GameModes.Shooting2)
             {
                 GameAPP.theBoardLevel = 72;
             }
-            if (PatchConfig.GameModes.Shooting3)
+            if (PatchMgr.GameModes.Shooting3)
             {
                 GameAPP.theBoardLevel = 84;
             }
-            if (PatchConfig.GameModes.Shooting4)
+            if (PatchMgr.GameModes.Shooting4)
             {
                 GameAPP.theBoardLevel = 88;
             }
@@ -395,7 +416,7 @@ namespace ToolMod
         public static void Prefix()
         {
             GameAPP.gameAPP.GetOrAddComponent<TravelMgr>();
-            if (PatchConfig.GameModes.IsShooting())
+            if (PatchMgr.GameModes.IsShooting())
             {
                 var t = Board.Instance.boardTag;
                 t.isShooting = true;
@@ -467,6 +488,18 @@ namespace ToolMod
             InGameAdvBuffs = GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().advancedUpgrades;
             InGameUltiBuffs = GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().ultimateUpgrades;
             InGameDebuffs = GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().debuff;
+            if (ZombieSeaLow && SeaTypes.Count > 0)
+            {
+                int i = 0;
+                for (int wave = 0; wave < Board.Instance.theMaxWave; wave++)
+                {
+                    for (int index = 0; index < 100; index++)
+                    {
+                        SetZombieList(index, wave, (ZombieType)SeaTypes[i]);
+                        if (++i >= SeaTypes.Count) i = 0;
+                    }
+                }
+            }
             ChangeCard();
             SyncInGameBuffs();
         }
@@ -478,28 +511,28 @@ namespace ToolMod
         public static void Prefix(ref int theLevelNumber)
         {
             originalLevel = GameAPP.theBoardLevel * 1;
-            if (PatchConfig.GameModes.IsShooting())
+            if (PatchMgr.GameModes.IsShooting())
             {
                 var t = Board.Instance.boardTag;
                 t.isShooting = true;
                 Board.Instance.boardTag = t;
             }
-            if (PatchConfig.GameModes.Shooting1)
+            if (PatchMgr.GameModes.Shooting1)
             {
                 GameAPP.theBoardLevel = 40;
                 theLevelNumber = 40;
             }
-            if (PatchConfig.GameModes.Shooting2)
+            if (PatchMgr.GameModes.Shooting2)
             {
                 GameAPP.theBoardLevel = 72;
                 theLevelNumber = 72;
             }
-            if (PatchConfig.GameModes.Shooting3)
+            if (PatchMgr.GameModes.Shooting3)
             {
                 GameAPP.theBoardLevel = 84;
                 theLevelNumber = 84;
             }
-            if (PatchConfig.GameModes.Shooting4)
+            if (PatchMgr.GameModes.Shooting4)
             {
                 GameAPP.theBoardLevel = 88;
                 theLevelNumber = 88;
@@ -524,9 +557,9 @@ namespace ToolMod
     {
         public static void Postfix(Plant __instance)
         {
-            if (HealthPlants[(PlantType)__instance.thePlantType] >= 0 && __instance.thePlantMaxHealth != HealthPlants[(PlantType)__instance.thePlantType])
+            if (HealthPlants[__instance.thePlantType] >= 0 && __instance.thePlantMaxHealth != HealthPlants[__instance.thePlantType])
             {
-                __instance.thePlantMaxHealth = HealthPlants[(PlantType)__instance.thePlantType];
+                __instance.thePlantMaxHealth = HealthPlants[__instance.thePlantType];
                 __instance.thePlantHealth = __instance.thePlantMaxHealth;
                 __instance.UpdateHealthText();
             }
@@ -708,6 +741,39 @@ namespace ToolMod
         public static bool OriginalDevMode { get; set; } = false;
     }
 
+    [HarmonyPatch(typeof(SuperSnowGatling), "Update")]
+    public static class SuperSnowGatlingPatchA
+    {
+        public static void Postfix(SuperSnowGatling __instance)
+        {
+            if (UltimateSuperGatling)
+            { __instance.timer = 0.1f; }
+        }
+    }
+
+    [HarmonyPatch(typeof(SuperSnowGatling), "AnimShoot")]
+    public static class SuperSnowGatlingPatchB
+    {
+        public static void Postfix(SuperSnowGatling __instance)
+        {
+            if (UltimateSuperGatling) { __instance.AttributeEvent(); }
+        }
+    }
+
+    /*
+    [HarmonyPatch(typeof(CreatePlant), "Lim")]
+    public static class CreatePlantPatchA
+    {
+        public static void Postfix(ref bool __result) => __result = !UnlockAllFusions && __result;
+    }
+
+    [HarmonyPatch(typeof(CreatePlant), "LimTravel")]
+    public static class CreatePlantPatchB
+    {
+        public static void Postfix(ref bool __result) => __result = !UnlockAllFusions && __result;
+    }
+    */
+
     [HarmonyPatch(typeof(UIMgr), "EnterMainMenu")]
     public static class UIMgrPatch
     {
@@ -824,10 +890,11 @@ namespace ToolMod
         public PlantType OriginalID { get; set; }
     }
 
+    // Token: 0x02000007 RID: 7
     [RegisterTypeInIl2Cpp]
-    public class PatchConfig : MonoBehaviour
+    public class PatchMgr : MonoBehaviour
     {
-        static PatchConfig()
+        static PatchMgr()
         {
             foreach (var p in Enum.GetValues<PlantType>())
             {
@@ -851,9 +918,9 @@ namespace ToolMod
             }
         }
 
-        public PatchConfig() : base(ClassInjector.DerivedConstructorPointer<PatchConfig>()) => ClassInjector.DerivedConstructorBody(this);
+        public PatchMgr() : base(ClassInjector.DerivedConstructorPointer<PatchMgr>()) => ClassInjector.DerivedConstructorBody(this);
 
-        public PatchConfig(IntPtr i) : base(i)
+        public PatchMgr(IntPtr i) : base(i)
         {
         }
 
@@ -877,7 +944,53 @@ namespace ToolMod
             }
         }
 
+        //from Gaoshu
+        public static string CompressString(string text)
+        {
+            byte[] buffer = Encoding.UTF8.GetBytes(text);
+            using var memoryStream = new MemoryStream();
+            using (var gZipStream = new GZipStream(memoryStream, CompressionMode.Compress, true))
+            {
+                gZipStream.Write(buffer, 0, buffer.Length);
+            }
+            return Convert.ToBase64String(memoryStream.ToArray());
+        }
+
+        //from Gaoshu
+        public static string DecompressString(string compressedText)
+        {
+            byte[] gZipBuffer = Convert.FromBase64String(compressedText);
+            using var memoryStream = new MemoryStream(gZipBuffer);
+            using var gZipStream = new GZipStream(memoryStream, CompressionMode.Decompress);
+            using var resultStream = new MemoryStream();
+            gZipStream.CopyTo(resultStream);
+            byte[] buffer = resultStream.ToArray();
+            return Encoding.UTF8.GetString(buffer);
+        }
+
         public static bool InGame() => Board.Instance is not null && GameAPP.theGameStatus != -2 && GameAPP.theGameStatus != -1 && GameAPP.theGameStatus != 4;
+
+        //感谢@高数带我飞(Github:https://github.com/LibraHp/)的在出怪表修改上的技术支持
+        public static unsafe void SetZombieList(int index, int wave, ZombieType value)
+        {
+            FieldInfo? fieldInfo = typeof(InitZombieList).GetField("NativeFieldInfoPtr_zombieList", BindingFlags.NonPublic | BindingFlags.Static);
+
+            if (fieldInfo is not null)
+            {
+                IntPtr nativeFieldInfoPtr = (IntPtr)fieldInfo.GetValue(null)!;
+                unsafe
+                {
+                    Unsafe.SkipInit(out IntPtr intPtr);
+                    IL2CPP.il2cpp_field_static_get_value(nativeFieldInfoPtr, &intPtr);
+                    if (intPtr == IntPtr.Zero)
+                    {
+                        return;
+                    }
+                    ZombieType* arrayData = (ZombieType*)intPtr.ToPointer();
+                    arrayData[index * 101 + wave + 9] = value;
+                }
+            }
+        }
 
         public static void SyncInGameBuffs()
         {
@@ -895,7 +1008,23 @@ namespace ToolMod
             if (GameAPP.theGameStatus is 0 or 2 or 3)
                 try
                 {
-                    if (Input.GetKeyDown(KeyCode.Alpha5) || Input.GetKeyDown(KeyCode.R))
+                    var slow = GameObject.Find("InGameUIFHD").GetComponent<InGameUIMgr>().SlowTrigger.transform;
+                    slow.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text = $"时停(x{Time.timeScale})";
+                    slow.GetChild(1).gameObject.GetComponent<TextMeshProUGUI>().text = $"时停(x{Time.timeScale})";
+
+                    if (Input.GetKeyDown(Core.KeyTopMostCardBank.Value.Value))
+                    {
+                        if (GameAPP.canvas.GetComponent<Canvas>().sortingLayerName == "Default")
+                        {
+                            GameAPP.canvas.GetComponent<Canvas>().sortingLayerName = "UI";
+                        }
+                        else
+                        {
+                            GameAPP.canvas.GetComponent<Canvas>().sortingLayerName = "Default";
+                        }
+                    }
+
+                    if (Input.GetKeyDown(Core.KeyTimeStop.Value.Value))
                     {
                         TimeStop = !TimeStop;
                         TimeSlow = false;
@@ -905,7 +1034,7 @@ namespace ToolMod
                         TimeStop = false;
                         TimeSlow = !TimeSlow;
                     }
-                    if (Input.GetKeyDown(KeyCode.BackQuote))
+                    if (Input.GetKeyDown(Core.KeyShowGameInfo.Value.Value))
                     {
                         ShowGameInfo = !ShowGameInfo;
                     }
@@ -921,6 +1050,25 @@ namespace ToolMod
                     if (InGameBtnPatch.BottomEnabled || (TimeStop && !TimeSlow))
                     {
                         Time.timeScale = 0;
+                    }
+                    if (Input.GetKeyDown(Core.KeyAlmanacCreatePlant.Value.Value) && AlmanacPlantCtrlPatch.SeedType != -1)
+                    {
+                        CreatePlant.Instance.SetPlant(Mouse.Instance.theMouseColumn, Mouse.Instance.theMouseRow, (PlantType)AlmanacPlantCtrlPatch.SeedType);
+                    }
+                    if (Input.GetKeyDown(Core.KeyAlmanacZombieMindCtrl.Value.Value))
+                    {
+                        Core.AlmanacZombieMindCtrl.Value.Value = !Core.AlmanacZombieMindCtrl.Value.Value;
+                    }
+                    if (Input.GetKeyDown(Core.KeyAlmanacCreateZombie.Value.Value) && AlmanacCardZombiePatch.ZombieType is not ZombieType.Nothing)
+                    {
+                        if (Core.AlmanacZombieMindCtrl.Value.Value)
+                        {
+                            CreateZombie.Instance.SetZombieWithMindControl(Mouse.Instance.theMouseRow, AlmanacCardZombiePatch.ZombieType, Mouse.Instance.mouseX);
+                        }
+                        else
+                        {
+                            CreateZombie.Instance.SetZombie(Mouse.Instance.theMouseRow, AlmanacCardZombiePatch.ZombieType, Mouse.Instance.mouseX);
+                        }
                     }
                     if (GameModes.Shooting1)
                     {
@@ -973,8 +1121,8 @@ namespace ToolMod
                         {
                             CreateZombie.Instance.SetZombie(i, (ZombieType)j);
                         }
-                        seaTime = 0;
                     }
+                    seaTime = 0;
                 }
             }
             if (GarlicDay && ++garlicDayTime >= 500 && GameAPP.theGameStatus == (int)GameStatus.InGame)
@@ -1005,6 +1153,7 @@ namespace ToolMod
         }
 
         public static bool[] AdvBuffs { get; set; } = new bool[TravelMgr.advancedBuffs.Count];
+        public static bool AlmanacCreate { get; set; } = false;
         public static Dictionary<BulletType, int> BulletDamage { get; set; } = [];
         public static bool CardNoInit { get; set; } = false;
         public static List<ToolModData.Card> CardReplaces { get; set; } = [];
@@ -1070,10 +1219,12 @@ namespace ToolMod
         public static bool TimeStop { get; set; } = false;
         public static bool[] UltiBuffs { get; set; } = new bool[TravelMgr.ultimateBuffs.Count];
         public static bool UltimateRamdomZombie { get; set; } = false;
+        public static bool UltimateSuperGatling { get; set; } = false;
         public static bool UndeadBullet { get; set; } = false;
         public static bool UnlockAllFusions { get; set; } = false;
         public static bool ZombieSea { get; set; } = false;
         public static int ZombieSeaCD { get; set; } = 40;
+        public static bool ZombieSeaLow { get; set; } = false;
         internal static int originalLevel;
         internal static bool originalTravel;
         private static int garlicDayTime = 0;

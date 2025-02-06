@@ -4,7 +4,7 @@ using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using ToolModData;
 using UnityEngine;
-using static ToolMod.PatchConfig;
+using static ToolMod.PatchMgr;
 
 namespace ToolMod
 {
@@ -30,7 +30,20 @@ namespace ToolMod
             SyncSpeed = Time.timeScale;
             Config = new(MelonPreferences.CreateCategory("PVZRHTools"));
             Port = new(Config.Value.CreateEntry("Port", 13531));
+            AlmanacZombieMindCtrl = new(Config.Value.CreateEntry(nameof(AlmanacZombieMindCtrl), false));
+            KeyTimeStop = new(Config.Value.CreateEntry(nameof(KeyTimeStop), KeyCode.Alpha5));
+            KeyShowGameInfo = new(Config.Value.CreateEntry(nameof(KeyShowGameInfo), KeyCode.BackQuote));
+            KeyAlmanacCreatePlant = new(Config.Value.CreateEntry(nameof(KeyAlmanacCreatePlant), KeyCode.B));
+            KeyAlmanacCreateZombie = new(Config.Value.CreateEntry(nameof(KeyAlmanacCreateZombie), KeyCode.N));
+            KeyAlmanacZombieMindCtrl = new(Config.Value.CreateEntry(nameof(KeyAlmanacZombieMindCtrl), KeyCode.LeftControl));
+            KeyTopMostCardBank = new(Config.Value.CreateEntry(nameof(KeyTopMostCardBank), KeyCode.Tab));
+            KeyBindings = new
+            ([
+                KeyTimeStop.Value,KeyTopMostCardBank.Value,KeyShowGameInfo.Value,
+                KeyAlmanacCreatePlant.Value,KeyAlmanacCreateZombie.Value,KeyAlmanacZombieMindCtrl.Value,
+            ]);
             Port.Value.Description = "修改窗口无法出现时可尝试修改此数值，范围10000~60000";
+            Config.Value.SaveToFile();
             inited = true;
         }
 
@@ -60,11 +73,19 @@ namespace ToolMod
             Update();
         }
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         internal static extern IntPtr MessageBox(int hWnd, string text, string caption, uint type);
 
+        public static Lazy<MelonPreferences_Entry<bool>> AlmanacZombieMindCtrl { get; set; } = new();
         public static Lazy<MelonPreferences_Category> Config { get; set; } = new();
         public static Lazy<Core> Instance { get; set; } = new();
+        public static Lazy<MelonPreferences_Entry<KeyCode>> KeyAlmanacCreatePlant { get; set; } = new();
+        public static Lazy<MelonPreferences_Entry<KeyCode>> KeyAlmanacCreateZombie { get; set; } = new();
+        public static Lazy<MelonPreferences_Entry<KeyCode>> KeyAlmanacZombieMindCtrl { get; set; } = new();
+        public static Lazy<List<MelonPreferences_Entry<KeyCode>>> KeyBindings { get; set; } = new();
+        public static Lazy<MelonPreferences_Entry<KeyCode>> KeyShowGameInfo { get; set; } = new();
+        public static Lazy<MelonPreferences_Entry<KeyCode>> KeyTimeStop { get; set; } = new();
+        public static Lazy<MelonPreferences_Entry<KeyCode>> KeyTopMostCardBank { get; set; } = new();
         public static Lazy<MelonPreferences_Entry<int>> Port { get; set; } = new();
         public static bool inited = false;
     }
