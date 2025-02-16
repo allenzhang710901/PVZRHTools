@@ -263,7 +263,9 @@ namespace PVZRHTools
                     Text = h.Item1
                 });
             }
-            using StreamReader reader = File.OpenText("UserData/MelonPreferences.cfg");
+            InGameHotkeys = [];
+            /*
+            using StreamReader reader = File.OpenText(App.IsBepInEx ? "BepInEx/config/inf75.toolmod.cfg" : "UserData/MelonPreferences.cfg");
             TomlTable table = TOML.Parse(reader);
             InGameHotkeys = [
                 new(new("高级时停 TimeStop", Enum.Parse<KeyCode>(table["PVZRHTools"]["KeyTimeStop"].AsString.Value))),
@@ -273,7 +275,7 @@ namespace PVZRHTools
                 new(new("图鉴种植：僵尸 AlmanacCreateZombie", Enum.Parse<KeyCode>(table["PVZRHTools"]["KeyAlmanacCreateZombie"].AsString.Value))),
                 new(new("图鉴种植：僵尸是否魅惑 AlmanacZombieMindCtrl", Enum.Parse<KeyCode>(table["PVZRHTools"]["KeyAlmanacZombieMindCtrl"].AsString.Value))),
             ];
-            InGameHotkeys.ListChanged += (_, _) => SyncInGameHotkeys();
+            InGameHotkeys.ListChanged += (_, _) => SyncInGameHotkeys();*/
         }
 
         public ModifierViewModel(List<HotkeyUIVM> hotkeys) : this()
@@ -434,7 +436,9 @@ namespace PVZRHTools
                 });
                 hi++;
             }
-            using StreamReader reader = File.OpenText("UserData/MelonPreferences.cfg");
+            InGameHotkeys = [];
+            /*
+            using StreamReader reader = File.OpenText(App.IsBepInEx ? "BepInEx/config/inf75.toolmod.cfg" : "UserData/MelonPreferences.cfg");
             TomlTable table = TOML.Parse(reader);
             InGameHotkeys = [
                 new(new("高级时停 TimeStop", Enum.Parse<KeyCode>(table["PVZRHTools"]["KeyTimeStop"].AsString.Value))),
@@ -444,7 +448,7 @@ namespace PVZRHTools
                 new(new("图鉴种植：僵尸 AlmanacCreateZombie", Enum.Parse<KeyCode>(table["PVZRHTools"]["KeyAlmanacCreateZombie"].AsString.Value))),
                 new(new("图鉴种植：僵尸是否魅惑 AlmanacZombieMindCtrl", Enum.Parse<KeyCode>(table["PVZRHTools"]["KeyAlmanacZombieMindCtrl"].AsString.Value))),
             ];
-            InGameHotkeys.ListChanged += (_, _) => SyncInGameHotkeys();
+            InGameHotkeys.ListChanged += (_, _) => SyncInGameHotkeys();*/
         }
 
         #region Commands
@@ -592,6 +596,19 @@ namespace PVZRHTools
             SyncInGameBuffs();
         }
 
+        public void InitInGameHotkeys(List<int> keycodes)
+        {
+            InGameHotkeys = [
+                new(new("高级时停 TimeStop", (KeyCode)keycodes[0])),
+                new(new("卡槽栏置顶 TopMostCardBank", (KeyCode)keycodes[1])),
+                new(new("显示CD信息 ShowCDInfo", (KeyCode)keycodes[2])),
+                new(new("图鉴种植：植物 AlmanacCreatePlant", (KeyCode)keycodes[3])),
+                new(new("图鉴种植：僵尸 AlmanacCreateZombie", (KeyCode)keycodes[4])),
+                new(new("图鉴种植：僵尸是否魅惑 AlmanacZombieMindCtrl", (KeyCode)keycodes[5])),
+            ];
+            InGameHotkeys.ListChanged += (_, _) => SyncInGameHotkeys();
+        }
+
         [RelayCommand]
         public void KillAllZombies() => App.DataSync.Value.SendData(new InGameActions() { ClearAllZombies = true });
 
@@ -699,7 +716,7 @@ namespace PVZRHTools
             {
                 s.ZombieSeaTypes.AddRange(from zst in ZombieSeaTypes select zst.Key);
             }
-            File.WriteAllText("UserData/ModifierSettings.json", JsonSerializer.Serialize(s, ModifierSaveModelSGC.Default.ModifierSaveModel));
+            File.WriteAllText(App.IsBepInEx ? "BepInEx/config/inf75.toolmod.cfg" : "UserData/MelonPreferences.cfg", JsonSerializer.Serialize(s, ModifierSaveModelSGC.Default.ModifierSaveModel));
         }
 
         [RelayCommand]

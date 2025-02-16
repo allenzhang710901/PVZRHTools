@@ -73,6 +73,7 @@ namespace PVZRHTools
 
         public static InitData? InitData { get; set; }
 
+        public static bool IsBepInEx => Directory.Exists("BepInEx");
         public static bool inited = false;
     }
 }

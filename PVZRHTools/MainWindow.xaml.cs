@@ -1,7 +1,6 @@
 ﻿using FastHotKeyForWPF;
 using HandyControl.Controls;
 using HandyControl.Tools.Extension;
-using System.Globalization;
 using System.IO;
 using System.Text.Json;
 using System.Windows;
@@ -23,16 +22,16 @@ namespace PVZRHTools
             ModifierSprite = new ModifierSprite();
             Sprite.Show(ModifierSprite);
             ModifierSprite.Hide();
-            if (File.Exists("UserData/ModifierSettings.json"))
+            if (File.Exists((App.IsBepInEx ? "BepInEx/config" : "UserData") + "/ModifierSettings.json"))
             {
                 try
                 {
-                    ModifierSaveModel s = JsonSerializer.Deserialize(File.ReadAllText("UserData/ModifierSettings.json"), ModifierSaveModelSGC.Default.ModifierSaveModel);
+                    ModifierSaveModel s = JsonSerializer.Deserialize(File.ReadAllText((App.IsBepInEx ? "BepInEx/config" : "UserData") + "/ModifierSettings.json"), ModifierSaveModelSGC.Default.ModifierSaveModel);
                     DataContext = s.NeedSave ? new ModifierViewModel(s) : new ModifierViewModel(s.Hotkeys);
                 }
                 catch
                 {
-                    File.Delete("UserData/ModifierSettings.json");
+                    File.Delete((App.IsBepInEx ? "BepInEx/config" : "UserData") + "/ModifierSettings.json");
                     DataContext = new ModifierViewModel();
                 }
             }
