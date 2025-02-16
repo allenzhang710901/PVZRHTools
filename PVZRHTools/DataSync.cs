@@ -37,6 +37,12 @@ namespace PVZRHTools
                 JsonObject json = JsonNode.Parse(data)!.AsObject();
                 switch ((int)json["ID"]!)
                 {
+                    case 3:
+                        {
+                            InGameHotkeys igh = JsonSerializer.Deserialize(json, InGameHotkeysSGC.Default.InGameHotkeys);
+                            Application.Current.Dispatcher.Invoke(() => MainWindow.Instance!.ViewModel.InitInGameHotkeys(igh.KeyCodes));
+                            break;
+                        }
                     case 4:
                         {
                             SyncTravelBuff s = JsonSerializer.Deserialize(json, SyncTravelBuffSGC.Default.SyncTravelBuff);

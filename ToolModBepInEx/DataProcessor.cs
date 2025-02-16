@@ -1,20 +1,18 @@
-﻿using Il2Cpp;
-using Il2CppInterop.Runtime;
+﻿using Il2CppInterop.Runtime;
 using Il2CppInterop.Runtime.Injection;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using Il2CppTMPro;
-using MelonLoader;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using TMPro;
 using ToolModData;
 using Unity.VisualScripting;
 using UnityEngine;
-using static ToolMod.PatchMgr;
+using static ToolModBepInEx.PatchMgr;
 using static ToolModData.Modifier;
+using System.Linq;
 
-namespace ToolMod
+namespace ToolModBepInEx
 {
-    [RegisterTypeInIl2Cpp]
     public class DataProcessor : MonoBehaviour
     {
         public DataProcessor() : base(ClassInjector.DerivedConstructorPointer<DataProcessor>()) => ClassInjector.DerivedConstructorBody(this);
@@ -298,11 +296,11 @@ namespace ToolMod
                                 {
                                     if (!(bool)iga.SummonMindControlledZombies)
                                     {
-                                        CreateZombie.Instance.SetZombie(i, (ZombieType)id, -5f + (j) * 1.37f);
+                                        CreateZombie.Instance.SetZombie(i, (ZombieType)id, -5f + j * 1.37f);
                                     }
                                     else
                                     {
-                                        CreateZombie.Instance.SetZombieWithMindControl(i, (ZombieType)id, -5f + (j) * 1.37f);
+                                        CreateZombie.Instance.SetZombieWithMindControl(i, (ZombieType)id, -5f + j * 1.37f);
                                     }
                                 }
                             }
@@ -330,11 +328,11 @@ namespace ToolMod
                             {
                                 if (!(bool)iga.SummonMindControlledZombies)
                                 {
-                                    CreateZombie.Instance.SetZombie(r - 1, (ZombieType)id, -5f + (j) * 1.37f);
+                                    CreateZombie.Instance.SetZombie(r - 1, (ZombieType)id, -5f + j * 1.37f);
                                 }
                                 else
                                 {
-                                    CreateZombie.Instance.SetZombieWithMindControl(r - 1, (ZombieType)id, -5f + (j) * 1.37f);
+                                    CreateZombie.Instance.SetZombieWithMindControl(r - 1, (ZombieType)id, -5f + j * 1.37f);
                                 }
                             }
                             continue;
@@ -466,7 +464,7 @@ namespace ToolMod
                     }
                     for (int j = Board.Instance.zombieArray.Count; j >= 0; j--)
                     {
-                        try { (Board.Instance.zombieArray[j])?.Die(); } catch { }
+                        try { Board.Instance.zombieArray[j]?.Die(); } catch { }
                     }
                     Board.Instance.zombieArray.Clear();
                 }
@@ -487,7 +485,7 @@ namespace ToolMod
                     }
                     for (int j = Board.Instance.zombieArray.Count; j >= 0; j--)
                     {
-                        try { (Board.Instance.zombieArray[j])?.SetMindControl(); } catch { }
+                        try { Board.Instance.zombieArray[j]?.SetMindControl(); } catch { }
                     }
                 }
                 if (iga.Win is not null)
@@ -752,42 +750,42 @@ namespace ToolMod
                 {
                     case 1:
                         {
-                            ProcessData(JsonSerializer.Deserialize<ValueProperties>(json));
+                            ProcessData(json.Deserialize<ValueProperties>());
                             break;
                         }
                     case 2:
                         {
-                            ProcessData(JsonSerializer.Deserialize<BasicProperties>(json));
+                            ProcessData(json.Deserialize<BasicProperties>());
                             break;
                         }
                     case 3:
                         {
-                            ProcessData(JsonSerializer.Deserialize<InGameHotkeys>(json));
+                            ProcessData(json.Deserialize<InGameHotkeys>());
                             break;
                         }
                     case 4:
                         {
-                            ProcessData(JsonSerializer.Deserialize<SyncTravelBuff>(json));
+                            ProcessData(json.Deserialize<SyncTravelBuff>());
                             break;
                         }
                     case 5:
                         {
-                            ProcessData(JsonSerializer.Deserialize<CardProperties>(json));
+                            ProcessData(json.Deserialize<CardProperties>());
                             break;
                         }
                     case 6:
                         {
-                            ProcessData(JsonSerializer.Deserialize<InGameActions>(json));
+                            ProcessData(json.Deserialize<InGameActions>());
                             break;
                         }
                     case 7:
                         {
-                            ProcessData(JsonSerializer.Deserialize<GameModes>(json));
+                            ProcessData(json.Deserialize<GameModes>());
                             break;
                         }
                     case 15:
                         {
-                            SyncAll all = JsonSerializer.Deserialize<SyncAll>(json);
+                            SyncAll all = json.Deserialize<SyncAll>();
                             ProcessData((SyncTravelBuff)all.TravelBuffs!);
                             ProcessData((InGameActions)all.InGameActions!);
                             ProcessData((BasicProperties)all.BasicProperties!);
@@ -814,9 +812,10 @@ namespace ToolMod
 
         public void Awake() => Task.Run(() =>
         {
-            Thread.Sleep(3000);
-            DataSync.Instance.Value.SendData(new SyncAll());
+            Thread.Sleep(100);
             DataSync.Instance.Value.SendData(new InGameHotkeys() { KeyCodes = [.. from i in Core.KeyBindings.Value select (int)i.Value] });
+            Thread.Sleep(100);
+            DataSync.Instance.Value.SendData(new SyncAll());
         });
 
         public void Update()
@@ -833,8 +832,8 @@ namespace ToolMod
 
         protected static void EnableAll<T>(bool enabled) where T : Component => _ = FindObjectsOfTypeAll(Il2CppType.Of<T>()).All((c) =>
         {
-            var v = ((c?.Cast<T>())?.gameObject.GetComponent<BoxCollider2D>());
-            var v2 = ((c?.Cast<T>())?.gameObject.GetComponent<PolygonCollider2D>());
+            var v = (c?.Cast<T>())?.gameObject.GetComponent<BoxCollider2D>();
+            var v2 = (c?.Cast<T>())?.gameObject.GetComponent<PolygonCollider2D>();
             if (v is not null) v.enabled = enabled;
             if (v2 is not null) v2.enabled = enabled;
             return true;
