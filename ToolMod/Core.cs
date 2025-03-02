@@ -42,8 +42,10 @@ namespace ToolMod
                 KeyTimeStop.Value,KeyTopMostCardBank.Value,KeyShowGameInfo.Value,
                 KeyAlmanacCreatePlant.Value,KeyAlmanacCreateZombie.Value,KeyAlmanacZombieMindCtrl.Value,
             ]);
+
             Port.Value.Description = "修改窗口无法出现时可尝试修改此数值，范围10000~60000";
             Config.Value.SaveToFile();
+
             inited = true;
         }
 
@@ -57,10 +59,6 @@ namespace ToolMod
                     Port.Value.Value = 13531;
                 }
                 _ = DataSync.Instance.Value;
-                Task.Run(() =>
-                {
-                    Thread.Sleep(5000);
-                });
             }
             catch (Exception ex)
             {

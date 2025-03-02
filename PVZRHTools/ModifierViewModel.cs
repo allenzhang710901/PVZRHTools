@@ -7,7 +7,6 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Windows.Input;
-using Tommy;
 using ToolModData;
 
 namespace PVZRHTools
@@ -208,6 +207,7 @@ namespace PVZRHTools
             GameSpeed = 1;
             ZombieSeaCD = 40;
             ZombieSeaTypes = [];
+            ConveyBeltTypes = [];
             FieldString = "";
             ZombieFieldString = "";
             NewLevelName = "";
@@ -221,6 +221,7 @@ namespace PVZRHTools
             Debuffs = [];
             InGameDebuffs = [];
             ImpToBeThrown = 37;
+            JachsonSummonType = 7;
             Times = 1;
             NewZombieUpdateCD = 30;
 
@@ -264,18 +265,6 @@ namespace PVZRHTools
                 });
             }
             InGameHotkeys = [];
-            /*
-            using StreamReader reader = File.OpenText(App.IsBepInEx ? "BepInEx/config/inf75.toolmod.cfg" : "UserData/MelonPreferences.cfg");
-            TomlTable table = TOML.Parse(reader);
-            InGameHotkeys = [
-                new(new("高级时停 TimeStop", Enum.Parse<KeyCode>(table["PVZRHTools"]["KeyTimeStop"].AsString.Value))),
-                new(new("卡槽栏置顶 TopMostCardBank", Enum.Parse<KeyCode>(table["PVZRHTools"]["KeyTopMostCardBank"].AsString.Value))),
-                new(new("显示CD信息 ShowCDInfo", Enum.Parse<KeyCode>(table["PVZRHTools"]["KeyShowGameInfo"].AsString.Value))),
-                new(new("图鉴种植：植物 AlmanacCreatePlant", Enum.Parse<KeyCode>(table["PVZRHTools"]["KeyAlmanacCreatePlant"].AsString.Value))),
-                new(new("图鉴种植：僵尸 AlmanacCreateZombie", Enum.Parse<KeyCode>(table["PVZRHTools"]["KeyAlmanacCreateZombie"].AsString.Value))),
-                new(new("图鉴种植：僵尸是否魅惑 AlmanacZombieMindCtrl", Enum.Parse<KeyCode>(table["PVZRHTools"]["KeyAlmanacZombieMindCtrl"].AsString.Value))),
-            ];
-            InGameHotkeys.ListChanged += (_, _) => SyncInGameHotkeys();*/
         }
 
         public ModifierViewModel(List<HotkeyUIVM> hotkeys) : this()
@@ -342,6 +331,8 @@ namespace PVZRHTools
             CobCannonNoCD = s.CobCannonNoCD;
             Col = s.Col;
             ColumnPlanting = s.ColumnPlanting;
+            ConveyBeltModify = s.ConveyBeltModify;
+            ConveyBeltTypes = [.. from cbt in s.ConveyBeltTypes select new KeyValuePair<int, string>(cbt, Plants2[cbt])];
             Debuffs = [.. s.Debuffs];
             DeveloperMode = s.DeveloperMode;
             DevLour = s.DevLour;
@@ -361,6 +352,7 @@ namespace PVZRHTools
             ItemExistForever = s.ItemExistForever;
             ItemType = s.ItemType;
             JackboxNotExplode = s.JackboxNotExplode;
+            JachsonSummonType = s.JachsonSummonType;
             LockBulletType = s.LockBulletType;
             LockMoney = s.LockMoney;
             LockPresent = s.LockPresent;
@@ -404,6 +396,7 @@ namespace PVZRHTools
             GloveFullCD = s.GloveFullCD;
             GloveFullCDEnabled = s.GloveFullCDEnabled;
             NewZombieUpdateCD = s.NewZombieUpdateCD;
+            PlantUpgrade = s.PlantUpgrade;
             int bi = 0;
             foreach (var b in App.InitData.Value.AdvBuffs)
             {
@@ -437,18 +430,6 @@ namespace PVZRHTools
                 hi++;
             }
             InGameHotkeys = [];
-            /*
-            using StreamReader reader = File.OpenText(App.IsBepInEx ? "BepInEx/config/inf75.toolmod.cfg" : "UserData/MelonPreferences.cfg");
-            TomlTable table = TOML.Parse(reader);
-            InGameHotkeys = [
-                new(new("高级时停 TimeStop", Enum.Parse<KeyCode>(table["PVZRHTools"]["KeyTimeStop"].AsString.Value))),
-                new(new("卡槽栏置顶 TopMostCardBank", Enum.Parse<KeyCode>(table["PVZRHTools"]["KeyTopMostCardBank"].AsString.Value))),
-                new(new("显示CD信息 ShowCDInfo", Enum.Parse<KeyCode>(table["PVZRHTools"]["KeyShowGameInfo"].AsString.Value))),
-                new(new("图鉴种植：植物 AlmanacCreatePlant", Enum.Parse<KeyCode>(table["PVZRHTools"]["KeyAlmanacCreatePlant"].AsString.Value))),
-                new(new("图鉴种植：僵尸 AlmanacCreateZombie", Enum.Parse<KeyCode>(table["PVZRHTools"]["KeyAlmanacCreateZombie"].AsString.Value))),
-                new(new("图鉴种植：僵尸是否魅惑 AlmanacZombieMindCtrl", Enum.Parse<KeyCode>(table["PVZRHTools"]["KeyAlmanacZombieMindCtrl"].AsString.Value))),
-            ];
-            InGameHotkeys.ListChanged += (_, _) => SyncInGameHotkeys();*/
         }
 
         #region Commands
@@ -648,6 +629,8 @@ namespace PVZRHTools
                 CobCannonNoCD = CobCannonNoCD,
                 Col = Col,
                 ColumnPlanting = ColumnPlanting,
+                ConveyBeltModify = ConveyBeltModify,
+                ConveyBeltTypes = [],
                 Debuffs = [.. Debuffs],
                 DeveloperMode = DeveloperMode,
                 DevLour = DevLour,
@@ -667,6 +650,7 @@ namespace PVZRHTools
                 ItemExistForever = ItemExistForever,
                 ItemType = ItemType,
                 JackboxNotExplode = JackboxNotExplode,
+                JachsonSummonType = JachsonSummonType,
                 LockBulletType = LockBulletType,
                 LockMoney = LockMoney,
                 LockPresent = LockPresent,
@@ -711,12 +695,17 @@ namespace PVZRHTools
                 HammerFullCDEnabled = HammerFullCDEnabled,
                 Hotkeys = Hotkeys,
                 NewZombieUpdateCD = NewZombieUpdateCD,
+                PlantUpgrade = PlantUpgrade,
             };
             if (ZombieSeaTypes.Count > 0)
             {
                 s.ZombieSeaTypes.AddRange(from zst in ZombieSeaTypes select zst.Key);
             }
-            File.WriteAllText(App.IsBepInEx ? "BepInEx/config/inf75.toolmod.cfg" : "UserData/MelonPreferences.cfg", JsonSerializer.Serialize(s, ModifierSaveModelSGC.Default.ModifierSaveModel));
+            if (ConveyBeltTypes.Count > 0)
+            {
+                s.ConveyBeltTypes.AddRange(from cbt in ConveyBeltTypes select cbt.Key);
+            }
+            File.WriteAllText(App.IsBepInEx ? "BepInEx/config/ModifierSettings.json" : "UserData/ModifierSettings.json", JsonSerializer.Serialize(s, ModifierSaveModelSGC.Default.ModifierSaveModel));
         }
 
         [RelayCommand]
@@ -762,6 +751,7 @@ namespace PVZRHTools
             InGameActions iga = new()
             {
                 NoFail = NoFail,
+                ConveyBeltTypes = [.. from p in ConveyBeltTypes select p.Key],
                 StopSummon = StopSummon,
                 ZombieSeaCD = (int)ZombieSeaCD,
                 ZombieSeaEnabled = ZombieSeaEnabled,
@@ -804,6 +794,8 @@ namespace PVZRHTools
                     GloveFullCD = GloveFullCDEnabled ? (int)GloveFullCD : -1,
                     HammerFullCD = HammerFullCDEnabled ? (int)HammerFullCD : -1,
                     NewZombieUpdateCD = NewZombieUpdateCD,
+                    PlantUpgrade = PlantUpgrade,
+                    JachsonSummonType = JachsonSummonType,
                 },
                 CardProperties = new CardProperties() { CardReplaces = cards },
                 InGameActions = iga,
@@ -985,6 +977,8 @@ namespace PVZRHTools
 
         partial void OnColumnPlantingChanged(bool value) => GameModes();
 
+        partial void OnConveyBeltModifyChanged(bool value) => App.DataSync.Value.SendData(new InGameActions() { ConveyBeltTypes = value ? [.. from type in ConveyBeltTypes select type.Key] : [] });
+
         partial void OnDeveloperModeChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { DeveloperMode = value, PlantingNoCD = FreeCD });
 
         partial void OnDevLourChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { DevLour = value });
@@ -1019,6 +1013,8 @@ namespace PVZRHTools
 
         partial void OnItemExistForeverChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { ItemExistForever = value });
 
+        partial void OnJachsonSummonTypeChanged(int value) => App.DataSync.Value.SendData(new BasicProperties() { JachsonSummonType = value });
+
         partial void OnJackboxNotExplodeChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { JackboxNotExplode = value });
 
         partial void OnLockMoneyChanged(bool value) => App.DataSync.Value.SendData(new InGameActions() { LockMoney = value, CurrentMoney = (int)NewMoney });
@@ -1038,6 +1034,8 @@ namespace PVZRHTools
         partial void OnNoIceRoadChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { NoIceRoad = value });
 
         partial void OnPlantingNoCDChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { PlantingNoCD = value });
+
+        partial void OnPlantUpgradeChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { PlantUpgrade = value });
 
         partial void OnPresentFastOpenChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { PresentFastOpen = value });
 
@@ -1109,13 +1107,14 @@ namespace PVZRHTools
 
         public Dictionary<int, string> Items => new()
         {
-            {0, "肥料"},
-            {1, "铁桶"},
-            {2, "橄榄头盔"},
-            {3, "小丑礼盒"},
-            {4, "镐子"},
-            {5, "机甲碎片"},
-            {6, "超级机甲碎片" }
+            {0, "肥料 Fertilizer"},
+            {1, "铁桶 Bucket"},
+            {2, "橄榄头盔 Helmet"},
+            {3, "小丑礼盒 Jackbox"},
+            {4, "镐子 Pickaxe"},
+            {5, "机甲碎片 Machine"},
+            {6, "超级机甲碎片 SuperMachine" },
+            {7,"花园植物礼盒 GardenPresent" }
         };
 
         public List<(string, Action)> KeyCommands =>
@@ -1203,6 +1202,12 @@ namespace PVZRHTools
 
         [ObservableProperty]
         public partial bool ColumnPlanting { get; set; }
+
+        [ObservableProperty]
+        public partial bool ConveyBeltModify { get; set; }
+
+        [ObservableProperty]
+        public partial List<KeyValuePair<int, string>> ConveyBeltTypes { get; set; }
 
         [ObservableProperty]
         public partial BindingList<TravelBuffVM> Debuffs { get; set; }
@@ -1307,6 +1312,9 @@ namespace PVZRHTools
         public partial int ItemType { get; set; }
 
         [ObservableProperty]
+        public partial int JachsonSummonType { get; set; }
+
+        [ObservableProperty]
         public partial bool JackboxNotExplode { get; set; }
 
         [ObservableProperty]
@@ -1353,6 +1361,9 @@ namespace PVZRHTools
 
         [ObservableProperty]
         public partial int PlantType { get; set; }
+
+        [ObservableProperty]
+        public partial bool PlantUpgrade { get; set; }
 
         [ObservableProperty]
         public partial bool PresentFastOpen { get; set; }

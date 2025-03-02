@@ -30,6 +30,7 @@
         public readonly int ID => 2;
         public int? ImpToBeThrown { get; set; }
         public bool? ItemExistForever { get; set; }
+        public int? JachsonSummonType { get; set; }
         public bool? JackboxNotExplode { get; set; }
         public int? LockPresent { get; set; }
         public bool? MineNoCD { get; set; }
@@ -37,6 +38,7 @@
         public bool? NoHole { get; set; }
         public bool? NoIceRoad { get; set; }
         public bool? PlantingNoCD { get; set; }
+        public bool? PlantUpgrade { get; set; }
         public bool? PresentFastOpen { get; set; }
         public bool? SuperPresent { get; set; }
         public bool? UltimateRamdomZombie { get; set; }
@@ -117,6 +119,7 @@
         public bool? ClearOnWritingField { get; set; }
         public bool? ClearOnWritingZombies { get; set; }
         public int? Column { get; set; }
+        public List<int>? ConveyBeltTypes { get; set; }
         public bool? CreateActiveMateorite { get; set; }
         public bool? CreateMower { get; set; }
         public bool? CreatePassiveMateorite { get; set; }

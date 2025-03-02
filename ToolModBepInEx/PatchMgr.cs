@@ -11,15 +11,14 @@ using System.IO.Compression;
 using System.Text;
 using TMPro;
 using BepInEx.Logging;
+using CustomizeLib;
 
 namespace ToolModBepInEx
 {
     [HarmonyPatch(typeof(AlmanacCardZombie), "OnMouseDown")]
     public static class AlmanacCardZombiePatch
     {
-        public static void Postfix(AlmanacCardZombie __instance) => ZombieType = __instance.theZombieType;
-
-        public static ZombieType ZombieType { get; set; } = ZombieType.Nothing;
+        public static void Postfix(AlmanacCardZombie __instance) => AlmanacZombieType = __instance.theZombieType;
     }
 
     [HarmonyPatch(typeof(AlmanacPlantCtrl), "GetSeedType")]
@@ -27,10 +26,8 @@ namespace ToolModBepInEx
     {
         public static void Postfix(AlmanacPlantCtrl __instance)
         {
-            SeedType = __instance.plantSelected;
+            AlmanacSeedType = __instance.plantSelected;
         }
-
-        public static int SeedType { get; set; } = -1;
     }
 
     [HarmonyPatch(typeof(Board), "Awake")]
@@ -81,10 +78,14 @@ namespace ToolModBepInEx
     {
         public static void Postfix(Bullet __instance)
         {
-            if (BulletDamage[(BulletType)__instance.theBulletType] >= 0 && __instance.theBulletDamage != BulletDamage[(BulletType)__instance.theBulletType])
+            try
             {
-                __instance.theBulletDamage = BulletDamage[(BulletType)__instance.theBulletType];
+                if (BulletDamage[(BulletType)__instance.theBulletType] >= 0 && __instance.theBulletDamage != BulletDamage[(BulletType)__instance.theBulletType])
+                {
+                    __instance.theBulletDamage = BulletDamage[(BulletType)__instance.theBulletType];
+                }
             }
+            catch { }
         }
     }
 
@@ -115,17 +116,42 @@ namespace ToolModBepInEx
         }
     }
 
-    [HarmonyPatch(typeof(CreateBullet), "SetBullet")]
-    public static class CreateBulletPatch
+    [HarmonyPatch(typeof(ConveyBeltMgr))]
+    public static class ConveyBeltMgrPatch
     {
-        public static void Postfix(Bullet __result)
+        [HarmonyPatch("Awake")]
+        [HarmonyPostfix]
+        public static void PostAwake(ConveyBeltMgr __instance)
         {
-            if (BulletDamage[(BulletType)__result.theBulletType] >= 0)
+            if (ConveyBeltTypes.Count > 0)
             {
-                __result.theBulletDamage = BulletDamage[(BulletType)__result.theBulletType];
+                __instance.plants = new();
+                foreach (var p in ConveyBeltTypes)
+                {
+                    __instance.plants.Add((PlantType)p);
+                }
             }
         }
 
+        [HarmonyPatch("GetCardPool")]
+        [HarmonyPostfix]
+        public static void PostGetCardPool(ref Il2CppSystem.Collections.Generic.List<PlantType> __result)
+        {
+            if (ConveyBeltTypes.Count > 0)
+            {
+                Il2CppSystem.Collections.Generic.List<PlantType> list = new();
+                foreach (var p in ConveyBeltTypes)
+                {
+                    list.Add((PlantType)p);
+                }
+                __result = list;
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(CreateBullet), "SetBullet")]
+    public static class CreateBulletPatch
+    {
         public static void Prefix(ref int theBulletType)
         {
             if (LockBulletType == -1)
@@ -161,9 +187,22 @@ namespace ToolModBepInEx
             if (GargantuarPatch.Flag)
             {
                 theZombieType = (ZombieType)ImpToBeThrown;
-                MLogger.Msg(theZombieType.ToString());
+            }
+            if (DancePolevaulterZombiePatch.Flag)
+            {
+                theZombieType = (ZombieType)JachsonSummonType;
             }
         }
+    }
+
+    [HarmonyPatch(typeof(DancePolevaulterZombie), "JumpOver")]
+    public static class DancePolevaulterZombiePatch
+    {
+        public static void Postfix() => Flag = false;
+
+        public static void Prefix() => Flag = JachsonSummonType is not 7;
+
+        public static bool Flag { get; set; } = false;
     }
 
     [HarmonyPatch(typeof(DriverZombie), "PositionUpdate")]
@@ -196,10 +235,22 @@ namespace ToolModBepInEx
         }
     }
 
-    [HarmonyPatch(typeof(GameAPP), "Start")]
+    [HarmonyPatch(typeof(GameAPP))]
     public static class GameAppPatch
     {
-        public static void Postfix()
+        [HarmonyPostfix]
+        [HarmonyPatch("LoadResources")]
+        public static void PostLoadResources()
+        {
+            foreach (var pc in CustomCore.CustomPlantTypes)
+            {
+                HealthPlants.Add(pc, -1);
+            }
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch("Start")]
+        public static void PostStart()
         {
             GameObject obj = new("Modifier");
             UnityEngine.Object.DontDestroyOnLoad(obj);
@@ -556,12 +607,16 @@ namespace ToolModBepInEx
     {
         public static void Postfix(Plant __instance)
         {
-            if (HealthPlants[__instance.thePlantType] >= 0 && __instance.thePlantMaxHealth != HealthPlants[__instance.thePlantType])
+            try
             {
-                __instance.thePlantMaxHealth = HealthPlants[__instance.thePlantType];
-                __instance.thePlantHealth = __instance.thePlantMaxHealth;
-                __instance.UpdateHealthText();
+                if (HealthPlants[__instance.thePlantType] >= 0 && __instance.thePlantMaxHealth != HealthPlants[__instance.thePlantType])
+                {
+                    __instance.thePlantMaxHealth = HealthPlants[__instance.thePlantType];
+                    __instance.thePlantHealth = __instance.thePlantMaxHealth;
+                    __instance.UpdateHealthText();
+                }
             }
+            catch { }
         }
     }
 
@@ -601,13 +656,11 @@ namespace ToolModBepInEx
                 && __instance.attributeCountdown > 0.1f)
             {
                 __instance.attributeCountdown = 0.1f;
-            }/*
-            if (HealthPlants[(MixData.PlantType)__instance.thePlantType] >= 0 && __instance.thePlantMaxHealth != HealthPlants[(MixData.PlantType)__instance.thePlantType])
+            }
+            if (PlantUpgrade && __instance.theLevel is not 3)
             {
-                __instance.thePlantMaxHealth = HealthPlants[(MixData.PlantType)__instance.thePlantType];
-                if (__instance.thePlantHealth >= __instance.thePlantMaxHealth) __instance.thePlantHealth = __instance.thePlantMaxHealth;
-                __instance.UpdateHealthText();
-            }*/
+                __instance.Upgrade(3, true);
+            }
         }
     }
 
@@ -1072,23 +1125,23 @@ namespace ToolModBepInEx
                     {
                         Time.timeScale = 0;
                     }
-                    if (Input.GetKeyDown(Core.KeyAlmanacCreatePlant.Value.Value) && AlmanacPlantCtrlPatch.SeedType != -1)
+                    if (Input.GetKeyDown(Core.KeyAlmanacCreatePlant.Value.Value) && AlmanacSeedType != -1)
                     {
-                        CreatePlant.Instance.SetPlant(Mouse.Instance.theMouseColumn, Mouse.Instance.theMouseRow, (PlantType)AlmanacPlantCtrlPatch.SeedType);
+                        CreatePlant.Instance.SetPlant(Mouse.Instance.theMouseColumn, Mouse.Instance.theMouseRow, (PlantType)AlmanacSeedType);
                     }
                     if (Input.GetKeyDown(Core.KeyAlmanacZombieMindCtrl.Value.Value))
                     {
                         Core.AlmanacZombieMindCtrl.Value.Value = !Core.AlmanacZombieMindCtrl.Value.Value;
                     }
-                    if (Input.GetKeyDown(Core.KeyAlmanacCreateZombie.Value.Value) && AlmanacCardZombiePatch.ZombieType is not ZombieType.Nothing)
+                    if (Input.GetKeyDown(Core.KeyAlmanacCreateZombie.Value.Value) && AlmanacZombieType is not ZombieType.Nothing)
                     {
                         if (Core.AlmanacZombieMindCtrl.Value.Value)
                         {
-                            CreateZombie.Instance.SetZombieWithMindControl(Mouse.Instance.theMouseRow, AlmanacCardZombiePatch.ZombieType, Mouse.Instance.mouseX);
+                            CreateZombie.Instance.SetZombieWithMindControl(Mouse.Instance.theMouseRow, AlmanacZombieType, Mouse.Instance.mouseX);
                         }
                         else
                         {
-                            CreateZombie.Instance.SetZombie(Mouse.Instance.theMouseRow, AlmanacCardZombiePatch.ZombieType, Mouse.Instance.mouseX);
+                            CreateZombie.Instance.SetZombie(Mouse.Instance.theMouseRow, AlmanacZombieType, Mouse.Instance.mouseX);
                         }
                     }
                     if (GameModes.Shooting1)
@@ -1159,11 +1212,14 @@ namespace ToolModBepInEx
 
         public static bool[] AdvBuffs { get; set; } = new bool[TravelMgr.advancedBuffs.Count];
         public static bool AlmanacCreate { get; set; } = false;
+        public static int AlmanacSeedType { get; set; } = -1;
+        public static ZombieType AlmanacZombieType { get; set; } = ZombieType.Nothing;
         public static Dictionary<BulletType, int> BulletDamage { get; set; } = [];
         public static bool CardNoInit { get; set; } = false;
         public static List<ToolModData.Card> CardReplaces { get; set; } = [];
         public static bool ChomperNoCD { get; set; } = false;
         public static bool CobCannonNoCD { get; set; } = false;
+        public static List<int> ConveyBeltTypes { get; set; } = [];
         public static bool[] Debuffs { get; set; } = new bool[TravelMgr.debuffs.Count];
         public static bool DevLour { get; set; } = false;
         public static bool FastShooting { get; set; } = false;
@@ -1186,6 +1242,7 @@ namespace ToolModBepInEx
         public static bool[] InGameDebuffs { get; set; } = new bool[TravelMgr.debuffs.Count];
         public static bool[] InGameUltiBuffs { get; set; } = new bool[TravelMgr.ultimateBuffs.Count];
         public static bool ItemExistForever { get; set; } = false;
+        public static int JachsonSummonType { get; set; } = 7;
         public static bool JackboxNotExplode { get; set; } = false;
         public static int LockBulletType { get; set; } = -2;
         public static bool LockMoney { get; set; } = false;
@@ -1198,6 +1255,7 @@ namespace ToolModBepInEx
         public static float NewZombieUpdateCD { get; set; } = 30;
         public static bool NoHole { get; set; } = false;
         public static bool NoIceRoad { get; set; } = false;
+        public static bool PlantUpgrade { get; set; } = false;
         public static bool PresentFastOpen { get; set; } = false;
         public static List<int> SeaTypes { get; set; } = [];
 

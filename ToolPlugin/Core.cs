@@ -11,7 +11,7 @@ using ToolModData;
 using UnityEngine;
 using static ToolModData.Modifier;
 
-[assembly: MelonInfo(typeof(ToolPlugin.Core), "ToolPlugin", "2.2.1-3.11", "Infinite75", null)]
+[assembly: MelonInfo(typeof(ToolPlugin.Core), "ToolPlugin", "2.3.1-3.14", "Infinite75", null)]
 [assembly: MelonGame("LanPiaoPiao", "PlantsVsZombiesRH")]
 [assembly: MelonPlatformDomain(MelonPlatformDomainAttribute.CompatibleDomains.IL2CPP)]
 
@@ -33,11 +33,22 @@ namespace ToolPlugin
                 {
                     plantsJson = File.ReadAllText(plantsPath);
                 }
+                //我****************************
+                plantsJson = plantsJson.Replace("\"cost\": \"\",\r\n            \"cost\": \"\"", "\"cost\": \"\"");
+                //我****************************
                 Dictionary<int, string> plants = [];
                 foreach (var plant in JsonNode.Parse(plantsJson)!["plants"]!.AsArray())
                 {
                     if (plant is not null) plants.Add((int)plant["seedType"]!, (int)plant["seedType"]! + " : " + (string)plant["name"]!);
                 }
+                plants.Add(960, "960 : 电能豌豆");
+                plants.Add(961, "961 : 钻石帝果");
+                plants.Add(962, "962 : 钻石大坚果");
+                plants.Add(963, "963 : 超级铁豌豆射手");
+                plants.Add(200, "200 : 浴火猫尾草");
+                plants.Add(206, "206 : 究极星神卷心菜");
+                plants.Add(205, "205 : 终极金卷光桃");
+                plants.Add(1900, "1900 : 巨型铁豌豆炮台");
                 string zombiesPath = Application.dataPath + "/ZombieStrings.json";
                 string zombiesJson;
                 if (!File.Exists(zombiesPath))
@@ -53,6 +64,8 @@ namespace ToolPlugin
                 {
                     if (zombie is not null) zombies.Add((int)zombie["theZombieType"]!, (int)zombie["theZombieType"]! + " : " + (string)zombie["name"]!);
                 }
+                zombies.Add(44, "44 : 僵王博士");
+                zombies.Add(46, "46 : 僵王博士(二阶段)");
                 List<string> advBuffs = [];
                 foreach (var adv in TravelMgr.advancedBuffs)
                 {
@@ -95,7 +108,7 @@ namespace ToolPlugin
                     FirstArmors = firsts,
                     SecondArmors = seconds,
                     Debuffs = [.. debuffs],
-                };//debuff
+                };
                 File.WriteAllText("./PVZRHTools/InitData.json", JsonSerializer.Serialize(InitData));
             }
         }
@@ -103,13 +116,13 @@ namespace ToolPlugin
         public override void OnPreInitialization()
         {
             Console.OutputEncoding = Encoding.UTF8;
-            if (UnityInformationHandler.GameVersion != "2.2")
+            if (UnityInformationHandler.GameVersion != "2.3.1")
             {
                 string caption = "修改器启动错误";
-                MessageBox(0, "游戏版本错误，修改器仅支持2.2.1版本。你需要自行更换游戏版本。请勿向修改器作者反馈此问题，看到也不会回复。", caption, 0U);
+                MessageBox(0, "游戏版本错误，修改器仅支持2.3.1版本。你需要自行更换游戏版本。请勿向修改器作者反馈此问题，看到也不会回复。", caption, 0U);
                 Environment.Exit(0);
             }
-            LoggerInstance.Msg("游戏版本2.2：Version Check OK");
+            LoggerInstance.Msg("游戏版本2.3.1：Version Check OK");
 
             if (!Directory.Exists("./PVZRHTools"))
             {

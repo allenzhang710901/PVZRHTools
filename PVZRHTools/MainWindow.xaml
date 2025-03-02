@@ -118,6 +118,7 @@
                                     <CheckBox x:Name="JackboxNotExplode" IsChecked="{Binding JackboxNotExplode}" Content="{DynamicResource Tab1.Page5.JackboxNotExplode}" Height="21" Margin="369,10,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left" />
                                     <CheckBox x:Name="GarlicDay" IsChecked="{Binding GarlicDay}" Content="{DynamicResource Tab1.Page5.GarlicDay}" Height="21" Margin="499,10,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left" />
                                     <ComboBox hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="{DynamicResource Tab1.Page5.ImpToBeThrown}" hc:TitleElement.TitleWidth="130" x:Name="ImpToBeThrown" HorizontalAlignment="Left" Height="20" Margin="10,36,0,0" VerticalAlignment="Top" Width="328" SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding ImpToBeThrown}" ItemsSource="{Binding Zombies, Mode=OneWay}" Style="{DynamicResource ComboBoxExtend}" />
+                                    <ComboBox hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="{DynamicResource Tab1.Page5.JachsonSummonType}" hc:TitleElement.TitleWidth="130" x:Name="JachsonSummonType" HorizontalAlignment="Left" Height="20" Margin="350,36,0,0" VerticalAlignment="Top" Width="328" SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding JachsonSummonType}" ItemsSource="{Binding Zombies, Mode=OneWay}" Style="{DynamicResource ComboBoxExtend}" />
                                 </Grid>
                             </Expander>
                             <Expander Header="{DynamicResource Tab1.Page6.Header}" Style="{DynamicResource Expander.Small}" MinWidth="28" MinHeight="28">
@@ -137,6 +138,7 @@
                                         <CheckBox x:Name="MineNoCD" IsChecked="{Binding MineNoCD}" Content="{DynamicResource Tab1.Page6.MineNoCD}" Height="21" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left" Margin="0,0,10,0" />
                                         <CheckBox x:Name="ChomperNoCD" IsChecked="{Binding ChomperNoCD}" Content="{DynamicResource Tab1.Page6.ChomperNoCD}" Height="21" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left" Margin="0,0,10,0" />
                                         <CheckBox x:Name="CobCannonNoCD" IsChecked="{Binding CobCannonNoCD}" Content="{DynamicResource Tab1.Page6.CobCannonNoCD}" Height="21" Margin="0,0,10,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left" />
+                                        <CheckBox x:Name="PlantUpgrade" IsChecked="{Binding PlantUpgrade}" Content="{DynamicResource Tab1.Page6.PlantUpgrade}" Height="21" Foreground="White"  BorderThickness="2,2,2,2" />
 
                                     </StackPanel>
                                 </Grid>
@@ -205,17 +207,23 @@
                                 </Grid>
                             </Expander>
                             <Expander Header="{DynamicResource Tab2.Page2.Header}">
-                                <Grid>
-                                    <Button x:Name="ChangeSun" Content="{DynamicResource Tab2.Page2.ChangeSun}" HorizontalAlignment="Left" Height="30" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Command="{Binding SunCommand}" />
-                                    <hc:NumericUpDown DecimalPlaces="0" x:Name="Sun" HorizontalAlignment="Left" Margin="90,10,0,0" VerticalAlignment="Top" Width="94" Height="30" Value="{Binding NewSun, ValidatesOnNotifyDataErrors=True}" Increment="100" Maximum="2147483647" Minimum="0" />
-                                    <CheckBox x:Name="LockSun" IsChecked="{Binding LockSun}" Content="{DynamicResource Tab2.Page2.LockSun}" Height="21" Margin="189,17,437,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" />
-                                    <Button x:Name="ChangeMoney" Content="{DynamicResource Tab2.Page2.ChangeMoney}" HorizontalAlignment="Left" Height="30" Margin="275,12,0,0" VerticalAlignment="Top" Width="75" Command="{Binding MoneyCommand, ValidatesOnNotifyDataErrors=True}" />
-                                    <hc:NumericUpDown DecimalPlaces="0" x:Name="Money" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="94" Height="30" Value="{Binding NewMoney}" Increment="100" Maximum="99999" Minimum="0" Margin="356,12,0,0" />
-                                    <CheckBox x:Name="LockMoney" IsChecked="{Binding LockMoney}" Content="{DynamicResource Tab2.Page2.LockMoney}" Height="21" Margin="455,17,166,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" />
-                                    <Button x:Name="NextWave" Content="{DynamicResource Tab2.Page2.NextWave}" HorizontalAlignment="Left" Height="30" Margin="10,91,0,0" VerticalAlignment="Top" Width="167" Command="{Binding NextWaveCommand}" />
-                                    <CheckBox x:Name="StopSummon" IsChecked="{Binding StopSummon}" Content="{DynamicResource Tab2.Page2.StopSummon}" Height="21" Margin="182,96,437,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" />
-                                    <CheckBox x:Name="NoFail" IsChecked="{Binding NoFail}" Content="{DynamicResource Tab2.Page2.NoFail}" Height="21" Margin="263,96,228,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" />
-                                    <hc:ButtonGroup Margin="10,51,74,0" Height="30">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                                                            <Button x:Name="ChangeSun" Content="{DynamicResource Tab2.Page2.ChangeSun}" HorizontalAlignment="Left" Height="30" Margin="10,0,0,0" VerticalAlignment="Top" Width="75" Command="{Binding SunCommand}" />
+                                    <hc:NumericUpDown DecimalPlaces="0" x:Name="Sun" HorizontalAlignment="Left" VerticalAlignment="Top" Width="94" Height="30" Value="{Binding NewSun, ValidatesOnNotifyDataErrors=True}" Increment="100" Maximum="2147483647" Minimum="0" Margin="10,0,0,0" />
+                                    <CheckBox x:Name="LockSun" IsChecked="{Binding LockSun}" Content="{DynamicResource Tab2.Page2.LockSun}" Height="21" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" Margin="10,5,0,0" />
+                                    <Button x:Name="ChangeMoney" Content="{DynamicResource Tab2.Page2.ChangeMoney}" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="75" Command="{Binding MoneyCommand, ValidatesOnNotifyDataErrors=True}" Margin="10,0,0,0" />
+                                    <hc:NumericUpDown DecimalPlaces="0" x:Name="Money" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="94" Height="30" Value="{Binding NewMoney}" Increment="100" Maximum="99999" Minimum="0" Margin="10,0,0,0" />
+                                    <CheckBox x:Name="LockMoney" IsChecked="{Binding LockMoney}" Content="{DynamicResource Tab2.Page2.LockMoney}" Height="21" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" Margin="10,5,0,0" />
+
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                                                            <Button x:Name="NextWave" Content="{DynamicResource Tab2.Page2.NextWave}" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="167" Command="{Binding NextWaveCommand}" Margin="10,0,0,0" />
+                                    <CheckBox x:Name="StopSummon" IsChecked="{Binding StopSummon}" Content="{DynamicResource Tab2.Page2.StopSummon}" Height="21" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" Margin="10,5,0,0" />
+                                    <CheckBox x:Name="NoFail" IsChecked="{Binding NoFail}" Content="{DynamicResource Tab2.Page2.NoFail}" Height="21" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" Margin="10,5,0,0" />
+
+                                    </StackPanel>
+                                    <hc:ButtonGroup Height="30" Margin="10,10,0,0">
                                         <Button x:Name="ClearAllPlants" Content="{DynamicResource Tab2.Page2.ClearAllPlants}" Command="{Binding ClearAllPlantsCommand}" Style="{DynamicResource ButtonGroupItemHorizontalFirst}" />
                                         <Button x:Name="KillAllZombies" Content="{DynamicResource Tab2.Page2.KillAllZombies}" Command="{Binding KillAllZombiesCommand}" Style="{DynamicResource ButtonGroupItemDefault}" />
                                         <Button x:Name="ClearIce" Content="{DynamicResource Tab2.Page2.ClearIce}" Command="{Binding ClearIceRoadsCommand}" Style="{DynamicResource ButtonGroupItemDefault}" />
@@ -223,15 +231,29 @@
                                         <Button x:Name="ClearAllHoles" Content="{DynamicResource Tab2.Page2.ClearAllHoles}" Command="{Binding ClearAllHolesCommand}" Style="{DynamicResource ButtonGroupItemDefault}" />
                                         <Button x:Name="SetAward" Content="{DynamicResource Tab2.Page2.SetAward}" Command="{Binding SetAwardCommand}" Style="{DynamicResource ButtonGroupItemDefault}" />
                                     </hc:ButtonGroup>
-                                    <Button x:Name="ChangeLevelName" Content="{DynamicResource Tab2.Page2.ChangeLevelName}" HorizontalAlignment="Left" Height="30" Margin="12,136,0,0" VerticalAlignment="Top" Width="106" Command="{Binding LevelNameCommand}" />
-                                    <TextBox x:Name="LevelName" HorizontalAlignment="Left" Margin="133,138,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="229" Height="20" Text="{Binding NewLevelName}" />
-                                    <Button x:Name="ShowText" Content="{DynamicResource Tab2.Page2.ShowText}" HorizontalAlignment="Left" Height="30" Margin="12,171,0,0" VerticalAlignment="Top" Width="106" Command="{Binding ShowingTextCommand}" />
-                                    <TextBox x:Name="Text" HorizontalAlignment="Left" Margin="133,171,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="229" Height="20" Text="{Binding ShowText}" />
-                                    <hc:ButtonGroup Height="30" Margin="12,206,476,0">
+                                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                                                            <Button x:Name="ChangeLevelName" Content="{DynamicResource Tab2.Page2.ChangeLevelName}" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="106" Command="{Binding LevelNameCommand}" Margin="10,0,0,0" />
+                                    <TextBox x:Name="LevelName" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Width="229" Height="20" Text="{Binding NewLevelName}" Margin="10,0,0,0" />
+
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                    <Button x:Name="ShowText" Content="{DynamicResource Tab2.Page2.ShowText}" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="106" Command="{Binding ShowingTextCommand}" Margin="10,0,0,0" />
+                                    <TextBox x:Name="Text" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Width="229" Height="20" Text="{Binding ShowText}" Margin="10,0,0,0" />
+
+                                    </StackPanel>
+
+                                    <hc:ButtonGroup Height="30" HorizontalAlignment="Left" Margin="10,10,0,0">
                                         <Button x:Name="StartMower" Content="{DynamicResource Tab2.Page2.StartMower}"  Command="{Binding StartMowerCommand}" />
                                         <Button x:Name="CreateMower" Content="{DynamicResource Tab2.Page2.CreateMower}"  Command="{Binding CreateMowerCommand}" ToolTip="{DynamicResource Tab2.Page2.CreateMower.Tooltip}" />
                                     </hc:ButtonGroup>
-                                </Grid>
+                                                                        <StackPanel Orientation="Vertical" Margin="0,10,0,0">
+                                        <CheckBox x:Name="ConveyBeltModify" IsChecked="{Binding ConveyBeltModify}" Content="{DynamicResource Tab2.Page1.ConveyBeltModify}" Height="21" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left" Width="192" Margin="10,0,0,0" />
+
+                                        <hc:CheckComboBox x:Name="ConveyBeltTypes" local:SelectedItemsExt.SelectedItems="{Binding ConveyBeltTypes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding Plants2}" HorizontalAlignment="Left" Width="644" SelectedValuePath="Key" DisplayMemberPath="Value" IsSynchronizedWithCurrentItem="True" Margin="10,0,0,0"/>
+
+                                    </StackPanel>
+
+                                </StackPanel>
                             </Expander>
                             <Expander Header="{DynamicResource Tab2.Page3.Header}">
                                 <StackPanel>

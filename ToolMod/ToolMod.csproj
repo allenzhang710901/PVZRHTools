@@ -51,6 +51,9 @@
 		<Reference Include="bHapticsLib">
 			<HintPath>..\..\..\pvz\rhex\MelonLoader\net6\bHapticsLib.dll</HintPath>
 		</Reference>
+		<Reference Include="CustomizeLib.MelonLoader">
+		  <HintPath>..\..\..\pvz\rhex\Mods\CustomizeLib.MelonLoader.dll</HintPath>
+		</Reference>
 		<Reference Include="Iced">
 			<HintPath>..\..\..\pvz\rhex\MelonLoader\net6\Iced.dll</HintPath>
 		</Reference>

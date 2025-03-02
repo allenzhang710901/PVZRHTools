@@ -148,6 +148,8 @@ namespace ToolMod
                 if (p.GloveFullCD is not null) GloveFullCD = (double)p.GloveFullCD;
                 if (p.NewZombieUpdateCD is not null) NewZombieUpdateCD = (float)p.NewZombieUpdateCD;
                 if (p.UltimateSuperGatling is not null) UltimateSuperGatling = (bool)p.UltimateSuperGatling;
+                if (p.PlantUpgrade is not null) PlantUpgrade = (bool)p.PlantUpgrade;
+                if (p.JachsonSummonType is not null) JachsonSummonType = (int)p.JachsonSummonType;
                 return;
             }
             if (data is InGameHotkeys h)
@@ -231,6 +233,10 @@ namespace ToolMod
                 if (iga.StopSummon is not null)
                 {
                     StopSummon = (bool)iga.StopSummon;
+                }
+                if (iga.ConveyBeltTypes is not null)
+                {
+                    ConveyBeltTypes = iga.ConveyBeltTypes;
                 }
                 if (!InGame()) return;
 
@@ -703,7 +709,6 @@ namespace ToolMod
                     Lawnf.SetAward(Board.Instance, Vector2.zero);
                 }
             }
-
             if (data is GameModes ga)
             {
                 PatchMgr.GameModes = ga;
@@ -851,6 +856,7 @@ namespace ToolMod
             Resources.Load<GameObject>("Items/Pickaxe"),
             Resources.Load<GameObject>("Items/Machine"),
             Resources.Load<GameObject>("Items/SuperMachine"),
+            Resources.Load<GameObject>("Items/SproutPotPrize/SproutPotPrize"),
         ];
     }
 }

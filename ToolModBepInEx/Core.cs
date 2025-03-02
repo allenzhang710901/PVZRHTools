@@ -16,6 +16,10 @@ namespace ToolModBepInEx
     [BepInPlugin("inf75.toolmod", "ToolMod", "3.12")]
     public class Core : BasePlugin
     {
+        public void CustomPlantPlayground()
+        {
+        }
+
         public override void Load()
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
@@ -54,6 +58,7 @@ namespace ToolModBepInEx
             {
                 LoggerInstance.Error(ex);
             }
+            CustomPlantPlayground();
         }
 
         public override bool Unload()

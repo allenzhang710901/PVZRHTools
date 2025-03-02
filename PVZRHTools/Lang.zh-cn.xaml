@@ -137,4 +137,7 @@
     <s:String x:Key="Tab2.Page1.PlantVase">生成植物罐子</s:String>
     <s:String x:Key="Tab2.Page1.ZombieVase">生成僵尸罐子</s:String>
     <s:String x:Key="Tab1.Page6.UltimateSuperGatling">超级机枪射手无限开大</s:String>
+    <s:String x:Key="Tab2.Page1.ConveyBeltModify">传送带植物类型，重进关卡生效</s:String>
+    <s:String x:Key="Tab1.Page5.JachsonSummonType">舞王撑杆召唤僵尸类型</s:String>
+    <s:String x:Key="Tab1.Page6.PlantUpgrade">植物升级</s:String>
 </ResourceDictionary>

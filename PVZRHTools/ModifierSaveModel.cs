@@ -20,6 +20,8 @@ namespace PVZRHTools
         public bool CobCannonNoCD { get; set; }
         public double Col { get; set; }
         public bool ColumnPlanting { get; set; }
+        public bool ConveyBeltModify { get; set; }
+        public List<int> ConveyBeltTypes { get; set; }
         public List<TravelBuffVM> Debuffs { get; set; }
         public bool DeveloperMode { get; set; }
         public bool DevLour { get; set; }
@@ -43,6 +45,7 @@ namespace PVZRHTools
         public bool IsMindCtrl { get; set; }
         public bool ItemExistForever { get; set; }
         public int ItemType { get; set; }
+        public int JachsonSummonType { get; set; }
         public bool JackboxNotExplode { get; set; }
         public int LockBulletType { get; set; }
         public bool LockMoney { get; set; }
@@ -59,6 +62,7 @@ namespace PVZRHTools
         public bool NoIceRoad { get; set; }
         public bool PlantingNoCD { get; set; }
         public int PlantType { get; set; }
+        public bool PlantUpgrade { get; set; }
         public bool PresentFastOpen { get; set; }
         public double Row { get; set; }
         public bool ScaredyDream { get; set; }
