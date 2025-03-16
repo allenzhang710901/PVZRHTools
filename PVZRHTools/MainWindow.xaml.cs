@@ -95,5 +95,6 @@ namespace PVZRHTools
         public static ResourceDictionary LangZH_CN => new() { Source = new("/Lang.zh-cn.xaml", UriKind.Relative) };
         public ModifierSprite ModifierSprite { get; set; }
         public ModifierViewModel ViewModel => (ModifierViewModel)DataContext;
+
     }
 }

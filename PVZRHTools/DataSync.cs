@@ -85,6 +85,11 @@ namespace PVZRHTools
                             {
                                 Application.Current.Dispatcher.Invoke(() => MainWindow.Instance!.ViewModel.ZombieFieldString = iga.WriteZombies);
                             }
+                            if (iga.WriteVases is not null)
+                            {
+                                Application.Current.Dispatcher.Invoke(() => MainWindow.Instance!.ViewModel.VasesFieldString = iga.WriteVases);
+                            }
+
                             break;
                         }
                     case 15:
@@ -94,7 +99,12 @@ namespace PVZRHTools
                         }
                     case 16:
                         {
-                            Application.Current.Dispatcher.Invoke(new Action(Application.Current.Shutdown));
+                            closed = true;
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                MainWindow.Instance!.ViewModel.Save();
+                                Environment.Exit(0);
+                            });
                             break;
                         }
                 }
@@ -111,6 +121,7 @@ namespace PVZRHTools
         {
             try
             {
+                if (closed) return;
                 Socket? socket = ar.AsyncState as Socket;
                 if (socket is not null)
                 {
@@ -123,15 +134,18 @@ namespace PVZRHTools
             }
             catch (InvalidOperationException)
             {
-                Application.Current.Shutdown();
+                MainWindow.Instance?.ViewModel.Save();
+                Environment.Exit(0);
             }
             catch (SocketException)
             {
-                Application.Current.Shutdown();
+                MainWindow.Instance?.ViewModel.Save();
+                Environment.Exit(0);
             }
             catch (NullReferenceException)
             {
-                Application.Current.Shutdown();
+                MainWindow.Instance?.ViewModel.Save();
+                Environment.Exit(0);
             }
         }
 
@@ -159,6 +173,7 @@ namespace PVZRHTools
         public static bool Enabled { get; set; } = true;
         public static Lazy<DataSync> Instance { get; } = new();
         public byte[] buffer;
+        public bool closed = false;
         public Socket modifierSocket;
     }
 }

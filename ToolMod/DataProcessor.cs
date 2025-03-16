@@ -230,6 +230,10 @@ namespace ToolMod
                 {
                     EnableAll<GameLose>(!(bool)iga.NoFail);
                 }
+                if (iga.BuffRefreshNoLimit is not null)
+                {
+                    BuffRefreshNoLimit = (bool)iga.BuffRefreshNoLimit;
+                }
                 if (iga.StopSummon is not null)
                 {
                     StopSummon = (bool)iga.StopSummon;
@@ -638,6 +642,55 @@ namespace ToolMod
                         WriteField = CompressString(lineupCode)
                     });
                 }
+                if (iga.ReadVases is not null)
+                {
+                    List<VaseInfo> vases = [];
+                    foreach (var vase in Board.Instance.griditemArray)
+                    {
+                        if (vase is null || vase.theItemType is not 4 or 5 or 6) continue;
+                        vases.Add(new()
+                        {
+                            Row = vase.theItemRow,
+                            Col = vase.theItemColumn,
+                            PlantType = (int)vase.thePlantType,
+                            ZombieType = (int)vase.theZombieType,
+                        });
+                    }
+                    DataSync.Instance.Value.SendData(new InGameActions()
+                    {
+                        WriteVases = JsonSerializer.Serialize(vases)
+                    });
+                }
+                if (iga.WriteVases is not null && iga.ClearOnWritingVases is not null)
+                {
+                    try
+                    {
+                        var fieldVases = JsonSerializer.Deserialize<List<VaseInfo>>(iga.WriteVases);
+                        if (fieldVases is not null)
+                        {
+                            if ((bool)iga.ClearOnWritingVases)
+                            {
+                                for (int i = Board.Instance.griditemArray.Count - 1; i >= 0; i--)
+                                {
+                                    if (Board.Instance.griditemArray[i] is not null && Board.Instance.griditemArray[i].theItemType is 4 or 5 or 6)
+                                    {
+                                        Board.Instance.griditemArray[i].gameObject.active = false;
+                                        UnityEngine.Object.Destroy(Board.Instance.griditemArray[i]);
+                                    }
+                                }
+                            }
+                            foreach (var vase in fieldVases)
+                            {
+                                var g = GridItem.SetGridItem(vase.Col, vase.Row, GridItemType.ScaryPot);
+                                g.thePlantType = (PlantType)vase.PlantType;
+                                g.theZombieType = (ZombieType)vase.ZombieType;
+                            }
+                        }
+                    }
+                    //catch (JsonException) { MLogger.Error("布阵代码存在错误！"); }
+                    catch (NotSupportedException) { MLogger.Error("布阵代码存在错误！"); }
+                }
+
                 if (iga.Card is not null
                   && iga.PlantType is not null)
                 {
@@ -709,6 +762,7 @@ namespace ToolMod
                     Lawnf.SetAward(Board.Instance, Vector2.zero);
                 }
             }
+
             if (data is GameModes ga)
             {
                 PatchMgr.GameModes = ga;

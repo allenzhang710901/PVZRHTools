@@ -140,4 +140,6 @@
     <s:String x:Key="Tab2.Page1.ConveyBeltModify">传送带植物类型，重进关卡生效</s:String>
     <s:String x:Key="Tab1.Page5.JachsonSummonType">舞王撑杆召唤僵尸类型</s:String>
     <s:String x:Key="Tab1.Page6.PlantUpgrade">植物升级</s:String>
+    <s:String x:Key="Tab2.Page2.BuffRefreshNoLimit">旅行词条无限刷新</s:String>
+    <s:String x:Key="Tab2.Page1.VaseLineUp">罐子布阵：</s:String>
 </ResourceDictionary>

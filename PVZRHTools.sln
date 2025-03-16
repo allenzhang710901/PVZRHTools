@@ -17,8 +17,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "解决方案项", "解决�
 		修改器更新日志.txt = 修改器更新日志.txt
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolPlugin", "ToolPlugin\ToolPlugin.csproj", "{6F98B77A-819A-4ACB-8245-A5DD1913A9B9}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -44,10 +42,6 @@ Global
 		{BAF63FD9-65ED-466C-ACCD-91DB2BB89F91}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BAF63FD9-65ED-466C-ACCD-91DB2BB89F91}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BAF63FD9-65ED-466C-ACCD-91DB2BB89F91}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6F98B77A-819A-4ACB-8245-A5DD1913A9B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6F98B77A-819A-4ACB-8245-A5DD1913A9B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6F98B77A-819A-4ACB-8245-A5DD1913A9B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6F98B77A-819A-4ACB-8245-A5DD1913A9B9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{45C60B7B-36A9-406F-9CAF-62D6045C9252}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{45C60B7B-36A9-406F-9CAF-62D6045C9252}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{45C60B7B-36A9-406F-9CAF-62D6045C9252}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -57,7 +51,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {8779E405-4CD5-4DF0-AADE-49B2CB00A4A0}
 		RESX_NeutralResourcesLanguage = zh-CN
+		SolutionGuid = {8779E405-4CD5-4DF0-AADE-49B2CB00A4A0}
 	EndGlobalSection
 EndGlobal

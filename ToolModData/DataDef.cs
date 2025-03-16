@@ -110,6 +110,7 @@
     [Serializable]
     public struct InGameActions : ISyncData
     {
+        public bool? BuffRefreshNoLimit { get; set; }
         public bool? Card { get; set; }
         public string? ChangeLevelName { get; set; }
         public bool? ClearAllHoles { get; set; }
@@ -117,6 +118,7 @@
         public bool? ClearAllPlants { get; set; }
         public bool? ClearAllZombies { get; set; }
         public bool? ClearOnWritingField { get; set; }
+        public bool? ClearOnWritingVases { get; set; }
         public bool? ClearOnWritingZombies { get; set; }
         public int? Column { get; set; }
         public List<int>? ConveyBeltTypes { get; set; }
@@ -136,6 +138,7 @@
         public int? PlantType { get; set; }
         public bool? PlantVase { get; set; }
         public bool? ReadField { get; set; }
+        public bool? ReadVases { get; set; }
         public bool? ReadZombies { get; set; }
         public int? Row { get; set; }
         public bool? SetAward { get; set; }
@@ -146,6 +149,7 @@
         public int? Times { get; set; }
         public bool? Win { get; set; }
         public string? WriteField { get; set; }
+        public string? WriteVases { get; set; }
         public string? WriteZombies { get; set; }
         public int? ZombieSeaCD { get; set; }
         public bool? ZombieSeaEnabled { get; set; }
@@ -229,6 +233,15 @@
         public KeyValuePair<int, int>? PlantsHealth { get; set; }
         public KeyValuePair<int, int>? SecondArmorsHealth { get; set; }
         public KeyValuePair<int, int>? ZombiesHealth { get; set; }
+    }
+
+    [Serializable]
+    public struct VaseInfo
+    {
+        public int Col { get; set; }
+        public int PlantType { get; set; }
+        public int Row { get; set; }
+        public int ZombieType { get; set; }
     }
 
     [Serializable]

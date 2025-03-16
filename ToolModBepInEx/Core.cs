@@ -7,17 +7,162 @@ using Il2CppInterop.Runtime.Injection;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using TMPro;
 using ToolModData;
 using UnityEngine;
 using static ToolModBepInEx.PatchMgr;
 
 namespace ToolModBepInEx
 {
-    [BepInPlugin("inf75.toolmod", "ToolMod", "3.12")]
+    [HarmonyPatch(typeof(Help_), "Awake")]
+    public static class Help_Patch
+    {
+        public static void Postfix() => Core.Instance.Value.LateInit();
+    }
+
+    [BepInPlugin("inf75.toolmod", "ToolMod", "3.15")]
     public class Core : BasePlugin
     {
-        public void CustomPlantPlayground()
+        public void LateInit()
         {
+            try
+            {
+                if (Port.Value.Value < 10000 || Port.Value.Value > 60000)
+                {
+                    MessageBox(0, "Port值无效，已使用默认值13531", "修改器警告", 0);
+                    Port.Value.Value = 13531;
+                }
+                MLogger.LogWarning("以下id信息为动态生成，仅适用于当前游戏实例！！！");
+                MLogger.LogWarning("以下id信息为动态生成，仅适用于当前游戏实例！！！");
+                MLogger.LogWarning("以下id信息为动态生成，仅适用于当前游戏实例！！！");
+                Dictionary<int, string> plants = [];
+                GameObject gameObject = new();
+                GameObject back = new();
+                back.transform.SetParent(gameObject.transform);
+                GameObject name = new("Name");
+                GameObject shadow = new("Shadow");
+                shadow.AddComponent<TextMeshPro>();
+                shadow.transform.SetParent(name.transform);
+                var nameText = name.AddComponent<TextMeshPro>();
+                name.transform.SetParent(gameObject.transform);
+                GameObject info = new("Info");
+                info.AddComponent<TextMeshPro>();
+                info.transform.SetParent(gameObject.transform);
+                GameObject cost = new("Cost");
+                cost.AddComponent<TextMeshPro>();
+                cost.transform.SetParent(gameObject.transform);
+                var alm = gameObject.AddComponent<AlmanacMgr>();
+                gameObject.AddComponent<TravelMgr>();
+                alm.plantName = name;
+                for (int i = 0; i < GameAPP.plantPrefab.Count; i++)
+                {
+                    if (GameAPP.plantPrefab[i] is not null)
+                    {
+                        alm.theSeedType = i;
+                        alm.InitNameAndInfoFromJson();
+                        string item = $"{i} : {alm.plantName.GetComponent<TextMeshPro>().text}";
+                        MLogger.LogInfo($"Dumping Plant String: {item}");
+                        plants.Add(i, item);
+                        HealthPlants.Add((PlantType)i, -1);
+                    }
+                }
+                UnityEngine.Object.Destroy(gameObject);
+                string zombiesPath = Application.dataPath + "/ZombieStrings.json";
+                string zombiesJson;
+                if (!File.Exists(zombiesPath))
+                {
+                    zombiesJson = Resources.Load<TextAsset>("ZombieStrings").text;
+                }
+                else
+                {
+                    zombiesJson = File.ReadAllText(zombiesPath);
+                }
+                Dictionary<int, string> zombies = [];
+                foreach (var zombie in JsonNode.Parse(zombiesJson)!["zombies"]!.AsArray())
+                {
+                    if (zombie is not null) zombies.Add((int)zombie["theZombieType"]!, (int)zombie["theZombieType"]! + " : " + (string)zombie["name"]!);
+                }
+                zombies.Add(44, "44 : 僵王博士");
+                zombies.Add(46, "46 : 僵王博士(二阶段)");
+                List<string> advBuffs = [];
+                for (int i = 0; i < TravelMgr.advancedBuffs.Count; i++)
+                {
+                    if (TravelMgr.advancedBuffs[i] is not null)
+                    {
+                        MLogger.LogInfo($"Dumping Advanced Buff String:#{i} {TravelMgr.advancedBuffs[i]}");
+                        advBuffs.Add(TravelMgr.advancedBuffs[i]);
+                    }
+                }
+                List<string> ultiBuffs = [];
+                for (int i = 0; i < TravelMgr.ultimateBuffs.Count; i++)
+                {
+                    if (TravelMgr.ultimateBuffs[i] is not null)
+                    {
+                        MLogger.LogInfo($"Dumping Ultimate Buff String:#{i} {TravelMgr.ultimateBuffs[i]}");
+                        ultiBuffs.Add(TravelMgr.ultimateBuffs[i]);
+                    }
+                }
+                List<string> debuffs = [];
+                for (int i = 0; i < TravelMgr.debuffs.Count; i++)
+                {
+                    if (TravelMgr.debuffs[i] is not null)
+                    {
+                        MLogger.LogInfo($"Dumping Debuff String:#{i} {TravelMgr.debuffs[i]}");
+                        debuffs.Add(TravelMgr.debuffs[i]);
+                    }
+                }
+                AdvBuffs = new bool[TravelMgr.advancedBuffs.Count];
+                UltiBuffs = new bool[TravelMgr.ultimateBuffs.Count];
+                Debuffs = new bool[TravelMgr.debuffs.Count];
+
+                Dictionary<int, string> bullets = [];
+
+                for (int i = 0; i < GameAPP.bulletPrefab.Count; i++)
+                {
+                    if (GameAPP.bulletPrefab[i] is not null)
+                    {
+                        string text = $"{i} : {GameAPP.bulletPrefab[i].name}";
+                        MLogger.LogInfo($"Dumping Bullet String: {text}");
+                        bullets.Add(i, text);
+                        BulletDamage.Add((BulletType)i, -1);
+                    }
+                }
+                Dictionary<int, string> firsts = [];
+                foreach (var first in Enum.GetValues(typeof(Zombie.FirstArmorType)))
+                {
+                    firsts.Add((int)first, $"{first}");
+                }
+                Dictionary<int, string> seconds = [];
+                foreach (var second in Enum.GetValues(typeof(Zombie.SecondArmorType)))
+                {
+                    seconds.Add((int)second, $"{second}");
+                }
+                MLogger.LogWarning("以上id信息为动态生成，仅适用于当前游戏实例！！！");
+                MLogger.LogWarning("以上id信息为动态生成，仅适用于当前游戏实例！！！");
+                MLogger.LogWarning("以上id信息为动态生成，仅适用于当前游戏实例！！！");
+
+                InitData data = new()
+                {
+                    Plants = plants,
+                    Zombies = zombies,
+                    AdvBuffs = [.. advBuffs],
+                    UltiBuffs = [.. ultiBuffs],
+                    Bullets = bullets,
+                    FirstArmors = firsts,
+                    SecondArmors = seconds,
+                    Debuffs = [.. debuffs],
+                };
+                File.WriteAllText("./PVZRHTools/InitData.json", JsonSerializer.Serialize(data));
+
+                _ = DataSync.Instance.Value;
+            }
+            catch (Exception ex)
+            {
+                LoggerInstance.Error(ex);
+            }
+            inited = true;
         }
 
         public override void Load()
@@ -38,27 +183,16 @@ namespace ToolModBepInEx
             KeyAlmanacCreateZombie = new(Config.Bind("PVZRHTools", nameof(KeyAlmanacCreateZombie), KeyCode.N));
             KeyAlmanacZombieMindCtrl = new(Config.Bind("PVZRHTools", nameof(KeyAlmanacZombieMindCtrl), KeyCode.LeftControl));
             KeyTopMostCardBank = new(Config.Bind("PVZRHTools", nameof(KeyTopMostCardBank), KeyCode.Tab));
+            KeyAlmanacCreatePlantVase = new(Config.Bind("PVZRHTools", nameof(KeyAlmanacCreatePlantVase), KeyCode.J));
+            KeyAlmanacCreateZombieVase = new(Config.Bind("PVZRHTools", nameof(KeyAlmanacCreateZombieVase), KeyCode.K));
+
             KeyBindings = new
             ([
                 KeyTimeStop.Value,KeyTopMostCardBank.Value,KeyShowGameInfo.Value,
                 KeyAlmanacCreatePlant.Value,KeyAlmanacCreateZombie.Value,KeyAlmanacZombieMindCtrl.Value,
+                KeyAlmanacCreatePlantVase.Value,KeyAlmanacCreateZombieVase.Value
             ]);
             Config.Save();
-            inited = true;
-            try
-            {
-                if (Port.Value.Value < 10000 || Port.Value.Value > 60000)
-                {
-                    MessageBox(0, "Port值无效，已使用默认值13531", "修改器警告", 0);
-                    Port.Value.Value = 13531;
-                }
-                _ = DataSync.Instance.Value;
-            }
-            catch (Exception ex)
-            {
-                LoggerInstance.Error(ex);
-            }
-            CustomPlantPlayground();
         }
 
         public override bool Unload()
@@ -75,18 +209,15 @@ namespace ToolModBepInEx
             return true;
         }
 
-        public void Update()
-        {
-            //PatchMgr.Update();
-        }
-
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         internal static extern IntPtr MessageBox(int hWnd, string text, string caption, uint type);
 
         public static Lazy<ConfigEntry<bool>> AlmanacZombieMindCtrl { get; set; } = new();
         public static Lazy<Core> Instance { get; set; } = new();
         public static Lazy<ConfigEntry<KeyCode>> KeyAlmanacCreatePlant { get; set; } = new();
+        public static Lazy<ConfigEntry<KeyCode>> KeyAlmanacCreatePlantVase { get; set; } = new();
         public static Lazy<ConfigEntry<KeyCode>> KeyAlmanacCreateZombie { get; set; } = new();
+        public static Lazy<ConfigEntry<KeyCode>> KeyAlmanacCreateZombieVase { get; set; } = new();
         public static Lazy<ConfigEntry<KeyCode>> KeyAlmanacZombieMindCtrl { get; set; } = new();
         public static Lazy<List<ConfigEntry<KeyCode>>> KeyBindings { get; set; } = new();
         public static Lazy<ConfigEntry<KeyCode>> KeyShowGameInfo { get; set; } = new();

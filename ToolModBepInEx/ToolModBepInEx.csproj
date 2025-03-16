@@ -52,9 +52,6 @@
     <Reference Include="Cpp2IL.Core">
       <HintPath>..\..\..\pvz\rhbep\BepInEx\core\Cpp2IL.Core.dll</HintPath>
     </Reference>
-    <Reference Include="CustomizeLib.BepInEx">
-      <HintPath>..\..\..\pvz\rhbep\BepInEx\plugins\CustomizeLib.BepInEx.dll</HintPath>
-    </Reference>
     <Reference Include="Disarm">
       <HintPath>..\..\..\pvz\rhbep\BepInEx\core\Disarm.dll</HintPath>
     </Reference>

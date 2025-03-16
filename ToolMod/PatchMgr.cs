@@ -12,7 +12,6 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.IO.Compression;
 using System.Text;
-using CustomizeLib;
 
 namespace ToolMod
 {
@@ -40,7 +39,7 @@ namespace ToolMod
             t.isSeedRain |= PatchMgr.GameModes.SeedRain;
             t.isShooting |= PatchMgr.GameModes.IsShooting();
             t.isExchange |= PatchMgr.GameModes.Exchange;
-            t.enableTravelPlant |= UnlockAllFusions;
+            t.enableAllTravelPlant |= UnlockAllFusions;
             Board.Instance.boardTag = t;
         }
 
@@ -150,14 +149,6 @@ namespace ToolMod
     [HarmonyPatch(typeof(CreateBullet), "SetBullet")]
     public static class CreateBulletPatch
     {
-        public static void Postfix(Bullet __result)
-        {
-            if (BulletDamage[(BulletType)__result.theBulletType] >= 0)
-            {
-                __result.theBulletDamage = BulletDamage[(BulletType)__result.theBulletType];
-            }
-        }
-
         public static void Prefix(ref int theBulletType)
         {
             if (LockBulletType == -1)
@@ -244,16 +235,6 @@ namespace ToolMod
     [HarmonyPatch(typeof(GameAPP))]
     public static class GameAppPatch
     {
-        [HarmonyPostfix]
-        [HarmonyPatch("LoadResources")]
-        public static void PostLoadResources()
-        {
-            foreach (var pc in CustomCore.CustomPlantTypes)
-            {
-                HealthPlants.Add(pc, -1);
-            }
-        }
-
         [HarmonyPostfix]
         [HarmonyPatch("Start")]
         public static void PostStart()
@@ -466,39 +447,12 @@ namespace ToolMod
         public static void Prefix() => GameAPP.theBoardLevel = originalLevel;
     }
 
-    [HarmonyPatch(typeof(InitBoard), "ReadySetPlant")]
-    public static class InitBoardPatchA
+    [HarmonyPatch(typeof(InitBoard))]
+    public static class InitBoardPatch
     {
-        public static void Prefix()
-        {
-            GameAPP.gameAPP.GetOrAddComponent<TravelMgr>();
-            if (PatchMgr.GameModes.IsShooting())
-            {
-                var t = Board.Instance.boardTag;
-                t.isShooting = true;
-                Board.Instance.boardTag = t;
-            }
-
-            if (CardNoInit)
-            {
-                if (SeedGroup is not null)
-                {
-                    for (int i = SeedGroup!.transform.childCount - 1; i >= 0; i--)
-                    {
-                        var card = SeedGroup.transform.GetChild(i);
-                        if (card is null || card.childCount is 0) continue;
-                        card.GetChild(0).gameObject.GetComponent<CardUI>().CD = card.GetChild(0).gameObject.GetComponent<CardUI>().fullCD;
-                    }
-                }
-            }
-            HammerMgrPatchA.OriginalFullCD = UnityEngine.Object.FindObjectsOfTypeAll(Il2CppType.Of<HammerMgr>())[0].Cast<HammerMgr>().fullCD;
-        }
-    }
-
-    [HarmonyPatch(typeof(InitBoard), "RightMoveCamera")]
-    public static class InitBoardPatchB
-    {
-        public static void Postfix()
+        [HarmonyPostfix]
+        [HarmonyPatch("RightMoveCamera")]
+        public static void PostRightMoveCamera()
         {
             var cs = UnityEngine.Object.FindObjectsOfTypeAll(Il2CppType.Of<CardUIReplacer>());
             for (int i = cs.Count - 1; i >= 0; i--)
@@ -561,6 +515,33 @@ namespace ToolMod
 
             ChangeCard();
             SyncInGameBuffs();
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch("ReadySetPlant")]
+        public static void PreReadySetPlant()
+        {
+            GameAPP.gameAPP.GetOrAddComponent<TravelMgr>();
+            if (PatchMgr.GameModes.IsShooting())
+            {
+                var t = Board.Instance.boardTag;
+                t.isShooting = true;
+                Board.Instance.boardTag = t;
+            }
+
+            if (CardNoInit)
+            {
+                if (SeedGroup is not null)
+                {
+                    for (int i = SeedGroup!.transform.childCount - 1; i >= 0; i--)
+                    {
+                        var card = SeedGroup.transform.GetChild(i);
+                        if (card is null || card.childCount is 0) continue;
+                        card.GetChild(0).gameObject.GetComponent<CardUI>().CD = card.GetChild(0).gameObject.GetComponent<CardUI>().fullCD;
+                    }
+                }
+            }
+            HammerMgrPatchA.OriginalFullCD = UnityEngine.Object.FindObjectsOfTypeAll(Il2CppType.Of<HammerMgr>())[0].Cast<HammerMgr>().fullCD;
         }
     }
 
@@ -821,6 +802,24 @@ namespace ToolMod
         }
     }
 
+    [HarmonyPatch(typeof(TravelRefresh), "OnMouseDown")]
+    public static class TravelRefreshPatch
+    {
+        public static void Postfix(TravelRefresh __instance)
+        {
+            if (BuffRefreshNoLimit) __instance.refreshTimes = 0;
+        }
+    }
+
+    [HarmonyPatch(typeof(TravelStore), "RefreshBuff")]
+    public static class TravelStorePatch
+    {
+        public static void Postfix(TravelStore __instance)
+        {
+            if (BuffRefreshNoLimit) __instance.count = 0;
+        }
+    }
+
     /*
     [HarmonyPatch(typeof(CreatePlant), "Lim")]
     public static class CreatePlantPatchA
@@ -956,10 +955,6 @@ namespace ToolMod
     {
         static PatchMgr()
         {
-            foreach (var p in Enum.GetValues<PlantType>())
-            {
-                HealthPlants.Add(p, -1);
-            }
             foreach (var z in Enum.GetValues<ZombieType>())
             {
                 HealthZombies.Add(z, -1);
@@ -971,10 +966,6 @@ namespace ToolMod
             foreach (var s in Enum.GetValues<Zombie.SecondArmorType>())
             {
                 Health2nd.Add(s, -1);
-            }
-            foreach (var b in Enum.GetValues<BulletType>())
-            {
-                BulletDamage.Add(b, -1);
             }
         }
 
@@ -1063,7 +1054,23 @@ namespace ToolMod
             });
         }
 
-        public static void Update()
+        public static void UpdateInGameBuffs()
+        {
+            for (int i = 0; i < GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().advancedUpgrades.Count; i++)
+            {
+                GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().advancedUpgrades![i] = InGameAdvBuffs[i];
+            }
+            for (int i = 0; i < GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().ultimateUpgrades.Count; i++)
+            {
+                GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().ultimateUpgrades![i] = InGameUltiBuffs[i];
+            }
+            for (int i = 0; i < GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().debuff.Count; i++)
+            {
+                GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().debuff![i] = InGameDebuffs[i];
+            }
+        }
+
+        public void Update()
         {
             if (GameAPP.theGameStatus is 0 or 2 or 3)
                 try
@@ -1129,6 +1136,14 @@ namespace ToolMod
                         {
                             CreateZombie.Instance.SetZombie(Mouse.Instance.theMouseRow, AlmanacZombieType, Mouse.Instance.mouseX);
                         }
+                    }
+                    if (Input.GetKeyDown(Core.KeyAlmanacCreatePlantVase.Value.Value) && AlmanacSeedType != -1)
+                    {
+                        GridItem.SetGridItem(Mouse.Instance.theMouseColumn, Mouse.Instance.theMouseRow, GridItemType.ScaryPot).thePlantType = (PlantType)AlmanacSeedType;
+                    }
+                    if (Input.GetKeyDown(Core.KeyAlmanacCreateZombieVase.Value.Value) && AlmanacZombieType is not ZombieType.Nothing)
+                    {
+                        GridItem.SetGridItem(Mouse.Instance.theMouseColumn, Mouse.Instance.theMouseRow, GridItemType.ScaryPot).theZombieType = AlmanacZombieType;
                     }
                     if (GameModes.Shooting1)
                     {
@@ -1196,33 +1211,18 @@ namespace ToolMod
             }
         }
 
-        public static void UpdateInGameBuffs()
-        {
-            for (int i = 0; i < GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().advancedUpgrades.Count; i++)
-            {
-                GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().advancedUpgrades![i] = InGameAdvBuffs[i];
-            }
-            for (int i = 0; i < GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().ultimateUpgrades.Count; i++)
-            {
-                GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().ultimateUpgrades![i] = InGameUltiBuffs[i];
-            }
-            for (int i = 0; i < GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().debuff.Count; i++)
-            {
-                GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().debuff![i] = InGameDebuffs[i];
-            }
-        }
-
-        public static bool[] AdvBuffs { get; set; } = new bool[TravelMgr.advancedBuffs.Count];
+        public static bool[] AdvBuffs { get; set; } = [];
         public static bool AlmanacCreate { get; set; } = false;
         public static int AlmanacSeedType { get; set; } = -1;
         public static ZombieType AlmanacZombieType { get; set; } = ZombieType.Nothing;
+        public static bool BuffRefreshNoLimit { get; set; } = false;
         public static Dictionary<BulletType, int> BulletDamage { get; set; } = [];
         public static bool CardNoInit { get; set; } = false;
         public static List<ToolModData.Card> CardReplaces { get; set; } = [];
         public static bool ChomperNoCD { get; set; } = false;
         public static bool CobCannonNoCD { get; set; } = false;
         public static List<int> ConveyBeltTypes { get; set; } = [];
-        public static bool[] Debuffs { get; set; } = new bool[TravelMgr.debuffs.Count];
+        public static bool[] Debuffs { get; set; } = [];
         public static bool DevLour { get; set; } = false;
         public static bool FastShooting { get; set; } = false;
         public static bool FreeCD { get; set; } = false;
@@ -1240,9 +1240,9 @@ namespace ToolMod
         public static Dictionary<ZombieType, int> HealthZombies { get; set; } = [];
         public static bool HyponoEmperorNoCD { get; set; } = false;
         public static int ImpToBeThrown { get; set; } = 37;
-        public static bool[] InGameAdvBuffs { get; set; } = new bool[TravelMgr.advancedBuffs.Count];
-        public static bool[] InGameDebuffs { get; set; } = new bool[TravelMgr.debuffs.Count];
-        public static bool[] InGameUltiBuffs { get; set; } = new bool[TravelMgr.ultimateBuffs.Count];
+        public static bool[] InGameAdvBuffs { get; set; } = [];
+        public static bool[] InGameDebuffs { get; set; } = [];
+        public static bool[] InGameUltiBuffs { get; set; } = [];
         public static bool ItemExistForever { get; set; } = false;
         public static int JachsonSummonType { get; set; } = 7;
         public static bool JackboxNotExplode { get; set; } = false;
@@ -1282,7 +1282,7 @@ namespace ToolMod
         public static float SyncSpeed { get; set; } = -1;
         public static bool TimeSlow { get; set; } = false;
         public static bool TimeStop { get; set; } = false;
-        public static bool[] UltiBuffs { get; set; } = new bool[TravelMgr.ultimateBuffs.Count];
+        public static bool[] UltiBuffs { get; set; } = [];
         public static bool UltimateRamdomZombie { get; set; } = false;
         public static bool UltimateSuperGatling { get; set; } = false;
         public static bool UndeadBullet { get; set; } = false;

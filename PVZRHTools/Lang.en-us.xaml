@@ -139,4 +139,6 @@
     <s:String x:Key="Tab2.Page1.ConveyBeltModify">ConveyBeltTypes</s:String>
     <s:String x:Key="Tab1.Page5.JachsonSummonType">PolevaulterSummonType</s:String>
     <s:String x:Key="Tab1.Page6.PlantUpgrade">PlantUpgrade</s:String>
+    <s:String x:Key="Tab2.Page2.BuffRefreshNoLimit">BuffRefreshNoLimit</s:String>
+    <s:String x:Key="Tab2.Page1.VaseLineUp">VaseLineUp</s:String>
 </ResourceDictionary>

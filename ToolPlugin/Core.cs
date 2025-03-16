@@ -1,8 +1,10 @@
-﻿using Il2Cpp;
+﻿using HarmonyLib;
+using Il2Cpp;
 using Il2CppTMPro;
 using MelonLoader;
 using MelonLoader.InternalUtils;
 using MelonLoader.Utils;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
@@ -41,14 +43,6 @@ namespace ToolPlugin
                 {
                     if (plant is not null) plants.Add((int)plant["seedType"]!, (int)plant["seedType"]! + " : " + (string)plant["name"]!);
                 }
-                plants.Add(960, "960 : 电能豌豆");
-                plants.Add(961, "961 : 钻石帝果");
-                plants.Add(962, "962 : 钻石大坚果");
-                plants.Add(963, "963 : 超级铁豌豆射手");
-                plants.Add(200, "200 : 浴火猫尾草");
-                plants.Add(206, "206 : 究极星神卷心菜");
-                plants.Add(205, "205 : 终极金卷光桃");
-                plants.Add(1900, "1900 : 巨型铁豌豆炮台");
                 string zombiesPath = Application.dataPath + "/ZombieStrings.json";
                 string zombiesJson;
                 if (!File.Exists(zombiesPath))
