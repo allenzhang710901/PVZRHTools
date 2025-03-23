@@ -119,7 +119,7 @@ namespace ToolModBepInEx
                     if (InGame())
                     {
                         var t = Board.Instance!.boardTag;
-                        t.enableTravelPlant = UnlockAllFusions || originalTravel;
+                        t.enableAllTravelPlant = UnlockAllFusions || originalTravel;
                         Board.Instance.boardTag = t;
                     }
                 }

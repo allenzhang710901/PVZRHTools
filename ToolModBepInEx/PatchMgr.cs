@@ -11,6 +11,8 @@ using System.IO.Compression;
 using System.Text;
 using TMPro;
 using BepInEx.Logging;
+using BepInEx.Unity.IL2CPP.Utils;
+using System.Collections;
 
 namespace ToolModBepInEx
 {
@@ -452,78 +454,10 @@ namespace ToolModBepInEx
     [HarmonyPatch(typeof(InitBoard))]
     public static class InitBoardPatch
     {
-        [HarmonyPostfix]
-        [HarmonyPatch("RightMoveCamera")]
-        public static void PostRightMoveCamera()
-        {
-            var cs = UnityEngine.Object.FindObjectsOfTypeAll(Il2CppType.Of<CardUIReplacer>());
-            for (int i = cs.Count - 1; i >= 0; i--)
-            {
-                if (cs[i] is not null)
-                {
-                    UnityEngine.Object.Destroy(cs[i]);
-                }
-            }
-
-            CardUIReplacer.Replacers = [];
-            foreach (var c in UnityEngine.Object.FindObjectsOfTypeAll(Il2CppType.Of<CardUI>()))
-            {
-                if (c.GameObject().TryGetComponent<CardUIReplacer>(out var cuir))
-                {
-                    UnityEngine.Object.Destroy(cuir);
-                }
-
-                CardUIReplacer.Replacers.Add(c.GameObject().AddComponent<CardUIReplacer>());
-            }
-            GameAPP.gameAPP.GetOrAddComponent<TravelMgr>();
-            InGameAdvBuffs = new bool[TravelMgr.advancedBuffs.Count];
-            InGameUltiBuffs = new bool[TravelMgr.ultimateBuffs.Count];
-            InGameDebuffs = new bool[TravelMgr.debuffs.Count];
-            Board.Instance.freeCD = FreeCD;
-            var advs = GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().advancedUpgrades;
-            for (int i = 0; i < advs.Count; i++)
-            {
-                if (GameAPP.theBoardType == 3 && Board.Instance.theCurrentSurvivalRound != 1) break;
-                advs[i] = AdvBuffs[i] || advs[i];
-            }
-            var ultis = GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().ultimateUpgrades;
-            for (int i = 0; i < ultis.Count; i++)
-            {
-                if (GameAPP.theBoardType == 3 && Board.Instance.theCurrentSurvivalRound != 1) break;
-                ultis[i] = UltiBuffs[i] || ultis[i];
-            }
-
-            var deb = GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().debuff;
-            for (int i = 0; i < deb.Count; i++)
-            {
-                if (GameAPP.theBoardType == 3 && Board.Instance.theCurrentSurvivalRound != 1) break;
-                deb[i] = Debuffs[i] || deb[i];
-            }
-            InGameAdvBuffs = GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().advancedUpgrades;
-            InGameUltiBuffs = GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().ultimateUpgrades;
-            InGameDebuffs = GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().debuff;
-            if (ZombieSeaLow && SeaTypes.Count > 0)
-            {
-                int i = 0;
-                for (int wave = 0; wave < Board.Instance.theMaxWave; wave++)
-                {
-                    for (int index = 0; index < 100; index++)
-                    {
-                        SetZombieList(index, wave, (ZombieType)SeaTypes[i]);
-                        if (++i >= SeaTypes.Count) i = 0;
-                    }
-                }
-            }
-
-            ChangeCard();
-            SyncInGameBuffs();
-        }
-
         [HarmonyPrefix]
         [HarmonyPatch("ReadySetPlant")]
         public static void PreReadySetPlant()
         {
-            GameAPP.gameAPP.GetOrAddComponent<TravelMgr>();
             if (PatchMgr.GameModes.IsShooting())
             {
                 var t = Board.Instance.boardTag;
@@ -544,6 +478,13 @@ namespace ToolModBepInEx
                 }
             }
             HammerMgrPatchA.OriginalFullCD = UnityEngine.Object.FindObjectsOfTypeAll(Il2CppType.Of<HammerMgr>())[0].Cast<HammerMgr>().fullCD;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch("RightMoveCamera")]
+        public static void PreRightMoveCamera(InitBoard __instance)
+        {
+            __instance.StartCoroutine(PostInitBoard());
         }
     }
 
@@ -867,22 +808,26 @@ namespace ToolModBepInEx
     {
         public static void Postfix(Zombie __instance)
         {
-            if (HealthZombies[__instance.theZombieType] >= 0)
+            try
             {
-                __instance.theMaxHealth = HealthZombies[__instance.theZombieType];
-                __instance.theHealth = __instance.theMaxHealth;
+                if (HealthZombies[__instance.theZombieType] >= 0)
+                {
+                    __instance.theMaxHealth = HealthZombies[__instance.theZombieType];
+                    __instance.theHealth = __instance.theMaxHealth;
+                }
+                if (Health1st[__instance.theFirstArmorType] >= 0 && __instance.theMaxHealth != Health1st[__instance.theFirstArmorType])
+                {
+                    __instance.theFirstArmorMaxHealth = Health1st[__instance.theFirstArmorType];
+                    __instance.theFirstArmorHealth = __instance.theFirstArmorMaxHealth;
+                }
+                if (Health2nd[__instance.theSecondArmorType] >= 0 && __instance.theMaxHealth != Health2nd[__instance.theSecondArmorType])
+                {
+                    __instance.theSecondArmorMaxHealth = Health2nd[__instance.theSecondArmorType];
+                    __instance.theSecondArmorHealth = __instance.theSecondArmorMaxHealth;
+                }
+                __instance.UpdateHealthText();
             }
-            if (Health1st[__instance.theFirstArmorType] >= 0 && __instance.theMaxHealth != Health1st[__instance.theFirstArmorType])
-            {
-                __instance.theFirstArmorMaxHealth = Health1st[__instance.theFirstArmorType];
-                __instance.theFirstArmorHealth = __instance.theFirstArmorMaxHealth;
-            }
-            if (Health2nd[__instance.theSecondArmorType] >= 0 && __instance.theMaxHealth != Health2nd[__instance.theSecondArmorType])
-            {
-                __instance.theSecondArmorMaxHealth = Health2nd[__instance.theSecondArmorType];
-                __instance.theSecondArmorHealth = __instance.theSecondArmorMaxHealth;
-            }
-            __instance.UpdateHealthText();
+            catch { }
         }
     }
 
@@ -964,10 +909,6 @@ namespace ToolModBepInEx
     {
         static PatchMgr()
         {
-            foreach (var z in Enum.GetValues<ZombieType>())
-            {
-                HealthZombies.Add(z, -1);
-            }
             foreach (var f in Enum.GetValues<Zombie.FirstArmorType>())
             {
                 Health1st.Add(f, -1);
@@ -1029,6 +970,75 @@ namespace ToolModBepInEx
         }
 
         public static bool InGame() => Board.Instance is not null && GameAPP.theGameStatus != -2 && GameAPP.theGameStatus != -1 && GameAPP.theGameStatus != 4;
+
+        public static IEnumerator PostInitBoard()
+        {
+            var travelMgr = GameAPP.gameAPP.GetOrAddComponent<TravelMgr>();
+            Board.Instance.freeCD = FreeCD;
+            yield return null;
+            if (!(GameAPP.theBoardType == 3 && Board.Instance.theCurrentSurvivalRound != 1))
+            {
+                yield return null;
+
+                var advs = travelMgr.advancedUpgrades;
+
+                for (int i = 0; i < advs.Count; i++)
+                {
+                    advs[i] = AdvBuffs[i] || advs[i];
+                    yield return null;
+                }
+
+                var ultis = travelMgr.ultimateUpgrades;
+                for (int i = 0; i < ultis.Count; i++)
+                {
+                    ultis[i] = UltiBuffs[i] || ultis[i];
+                    yield return null;
+                }
+
+                var deb = travelMgr.debuff;
+                for (int i = 0; i < deb.Count; i++)
+                {
+                    deb[i] = Debuffs[i] || deb[i];
+                    yield return null;
+                }
+            }
+
+            InGameAdvBuffs = new bool[TravelMgr.advancedBuffs.Count];
+            InGameUltiBuffs = new bool[TravelMgr.ultimateBuffs.Count];
+            InGameDebuffs = new bool[TravelMgr.debuffs.Count];
+            yield return null;
+
+            InGameAdvBuffs = travelMgr.advancedUpgrades;
+            InGameUltiBuffs = travelMgr.ultimateUpgrades;
+            InGameDebuffs = travelMgr.debuff;
+            yield return null;
+            Task.Run(SyncInGameBuffs);
+
+            yield return null;
+            CardUIReplacer.Replacers = [];
+            foreach (var c in UnityEngine.Object.FindObjectsOfTypeAll(Il2CppType.Of<CardUI>()))
+            {
+                if (c.GameObject().TryGetComponent<CardUIReplacer>(out var cuir))
+                {
+                    UnityEngine.Object.Destroy(cuir);
+                }
+                CardUIReplacer.Replacers.Add(c.GameObject().AddComponent<CardUIReplacer>());
+            }
+            ChangeCard();
+            yield return null;
+            if (ZombieSeaLow && SeaTypes.Count > 0)
+            {
+                int i = 0;
+                for (int wave = 0; wave < Board.Instance.theMaxWave; wave++)
+                {
+                    for (int index = 0; index < 100; index++)
+                    {
+                        SetZombieList(index, wave, (ZombieType)SeaTypes[i]);
+                        if (++i >= SeaTypes.Count) i = 0;
+                    }
+                }
+            }
+        }
 
         //感谢@高数带我飞(Github:https://github.com/LibraHp/)的在出怪表修改上的技术支持
         public static unsafe void SetZombieList(int index, int wave, ZombieType value)

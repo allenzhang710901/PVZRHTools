@@ -8,7 +8,6 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using TMPro;
 using ToolModData;
 using UnityEngine;
@@ -22,7 +21,7 @@ namespace ToolModBepInEx
         public static void Postfix() => Core.Instance.Value.LateInit();
     }
 
-    [BepInPlugin("inf75.toolmod", "ToolMod", "3.15")]
+    [BepInPlugin("inf75.toolmod", "ToolMod", "3.16")]
     public class Core : BasePlugin
     {
         public void LateInit()
@@ -38,6 +37,7 @@ namespace ToolModBepInEx
                 MLogger.LogWarning("以下id信息为动态生成，仅适用于当前游戏实例！！！");
                 MLogger.LogWarning("以下id信息为动态生成，仅适用于当前游戏实例！！！");
                 Dictionary<int, string> plants = [];
+                Dictionary<int, string> zombies = [];
                 GameObject gameObject = new();
                 GameObject back = new();
                 back.transform.SetParent(gameObject.transform);
@@ -54,6 +54,7 @@ namespace ToolModBepInEx
                 cost.AddComponent<TextMeshPro>();
                 cost.transform.SetParent(gameObject.transform);
                 var alm = gameObject.AddComponent<AlmanacMgr>();
+                var almz = gameObject.AddComponent<AlmanacMgrZombie>();
                 gameObject.AddComponent<TravelMgr>();
                 alm.plantName = name;
                 for (int i = 0; i < GameAPP.plantPrefab.Count; i++)
@@ -63,29 +64,35 @@ namespace ToolModBepInEx
                         alm.theSeedType = i;
                         alm.InitNameAndInfoFromJson();
                         string item = $"{i} : {alm.plantName.GetComponent<TextMeshPro>().text}";
-                        MLogger.LogInfo($"Dumping Plant String: {item}");
+                        MLogger.Msg($"Dumping Plant String: {item}");
                         plants.Add(i, item);
                         HealthPlants.Add((PlantType)i, -1);
+                        alm.plantName.GetComponent<TextMeshPro>().text = "";
                     }
                 }
-                UnityEngine.Object.Destroy(gameObject);
-                string zombiesPath = Application.dataPath + "/ZombieStrings.json";
-                string zombiesJson;
-                if (!File.Exists(zombiesPath))
+                for (int i = 0; i < GameAPP.zombiePrefab.Count; i++)
                 {
-                    zombiesJson = Resources.Load<TextAsset>("ZombieStrings").text;
-                }
-                else
-                {
-                    zombiesJson = File.ReadAllText(zombiesPath);
-                }
-                Dictionary<int, string> zombies = [];
-                foreach (var zombie in JsonNode.Parse(zombiesJson)!["zombies"]!.AsArray())
-                {
-                    if (zombie is not null) zombies.Add((int)zombie["theZombieType"]!, (int)zombie["theZombieType"]! + " : " + (string)zombie["name"]!);
+                    if (GameAPP.zombiePrefab[i] is not null)
+                    {
+                        almz.theZombieType = (ZombieType)i;
+                        almz.InitNameAndInfoFromJson();
+                        HealthZombies.Add((ZombieType)i, -1);
+
+                        if (!string.IsNullOrEmpty(almz.zombieName.GetComponent<TextMeshPro>().text))
+                        {
+                            string item = $"{i} : {almz.zombieName.GetComponent<TextMeshPro>().text}";
+                            MLogger.Msg($"Dumping Zombie String: {item}");
+                            zombies.Add(i, item);
+                            almz.zombieName.GetComponent<TextMeshPro>().text = "";
+                        }
+                    }
                 }
                 zombies.Add(44, "44 : 僵王博士");
                 zombies.Add(46, "46 : 僵王博士(二阶段)");
+                MLogger.Msg($"Dumping Zombie String: 44 : 僵王博士");
+                MLogger.Msg($"Dumping Zombie String: 46 : 僵王博士(二阶段)");
+
+                UnityEngine.Object.Destroy(gameObject);
                 List<string> advBuffs = [];
                 for (int i = 0; i < TravelMgr.advancedBuffs.Count; i++)
                 {
