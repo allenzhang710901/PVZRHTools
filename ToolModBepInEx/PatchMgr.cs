@@ -41,8 +41,6 @@ namespace ToolModBepInEx
             t.isScaredyDream |= PatchMgr.GameModes.ScaredyDream;
             t.isColumn |= PatchMgr.GameModes.ColumnPlanting;
             t.isSeedRain |= PatchMgr.GameModes.SeedRain;
-            t.isShooting |= PatchMgr.GameModes.IsShooting();
-            t.isExchange |= PatchMgr.GameModes.Exchange;
             t.enableAllTravelPlant |= UnlockAllFusions;
             Board.Instance.boardTag = t;
         }
@@ -425,32 +423,6 @@ namespace ToolModBepInEx
         }
     }
 
-    [HarmonyPatch(typeof(InGameUIMgr), "Start")]
-    public static class InGameUIMgrPatch
-    {
-        public static void Postfix()
-        {
-            if (PatchMgr.GameModes.Shooting1)
-            {
-                GameAPP.theBoardLevel = 40;
-            }
-            if (PatchMgr.GameModes.Shooting2)
-            {
-                GameAPP.theBoardLevel = 72;
-            }
-            if (PatchMgr.GameModes.Shooting3)
-            {
-                GameAPP.theBoardLevel = 84;
-            }
-            if (PatchMgr.GameModes.Shooting4)
-            {
-                GameAPP.theBoardLevel = 88;
-            }
-        }
-
-        public static void Prefix() => GameAPP.theBoardLevel = originalLevel;
-    }
-
     [HarmonyPatch(typeof(InitBoard))]
     public static class InitBoardPatch
     {
@@ -458,13 +430,6 @@ namespace ToolModBepInEx
         [HarmonyPatch("ReadySetPlant")]
         public static void PreReadySetPlant()
         {
-            if (PatchMgr.GameModes.IsShooting())
-            {
-                var t = Board.Instance.boardTag;
-                t.isShooting = true;
-                Board.Instance.boardTag = t;
-            }
-
             if (CardNoInit)
             {
                 if (SeedGroup is not null)
@@ -485,41 +450,6 @@ namespace ToolModBepInEx
         public static void PreRightMoveCamera(InitBoard __instance)
         {
             __instance.StartCoroutine(PostInitBoard());
-        }
-    }
-
-    [HarmonyPatch(typeof(InitZombieList), "InitZombie")]
-    public static class InitZombieListPatch
-    {
-        public static void Prefix(ref int theLevelNumber)
-        {
-            originalLevel = GameAPP.theBoardLevel * 1;
-            if (PatchMgr.GameModes.IsShooting())
-            {
-                var t = Board.Instance.boardTag;
-                t.isShooting = true;
-                Board.Instance.boardTag = t;
-            }
-            if (PatchMgr.GameModes.Shooting1)
-            {
-                GameAPP.theBoardLevel = 40;
-                theLevelNumber = 40;
-            }
-            if (PatchMgr.GameModes.Shooting2)
-            {
-                GameAPP.theBoardLevel = 72;
-                theLevelNumber = 72;
-            }
-            if (PatchMgr.GameModes.Shooting3)
-            {
-                GameAPP.theBoardLevel = 84;
-                theLevelNumber = 84;
-            }
-            if (PatchMgr.GameModes.Shooting4)
-            {
-                GameAPP.theBoardLevel = 88;
-                theLevelNumber = 88;
-            }
         }
     }
 
@@ -831,80 +761,6 @@ namespace ToolModBepInEx
         }
     }
 
-    public class CardUIReplacer : MonoBehaviour
-    {
-        public CardUIReplacer() : base(ClassInjector.DerivedConstructorPointer<CardUIReplacer>()) => ClassInjector.DerivedConstructorBody(this);
-
-        public CardUIReplacer(IntPtr i) : base(i)
-        {
-        }
-
-        //public static implicit operator int(CardUIReplacer r) => (int)r.OriginalID;
-
-        public void ChangeCard(int id, int cost, float cd)
-        {
-            Card.theSeedType = id >= 0 ? id : (int)OriginalID * 1;
-            Card.thePlantType = id >= 0 ? (PlantType)id : OriginalID;
-            Card.theSeedCost = cost >= 0 ? cost : OriginalCost;
-            if (cd >= 0.01)
-            {
-                Card.fullCD = cd;
-            }
-            else if (cd < 0.01 && cd >= 0)
-            {
-                Card.fullCD = 0.01f;
-            }
-            else
-            {
-                Card.fullCD = OriginalCD;
-            }
-            Lawnf.ChangeCardSprite(Card.thePlantType, Card.gameObject);
-        }
-
-        public void Resume() => ChangeCard(-1, -1, -1);
-
-        public void Start()
-        {
-            OriginalID = (PlantType)int.Parse(((int)Card.thePlantType).ToString());
-            OriginalCost = Card.theSeedCost * 1;
-            OriginalCD = Card.fullCD * 1;
-            //Replacers.Add(this);
-            foreach (var re in CardReplaces)
-            {
-                if (re.Enabled && re.ID != 0 && re.ID == (int)Card.thePlantType)
-                {
-                    ChangeCard(re.NewID, re.Sun, re.CD);
-                }
-            }
-            GameObject obj = new("ModifierCardCD");
-            var text = obj.AddComponent<TextMeshProUGUI>();
-            text.font = Resources.Load<TMP_FontAsset>("Fonts/ContinuumBold SDF");
-            text.color = new(228f / 256f, 155f / 256f, 38f / 256f);
-            obj.transform.SetParent(gameObject.transform);
-            obj.transform.localScale = new(0.7f, 0.7f, 0.7f);
-            obj.transform.localPosition = new(39f, 0, 0);
-        }
-
-        public void Update()
-        {
-            if (gameObject.GetComponent<CardUI>().isAvailable || !ShowGameInfo)
-            {
-                gameObject.transform.FindChild("ModifierCardCD").GameObject().active = false;
-            }
-            else
-            {
-                gameObject.transform.FindChild("ModifierCardCD").GameObject().active = true;
-                gameObject.transform.FindChild("ModifierCardCD").GameObject().GetComponent<TextMeshProUGUI>().text = $"{gameObject.GetComponent<CardUI>().CD:N1}/{gameObject.GetComponent<CardUI>().fullCD}";
-            }
-        }
-
-        public static List<CardUIReplacer> Replacers { get; set; } = [];
-        public CardUI Card => gameObject.GetComponent<CardUI>();
-        public float OriginalCD { get; set; }
-        public int OriginalCost { get; set; }
-        public PlantType OriginalID { get; set; }
-    }
-
     public class PatchMgr : MonoBehaviour
     {
         static PatchMgr()
@@ -923,26 +779,6 @@ namespace ToolModBepInEx
 
         public PatchMgr(IntPtr i) : base(i)
         {
-        }
-
-        public static void ChangeCard()
-        {
-            if (!InGame()) return;
-            foreach (var (c, r) in from c in CardUIReplacer.Replacers
-                                   where c is not null
-                                   from r in CardReplaces
-                                   where r.ID == (int)c.OriginalID && r.ID != 0
-                                   select (c, r))
-            {
-                if (r.Enabled)
-                {
-                    c.ChangeCard(r.NewID, r.Sun, r.CD);
-                }
-                else
-                {
-                    c.Resume();
-                }
-            }
         }
 
         //from Gaoshu
@@ -1014,17 +850,6 @@ namespace ToolModBepInEx
             yield return null;
             Task.Run(SyncInGameBuffs);
 
-            yield return null;
-            CardUIReplacer.Replacers = [];
-            foreach (var c in UnityEngine.Object.FindObjectsOfTypeAll(Il2CppType.Of<CardUI>()))
-            {
-                if (c.GameObject().TryGetComponent<CardUIReplacer>(out var cuir))
-                {
-                    UnityEngine.Object.Destroy(cuir);
-                }
-                CardUIReplacer.Replacers.Add(c.GameObject().AddComponent<CardUIReplacer>());
-            }
-            ChangeCard();
             yield return null;
             if (ZombieSeaLow && SeaTypes.Count > 0)
             {
@@ -1165,22 +990,6 @@ namespace ToolModBepInEx
                             CreateZombie.Instance.SetZombie(Mouse.Instance.theMouseRow, AlmanacZombieType, Mouse.Instance.mouseX);
                         }
                     }
-                    if (GameModes.Shooting1)
-                    {
-                        GameAPP.theBoardLevel = 40;
-                    }
-                    if (GameModes.Shooting2)
-                    {
-                        GameAPP.theBoardLevel = 72;
-                    }
-                    if (GameModes.Shooting3)
-                    {
-                        GameAPP.theBoardLevel = 84;
-                    }
-                    if (GameModes.Shooting4)
-                    {
-                        GameAPP.theBoardLevel = 88;
-                    }
                     var t = Board.Instance.boardTag;
                     t.enableTravelPlant = t.enableTravelPlant || UnlockAllFusions;
                     Board.Instance.boardTag = t;
@@ -1238,7 +1047,6 @@ namespace ToolModBepInEx
         public static bool BuffRefreshNoLimit { get; set; } = false;
         public static Dictionary<BulletType, int> BulletDamage { get; set; } = [];
         public static bool CardNoInit { get; set; } = false;
-        public static List<ToolModData.Card> CardReplaces { get; set; } = [];
         public static bool ChomperNoCD { get; set; } = false;
         public static bool CobCannonNoCD { get; set; } = false;
         public static List<int> ConveyBeltTypes { get; set; } = [];

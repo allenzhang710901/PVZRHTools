@@ -11,70 +11,6 @@ using ToolModData;
 
 namespace PVZRHTools
 {
-    public class CardUI
-    {
-        public CardUI()
-        {
-            SetEnabled = false;
-        }
-
-        public Card GetCard() => new()
-        {
-            ID = ID,
-            NewID = NewID,
-            Sun = Sun,
-            CD = (float)CD,
-            Enabled = SetEnabled
-        };
-
-        public double CD { get; set; } = -1;
-
-        public int ID { get; set; } = -1;
-
-        public int NewID { get; set; } = -1;
-
-        public bool SetEnabled
-        {
-            get; set
-            {
-                field = value;
-                if (App.inited)
-                    App.DataSync.Value.SendData(new CardProperties() { CardReplaces = [.. from c in MainWindow.Instance!.ViewModel.CardReplaces select c.CardUI.GetCard()] });
-            }
-        }
-
-        public int Sun { get; set; } = -1;
-    }
-
-    public partial class CardUIVM(CardUI CardUI) : ObservableObject
-    {
-        [ObservableProperty]
-        public partial CardUI CardUI { get; set; } = CardUI;
-
-        public double CD { get => CardUI.CD; set => SetProperty(CardUI.CD, value, CardUI, (t, e) => t.CD = e); }
-
-        public RelayCommand Clear => new(() =>
-        {
-            (Enabled, ID, NewID, CD, Sun) = (false, -1, -1, -1, -1);
-            OnPropertyChanged(new PropertyChangedEventArgs("IsChecked"));
-            OnPropertyChanged(new PropertyChangedEventArgs("IsEnabled"));
-            OnPropertyChanged(new PropertyChangedEventArgs("SelectedValue"));
-            OnPropertyChanged(new PropertyChangedEventArgs("Value"));
-        });
-
-        public bool Enabled
-        {
-            get => CardUI.SetEnabled;
-            set => SetProperty(CardUI.SetEnabled, value, CardUI, (t, e) => t.SetEnabled = e);
-        }
-
-        public int ID { get => CardUI.ID; set => SetProperty(CardUI.ID, value, CardUI, (t, e) => t.ID = e); }
-
-        public int NewID { get => CardUI.NewID; set => SetProperty(CardUI.NewID, value, CardUI, (t, e) => t.NewID = e); }
-
-        public int Sun { get => CardUI.Sun; set => SetProperty(CardUI.Sun, value, CardUI, (t, e) => t.Sun = e); }
-    }
-
     [Serializable]
     public partial class HotkeyUI : IAutoHotKeyProperty
     {
@@ -221,8 +157,6 @@ namespace PVZRHTools
             InGameBuffs = [];
             Debuffs = [];
             InGameDebuffs = [];
-            ImpToBeThrown = 37;
-            JachsonSummonType = 7;
             Times = 1;
             NewZombieUpdateCD = 30;
 
@@ -250,12 +184,6 @@ namespace PVZRHTools
             InGameBuffs.ListChanged += (sender, e) => SyncInGameBuffs();
             Debuffs.ListChanged += (_, _) => SyncTravelBuffs();
             InGameDebuffs.ListChanged += (_, _) => SyncInGameBuffs();
-            CardReplaces = [];
-            for (int i = 0; i < 14; i++)
-            {
-                CardReplaces.Add(new(new()));
-            }
-            CardReplaces.ListChanged += (sender, e) => SyncCards();
             Hotkeys = [];
             foreach (var (h, hui) in from h in KeyCommands let hui = new HotkeyUI() select (h, hui))
             {
@@ -326,7 +254,6 @@ namespace PVZRHTools
             InGameDebuffs = [];
             BuffRefreshNoLimit = s.BuffRefreshNoLimit;
             CardNoInit = s.CardNoInit;
-            CardReplaces = [.. s.CardReplaces];
             ChomperNoCD = s.ChomperNoCD;
             ClearOnWritingField = s.ClearOnWritingField;
             ClearOnWritingZombies = s.ClearOnWritingZombies;
@@ -350,12 +277,10 @@ namespace PVZRHTools
             HammerNoCD = s.HammerNoCD;
             HardPlant = s.HardPlant;
             HyponoEmperorNoCD = s.HyponoEmperorNoCD;
-            ImpToBeThrown = s.ImpToBeThrown;
             IsMindCtrl = s.IsMindCtrl;
             ItemExistForever = s.ItemExistForever;
             ItemType = s.ItemType;
             JackboxNotExplode = s.JackboxNotExplode;
-            JachsonSummonType = s.JachsonSummonType;
             LockBulletType = s.LockBulletType;
             LockMoney = s.LockMoney;
             LockPresent = s.LockPresent;
@@ -404,12 +329,22 @@ namespace PVZRHTools
             int bi = 0;
             foreach (var b in App.InitData.Value.AdvBuffs)
             {
-                InGameBuffs.Add(new(new(bi, b, true, false)));
+                try
+                {
+                    InGameBuffs.Add(new(new(bi, b, true, false)));
+                    TravelBuffs[bi].TravelBuff.Text = b;
+                }
+                catch { }
                 bi++;
             }
             foreach (var b in App.InitData.Value.UltiBuffs)
             {
-                InGameBuffs.Add(new(new(bi, b, true, false)));
+                try
+                {
+                    InGameBuffs.Add(new(new(bi, b, true, false)));
+                    TravelBuffs[bi].TravelBuff.Text = b;
+                }
+                catch { }
                 bi++;
             }
             int di = 0;
@@ -421,7 +356,6 @@ namespace PVZRHTools
             InGameBuffs.ListChanged += (sender, e) => SyncInGameBuffs();
             Debuffs.ListChanged += (_, _) => SyncTravelBuffs();
             InGameDebuffs.ListChanged += (_, _) => SyncInGameBuffs();
-            CardReplaces.ListChanged += (sender, e) => SyncCards();
             int hi = 0;
             Hotkeys = [];
             foreach (var (h, hui) in from h in KeyCommands let hui = new HotkeyUI() select (h, hui))
@@ -437,6 +371,9 @@ namespace PVZRHTools
         }
 
         #region Commands
+
+        [RelayCommand]
+        public void AbyssCheat() => App.DataSync.Value.SendData(new InGameActions() { AbyssCheat = true });
 
         [RelayCommand]
         public void BulletDamage() => App.DataSync.Value.SendData(new ValueProperties() { BulletsDamage = new(BulletDamageType, (int)BulletDamageValue) });
@@ -593,7 +530,7 @@ namespace PVZRHTools
                 new(new("图鉴种植：植物 AlmanacCreatePlant", (KeyCode)keycodes[3])),
                 new(new("图鉴种植：僵尸 AlmanacCreateZombie", (KeyCode)keycodes[4])),
                 new(new("图鉴种植：僵尸是否魅惑 AlmanacZombieMindCtrl", (KeyCode)keycodes[5])),
-                                new(new("图鉴种植：植物罐子 AlmanacCreatePlantVase", (KeyCode)keycodes[6])),
+                new(new("图鉴种植：植物罐子 AlmanacCreatePlantVase", (KeyCode)keycodes[6])),
                 new(new("图鉴种植：僵尸罐子 AlmanacCreateZombieVase", (KeyCode)keycodes[7])),
 
             ];
@@ -633,7 +570,6 @@ namespace PVZRHTools
             {
                 BuffRefreshNoLimit = BuffRefreshNoLimit,
                 CardNoInit = CardNoInit,
-                CardReplaces = [.. CardReplaces],
                 ChomperNoCD = ChomperNoCD,
                 ClearOnWritingField = ClearOnWritingField,
                 ClearOnWritingVases = ClearOnWritingVases,
@@ -657,12 +593,10 @@ namespace PVZRHTools
                 HammerNoCD = HammerNoCD,
                 HardPlant = HardPlant,
                 HyponoEmperorNoCD = HyponoEmperorNoCD,
-                ImpToBeThrown = ImpToBeThrown,
                 IsMindCtrl = IsMindCtrl,
                 ItemExistForever = ItemExistForever,
                 ItemType = ItemType,
                 JackboxNotExplode = JackboxNotExplode,
-                JachsonSummonType = JachsonSummonType,
                 LockBulletType = LockBulletType,
                 LockMoney = LockMoney,
                 LockPresent = LockPresent,
@@ -773,8 +707,6 @@ namespace PVZRHTools
                 ZombieType = ZombieType,
             };
             iga.ZombieSeaTypes.AddRange(from zst in ZombieSeaTypes select zst.Key);
-            List<Card> cards = [];
-            cards.AddRange(from c in CardReplaces select c.CardUI.GetCard());
             SyncAll syncAll = new()
             {
                 BasicProperties = new BasicProperties()
@@ -792,7 +724,6 @@ namespace PVZRHTools
                     HammerNoCD = HammerNoCD,
                     HardPlant = HardPlant,
                     HyponoEmperorNoCD = HyponoEmperorNoCD,
-                    ImpToBeThrown = ImpToBeThrown,
                     ItemExistForever = ItemExistForever,
                     JackboxNotExplode = JackboxNotExplode,
                     LockPresent = LockPresent,
@@ -809,9 +740,7 @@ namespace PVZRHTools
                     HammerFullCD = HammerFullCDEnabled ? (int)HammerFullCD : -1,
                     NewZombieUpdateCD = NewZombieUpdateCD,
                     PlantUpgrade = PlantUpgrade,
-                    JachsonSummonType = JachsonSummonType,
                 },
-                CardProperties = new CardProperties() { CardReplaces = cards },
                 InGameActions = iga,
                 TravelBuffs = new SyncTravelBuff()
                 {
@@ -822,24 +751,13 @@ namespace PVZRHTools
                 ValueProperties = new ValueProperties() { LockBulletType = LockBulletType },
                 GameModes = new GameModes()
                 {
-                    Exchange = Exchange,
                     ScaredyDream = ScaredyDream,
                     ColumnPlanting = ColumnPlanting,
                     SeedRain = SeedRain,
-                    Shooting1 = Shooting1,
-                    Shooting2 = Shooting2,
-                    Shooting3 = Shooting3,
-                    Shooting4 = Shooting4,
                 }
             };
 
             App.DataSync.Value.SendData(syncAll);
-        }
-
-        public void SyncCards()
-        {
-            List<Card> cards = [.. from c in CardReplaces select c.CardUI.GetCard()];
-            App.DataSync.Value.SendData(new CardProperties() { CardReplaces = cards });
         }
 
         public void SyncInGameBuffs()
@@ -937,9 +855,6 @@ namespace PVZRHTools
         }
 
         [RelayCommand]
-        public void Win() => App.DataSync.Value.SendData(new InGameActions() { Win = true });
-
-        [RelayCommand]
         public void WriteField() => App.DataSync.Value.SendData(new InGameActions() { WriteField = FieldString, ClearOnWritingField = ClearOnWritingField });
 
         [RelayCommand]
@@ -976,14 +891,9 @@ namespace PVZRHTools
 
         private void GameModes() => App.DataSync.Value.SendData(new GameModes()
         {
-            Exchange = Exchange,
             ScaredyDream = ScaredyDream,
             ColumnPlanting = ColumnPlanting,
             SeedRain = SeedRain,
-            Shooting1 = Shooting1,
-            Shooting2 = Shooting2,
-            Shooting3 = Shooting3,
-            Shooting4 = Shooting4,
         });
 
         partial void OnBuffRefreshNoLimitChanged(bool value) => App.DataSync.Value.SendData(new InGameActions() { BuffRefreshNoLimit = value });
@@ -1028,11 +938,7 @@ namespace PVZRHTools
 
         partial void OnHyponoEmperorNoCDChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { HyponoEmperorNoCD = value });
 
-        partial void OnImpToBeThrownChanged(int value) => App.DataSync.Value.SendData(new BasicProperties() { ImpToBeThrown = value });
-
         partial void OnItemExistForeverChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { ItemExistForever = value });
-
-        partial void OnJachsonSummonTypeChanged(int value) => App.DataSync.Value.SendData(new BasicProperties() { JachsonSummonType = value });
 
         partial void OnJackboxNotExplodeChanged(bool value) => App.DataSync.Value.SendData(new BasicProperties() { JackboxNotExplode = value });
 
@@ -1205,9 +1111,6 @@ namespace PVZRHTools
         public partial bool CardNoInit { get; set; }
 
         [ObservableProperty]
-        public partial BindingList<CardUIVM> CardReplaces { get; set; }
-
-        [ObservableProperty]
         public partial bool ChomperNoCD { get; set; }
 
         [ObservableProperty]
@@ -1316,9 +1219,6 @@ namespace PVZRHTools
         public partial bool HyponoEmperorNoCD { get; set; }
 
         [ObservableProperty]
-        public partial int ImpToBeThrown { get; set; }
-
-        [ObservableProperty]
         public partial BindingList<TravelBuffVM> InGameBuffs { get; set; }
 
         [ObservableProperty]
@@ -1335,9 +1235,6 @@ namespace PVZRHTools
 
         [ObservableProperty]
         public partial int ItemType { get; set; }
-
-        [ObservableProperty]
-        public partial int JachsonSummonType { get; set; }
 
         [ObservableProperty]
         public partial bool JackboxNotExplode { get; set; }
@@ -1488,6 +1385,8 @@ namespace PVZRHTools
 
         public int Index { get; set; }
         public bool InGame { get; set; }
+
+        [JsonIgnore]
         public string Text { get; set; } = "";
     }
 

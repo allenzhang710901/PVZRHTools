@@ -28,9 +28,7 @@
         public bool? HardPlant { get; set; }
         public bool? HyponoEmperorNoCD { get; set; }
         public readonly int ID => 2;
-        public int? ImpToBeThrown { get; set; }
         public bool? ItemExistForever { get; set; }
-        public int? JachsonSummonType { get; set; }
         public bool? JackboxNotExplode { get; set; }
         public int? LockPresent { get; set; }
         public bool? MineNoCD { get; set; }
@@ -45,33 +43,6 @@
         public bool? UltimateSuperGatling { get; set; }
         public bool? UndeadBullet { get; set; }
         public bool? UnlockAllFusions { get; set; }
-    }
-
-    [Serializable]
-    public struct Card
-    {
-        public Card()
-        {
-        }
-
-        public float CD { get; set; } = -1;
-        public bool Enabled { get; set; } = false;
-
-        public int ID { get; set; } = -1;
-        public int NewID { get; set; } = -1;
-
-        public int Sun { get; set; } = -1;
-    }
-
-    /// <summary>
-    /// modifier->game
-    /// 5
-    /// </summary>
-    [Serializable]
-    public struct CardProperties : ISyncData
-    {
-        public List<Card>? CardReplaces { get; set; }
-        public readonly int ID => 5;
     }
 
     [Serializable]
@@ -90,17 +61,10 @@
         {
         }
 
-        public readonly bool IsShooting() => Shooting1 || Shooting2 || Shooting3 || Shooting4;
-
         public bool ColumnPlanting { get; set; } = false;
-        public bool Exchange { get; set; } = false;
         public readonly int ID => 7;
         public bool ScaredyDream { get; set; } = false;
         public bool SeedRain { get; set; } = false;
-        public bool Shooting1 { get; set; } = false;
-        public bool Shooting2 { get; set; } = false;
-        public bool Shooting3 { get; set; } = false;
-        public bool Shooting4 { get; set; } = false;
     }
 
     /// <summary>
@@ -110,6 +74,7 @@
     [Serializable]
     public struct InGameActions : ISyncData
     {
+        public bool? AbyssCheat { get; set; }
         public bool? BuffRefreshNoLimit { get; set; }
         public bool? Card { get; set; }
         public string? ChangeLevelName { get; set; }
@@ -147,7 +112,6 @@
         public bool? StopSummon { get; set; }
         public bool? SummonMindControlledZombies { get; set; }
         public int? Times { get; set; }
-        public bool? Win { get; set; }
         public string? WriteField { get; set; }
         public string? WriteVases { get; set; }
         public string? WriteZombies { get; set; }
@@ -195,7 +159,6 @@
     public struct SyncAll : ISyncData
     {
         public BasicProperties? BasicProperties { get; set; }
-        public CardProperties? CardProperties { get; set; }
         public GameModes? GameModes { get; set; }
         public readonly int ID => 15;
         public InGameActions? InGameActions { get; set; }

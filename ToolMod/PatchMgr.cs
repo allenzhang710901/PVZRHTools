@@ -38,15 +38,8 @@ namespace ToolMod
             t.isScaredyDream |= PatchMgr.GameModes.ScaredyDream;
             t.isColumn |= PatchMgr.GameModes.ColumnPlanting;
             t.isSeedRain |= PatchMgr.GameModes.SeedRain;
-            t.isShooting |= PatchMgr.GameModes.IsShooting();
-            t.isExchange |= PatchMgr.GameModes.Exchange;
             t.enableAllTravelPlant |= UnlockAllFusions;
             Board.Instance.boardTag = t;
-        }
-
-        public static void Prefix()
-        {
-            originalLevel = GameAPP.theBoardLevel;
         }
     }
 
@@ -78,9 +71,9 @@ namespace ToolMod
         {
             try
             {
-                if (BulletDamage[(BulletType)__instance.theBulletType] >= 0 && __instance.theBulletDamage != BulletDamage[(BulletType)__instance.theBulletType])
+                if (BulletDamage[(BulletType)__instance.theBulletType] >= 0 && __instance.Damage != BulletDamage[(BulletType)__instance.theBulletType])
                 {
-                    __instance.theBulletDamage = BulletDamage[(BulletType)__instance.theBulletType];
+                    __instance.Damage = BulletDamage[(BulletType)__instance.theBulletType];
                 }
             }
             catch { }
@@ -257,10 +250,10 @@ namespace ToolMod
         public static bool Flag { get; set; } = false;
     }
 
-    [HarmonyPatch(typeof(GloveMgr), "Update")]
-    public static class GloveMgrPatchA
+    [HarmonyPatch(typeof(Glove), "Update")]
+    public static class GlovePatchA
     {
-        public static void Postfix(GloveMgr __instance)
+        public static void Postfix(Glove __instance)
         {
             __instance.gameObject.transform.GetChild(0).gameObject.SetActive(!GloveNoCD);
             if (GloveFullCD > 0)
@@ -283,10 +276,10 @@ namespace ToolMod
         }
     }
 
-    [HarmonyPatch(typeof(GloveMgr), "Start")]
-    public static class GloveMgrPatchB
+    [HarmonyPatch(typeof(Glove), "Start")]
+    public static class GlovePatchB
     {
-        public static void Postfix(GloveMgr __instance)
+        public static void Postfix(Glove __instance)
         {
             GameObject obj = new("ModifierGloveCD");
             var text = obj.AddComponent<TextMeshProUGUI>();
@@ -391,14 +384,14 @@ namespace ToolMod
             }
             if (__instance.buttonNumber == 13)
             {
-                BottomEnabled = GameObject.Find("InGameUIFHD").GetComponent<InGameUIMgr>().Bottom.active;
+                BottomEnabled = GameObject.Find("Bottom") is not null;
             }
         }
 
         public static bool BottomEnabled { get; set; } = false;
     }
 
-    [HarmonyPatch(typeof(InGameText), "EnableText")]
+    [HarmonyPatch(typeof(InGameText), "ShowText")]
     public static class InGameTextPatch
     {
         public static void Postfix()
@@ -422,32 +415,6 @@ namespace ToolMod
         }
     }
 
-    [HarmonyPatch(typeof(InGameUIMgr), "Start")]
-    public static class InGameUIMgrPatch
-    {
-        public static void Postfix()
-        {
-            if (PatchMgr.GameModes.Shooting1)
-            {
-                GameAPP.theBoardLevel = 40;
-            }
-            if (PatchMgr.GameModes.Shooting2)
-            {
-                GameAPP.theBoardLevel = 72;
-            }
-            if (PatchMgr.GameModes.Shooting3)
-            {
-                GameAPP.theBoardLevel = 84;
-            }
-            if (PatchMgr.GameModes.Shooting4)
-            {
-                GameAPP.theBoardLevel = 88;
-            }
-        }
-
-        public static void Prefix() => GameAPP.theBoardLevel = originalLevel;
-    }
-
     [HarmonyPatch(typeof(InitBoard))]
     public static class InitBoardPatch
     {
@@ -455,13 +422,6 @@ namespace ToolMod
         [HarmonyPatch("ReadySetPlant")]
         public static void PreReadySetPlant()
         {
-            if (PatchMgr.GameModes.IsShooting())
-            {
-                var t = Board.Instance.boardTag;
-                t.isShooting = true;
-                Board.Instance.boardTag = t;
-            }
-
             if (CardNoInit)
             {
                 if (SeedGroup is not null)
@@ -482,41 +442,6 @@ namespace ToolMod
         public static void PreRightMoveCamera()
         {
             MelonCoroutines.Start(PostInitBoard());
-        }
-    }
-
-    [HarmonyPatch(typeof(InitZombieList), "InitZombie")]
-    public static class InitZombieListPatch
-    {
-        public static void Prefix(ref int theLevelNumber)
-        {
-            originalLevel = GameAPP.theBoardLevel * 1;
-            if (PatchMgr.GameModes.IsShooting())
-            {
-                var t = Board.Instance.boardTag;
-                t.isShooting = true;
-                Board.Instance.boardTag = t;
-            }
-            if (PatchMgr.GameModes.Shooting1)
-            {
-                GameAPP.theBoardLevel = 40;
-                theLevelNumber = 40;
-            }
-            if (PatchMgr.GameModes.Shooting2)
-            {
-                GameAPP.theBoardLevel = 72;
-                theLevelNumber = 72;
-            }
-            if (PatchMgr.GameModes.Shooting3)
-            {
-                GameAPP.theBoardLevel = 84;
-                theLevelNumber = 84;
-            }
-            if (PatchMgr.GameModes.Shooting4)
-            {
-                GameAPP.theBoardLevel = 88;
-                theLevelNumber = 88;
-            }
         }
     }
 
@@ -543,7 +468,7 @@ namespace ToolMod
                 {
                     __instance.thePlantMaxHealth = HealthPlants[__instance.thePlantType];
                     __instance.thePlantHealth = __instance.thePlantMaxHealth;
-                    __instance.UpdateHealthText();
+                    __instance.UpdateText();
                 }
             }
             catch { }
@@ -733,7 +658,7 @@ namespace ToolMod
         }
     }
 
-    [HarmonyPatch(typeof(SuperSnowGatling), "AnimShoot")]
+    [HarmonyPatch(typeof(SuperSnowGatling), "Shoot1")]
     public static class SuperSnowGatlingPatchB
     {
         public static void Postfix(SuperSnowGatling __instance)
@@ -820,81 +745,6 @@ namespace ToolMod
     }
 
     [RegisterTypeInIl2Cpp]
-    public class CardUIReplacer : MonoBehaviour
-    {
-        public CardUIReplacer() : base(ClassInjector.DerivedConstructorPointer<CardUIReplacer>()) => ClassInjector.DerivedConstructorBody(this);
-
-        public CardUIReplacer(IntPtr i) : base(i)
-        {
-        }
-
-        //public static implicit operator int(CardUIReplacer r) => (int)r.OriginalID;
-
-        public void ChangeCard(int id, int cost, float cd)
-        {
-            Card.theSeedType = id >= 0 ? id : (int)OriginalID * 1;
-            Card.thePlantType = id >= 0 ? (PlantType)id : OriginalID;
-            Card.theSeedCost = cost >= 0 ? cost : OriginalCost;
-            if (cd >= 0.01)
-            {
-                Card.fullCD = cd;
-            }
-            else if (cd < 0.01 && cd >= 0)
-            {
-                Card.fullCD = 0.01f;
-            }
-            else
-            {
-                Card.fullCD = OriginalCD;
-            }
-            Lawnf.ChangeCardSprite(Card.thePlantType, Card.gameObject);
-        }
-
-        public void Resume() => ChangeCard(-1, -1, -1);
-
-        public void Start()
-        {
-            OriginalID = (PlantType)int.Parse(((int)Card.thePlantType).ToString());
-            OriginalCost = Card.theSeedCost * 1;
-            OriginalCD = Card.fullCD * 1;
-            //Replacers.Add(this);
-            foreach (var re in CardReplaces)
-            {
-                if (re.Enabled && re.ID != 0 && re.ID == (int)Card.thePlantType)
-                {
-                    ChangeCard(re.NewID, re.Sun, re.CD);
-                }
-            }
-            GameObject obj = new("ModifierCardCD");
-            var text = obj.AddComponent<TextMeshProUGUI>();
-            text.font = Resources.Load<TMP_FontAsset>("Fonts/ContinuumBold SDF");
-            text.color = new(228f / 256f, 155f / 256f, 38f / 256f);
-            obj.transform.SetParent(gameObject.transform);
-            obj.transform.localScale = new(0.7f, 0.7f, 0.7f);
-            obj.transform.localPosition = new(39f, 0, 0);
-        }
-
-        public void Update()
-        {
-            if (gameObject.GetComponent<CardUI>().isAvailable || !ShowGameInfo)
-            {
-                gameObject.transform.FindChild("ModifierCardCD").GameObject().active = false;
-            }
-            else
-            {
-                gameObject.transform.FindChild("ModifierCardCD").GameObject().active = true;
-                gameObject.transform.FindChild("ModifierCardCD").GameObject().GetComponent<TextMeshProUGUI>().text = $"{gameObject.GetComponent<CardUI>().CD:N1}/{gameObject.GetComponent<CardUI>().fullCD}";
-            }
-        }
-
-        public static List<CardUIReplacer> Replacers { get; set; } = [];
-        public CardUI Card => gameObject.GetComponent<CardUI>();
-        public float OriginalCD { get; set; }
-        public int OriginalCost { get; set; }
-        public PlantType OriginalID { get; set; }
-    }
-
-    [RegisterTypeInIl2Cpp]
     public class PatchMgr : MonoBehaviour
     {
         static PatchMgr()
@@ -909,30 +759,11 @@ namespace ToolMod
             }
         }
 
+        //public static PlantDataLoader.PlantData_ PlantData => PlantDataLoader.plantDatas;
         public PatchMgr() : base(ClassInjector.DerivedConstructorPointer<PatchMgr>()) => ClassInjector.DerivedConstructorBody(this);
 
         public PatchMgr(IntPtr i) : base(i)
         {
-        }
-
-        public static void ChangeCard()
-        {
-            if (!InGame()) return;
-            foreach (var (c, r) in from c in CardUIReplacer.Replacers
-                                   where c is not null
-                                   from r in CardReplaces
-                                   where r.ID == (int)c.OriginalID && r.ID != 0
-                                   select (c, r))
-            {
-                if (r.Enabled)
-                {
-                    c.ChangeCard(r.NewID, r.Sun, r.CD);
-                }
-                else
-                {
-                    c.Resume();
-                }
-            }
         }
 
         //from Gaoshu
@@ -966,7 +797,7 @@ namespace ToolMod
             var travelMgr = GameAPP.gameAPP.GetOrAddComponent<TravelMgr>();
             Board.Instance.freeCD = FreeCD;
             yield return null;
-            if (!(GameAPP.theBoardType == 3 && Board.Instance.theCurrentSurvivalRound != 1))
+            if (!(GameAPP.theBoardType == (LevelType)3 && Board.Instance.theCurrentSurvivalRound != 1))
             {
                 yield return null;
 
@@ -1004,17 +835,6 @@ namespace ToolMod
             yield return null;
             Task.Run(SyncInGameBuffs);
 
-            yield return null;
-            CardUIReplacer.Replacers = [];
-            foreach (var c in UnityEngine.Object.FindObjectsOfTypeAll(Il2CppType.Of<CardUI>()))
-            {
-                if (c.GameObject().TryGetComponent<CardUIReplacer>(out var cuir))
-                {
-                    UnityEngine.Object.Destroy(cuir);
-                }
-                CardUIReplacer.Replacers.Add(c.GameObject().AddComponent<CardUIReplacer>());
-            }
-            ChangeCard();
             yield return null;
             if (ZombieSeaLow && SeaTypes.Count > 0)
             {
@@ -1082,12 +902,40 @@ namespace ToolMod
         public void Update()
         {
             if (GameAPP.theGameStatus is 0 or 2 or 3)
+            {
+                if (Input.GetKeyDown(Core.KeyTimeStop.Value.Value))
+                {
+                    TimeStop = !TimeStop;
+                    TimeSlow = false;
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha3))
+                {
+                    TimeStop = false;
+                    TimeSlow = !TimeSlow;
+                }
+                if (Input.GetKeyDown(Core.KeyShowGameInfo.Value.Value))
+                {
+                    ShowGameInfo = !ShowGameInfo;
+                }
+                if (!TimeStop && !TimeSlow)
+                {
+                    Time.timeScale = SyncSpeed;
+                }
+
+                if (!TimeStop && TimeSlow)
+                {
+                    Time.timeScale = 0.2f;
+                }
+                if (InGameBtnPatch.BottomEnabled || (TimeStop && !TimeSlow))
+                {
+                    Time.timeScale = 0;
+                }
+
                 try
                 {
-                    var slow = GameObject.Find("InGameUIFHD").GetComponent<InGameUIMgr>().SlowTrigger.transform;
+                    var slow = GameObject.Find("SlowTrigger").transform;
                     slow.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text = $"时停(x{Time.timeScale})";
                     slow.GetChild(1).gameObject.GetComponent<TextMeshProUGUI>().text = $"时停(x{Time.timeScale})";
-
                     if (Input.GetKeyDown(Core.KeyTopMostCardBank.Value.Value))
                     {
                         if (GameAPP.canvas.GetComponent<Canvas>().sortingLayerName == "Default")
@@ -1100,33 +948,6 @@ namespace ToolMod
                         }
                     }
 
-                    if (Input.GetKeyDown(Core.KeyTimeStop.Value.Value))
-                    {
-                        TimeStop = !TimeStop;
-                        TimeSlow = false;
-                    }
-                    if (Input.GetKeyDown(KeyCode.Alpha3))
-                    {
-                        TimeStop = false;
-                        TimeSlow = !TimeSlow;
-                    }
-                    if (Input.GetKeyDown(Core.KeyShowGameInfo.Value.Value))
-                    {
-                        ShowGameInfo = !ShowGameInfo;
-                    }
-                    if (!TimeStop && !TimeSlow)
-                    {
-                        Time.timeScale = SyncSpeed;
-                    }
-
-                    if (!TimeStop && TimeSlow)
-                    {
-                        Time.timeScale = 0.2f;
-                    }
-                    if (InGameBtnPatch.BottomEnabled || (TimeStop && !TimeSlow))
-                    {
-                        Time.timeScale = 0;
-                    }
                     if (Input.GetKeyDown(Core.KeyAlmanacCreatePlant.Value.Value) && AlmanacSeedType != -1)
                     {
                         CreatePlant.Instance.SetPlant(Mouse.Instance.theMouseColumn, Mouse.Instance.theMouseRow, (PlantType)AlmanacSeedType);
@@ -1154,32 +975,13 @@ namespace ToolMod
                     {
                         GridItem.SetGridItem(Mouse.Instance.theMouseColumn, Mouse.Instance.theMouseRow, GridItemType.ScaryPot).theZombieType = AlmanacZombieType;
                     }
-                    if (GameModes.Shooting1)
-                    {
-                        GameAPP.theBoardLevel = 40;
-                    }
-                    if (GameModes.Shooting2)
-                    {
-                        GameAPP.theBoardLevel = 72;
-                    }
-                    if (GameModes.Shooting3)
-                    {
-                        GameAPP.theBoardLevel = 84;
-                    }
-                    if (GameModes.Shooting4)
-                    {
-                        GameAPP.theBoardLevel = 88;
-                    }
                     var t = Board.Instance.boardTag;
                     t.enableTravelPlant = t.enableTravelPlant || UnlockAllFusions;
                     Board.Instance.boardTag = t;
                 }
                 catch (NullReferenceException) { }
-            if (!InGame()) return;
-            if (GameAPP.theGameStatus is 1)
-            {
-                GameAPP.theBoardLevel = originalLevel;
             }
+            if (!InGame()) return;
             if (LockSun)
             {
                 Board.Instance.theSun = LockSunCount;
@@ -1227,7 +1029,6 @@ namespace ToolMod
         public static bool BuffRefreshNoLimit { get; set; } = false;
         public static Dictionary<BulletType, int> BulletDamage { get; set; } = [];
         public static bool CardNoInit { get; set; } = false;
-        public static List<ToolModData.Card> CardReplaces { get; set; } = [];
         public static bool ChomperNoCD { get; set; } = false;
         public static bool CobCannonNoCD { get; set; } = false;
         public static List<int> ConveyBeltTypes { get; set; } = [];
@@ -1299,7 +1100,6 @@ namespace ToolMod
         public static bool ZombieSea { get; set; } = false;
         public static int ZombieSeaCD { get; set; } = 40;
         public static bool ZombieSeaLow { get; set; } = false;
-        internal static int originalLevel;
         internal static bool originalTravel;
         private static int garlicDayTime = 0;
         private static int seaTime = 0;

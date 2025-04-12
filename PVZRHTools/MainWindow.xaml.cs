@@ -82,19 +82,33 @@ namespace PVZRHTools
 
         private void ComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            if (App.inited)
+            if (App.inited && sender is ComboBox)
             {
                 Application.Current.Resources.MergedDictionaries.RemoveAt(2);
-                Application.Current.Resources.MergedDictionaries.Add(!(sender is ComboBox box && box.Text == "English") ? LangEN_US : LangZH_CN);
+                ResourceDictionary lang;
+                if ((string?)((System.Windows.Controls.ComboBoxItem?)e.AddedItems[0]!).Content == "简体中文")
+                {
+                    lang = LangZH_CN;
+                }
+                else if ((string?)((System.Windows.Controls.ComboBoxItem?)e.AddedItems[0]!).Content == "English")
+                {
+                    lang = LangEN_US;
+                }
+                else
+                {
+                    lang = LangRU_RU;
+                }
+
+                Application.Current.Resources.MergedDictionaries.Add(lang);
                 OnApplyTemplate();
             }
         }
 
         public static MainWindow? Instance { get; set; }
         public static ResourceDictionary LangEN_US => new() { Source = new("/Lang.en-us.xaml", UriKind.Relative) };
+        public static ResourceDictionary LangRU_RU => new() { Source = new("/Lang.ru-ru.xaml", UriKind.Relative) };
         public static ResourceDictionary LangZH_CN => new() { Source = new("/Lang.zh-cn.xaml", UriKind.Relative) };
         public ModifierSprite ModifierSprite { get; set; }
         public ModifierViewModel ViewModel => (ModifierViewModel)DataContext;
-
     }
 }

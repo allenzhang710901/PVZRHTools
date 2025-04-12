@@ -2,6 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:s="clr-namespace:System;assembly=mscorlib">
     <s:String x:Key="Modify">修改</s:String>
+    <s:String x:Key="Tab0.Header">常用功能</s:String>
 
     <s:String x:Key="Tab1.Header">全局特性修改</s:String>
     <s:String x:Key="Tab2.Header">游戏内操作</s:String>
@@ -66,7 +67,7 @@
     <s:String x:Key="Tab1.Page6.UndeadBullet">子弹无限穿透</s:String>
     <s:String x:Key="Tab1.Page6.DevLour">窝红温了</s:String>
     <s:String x:Key="Tab1.Page6.DevLour.Tooltip">开发者模式珞瓜，植物叠太多可能导致问题，仅供娱乐</s:String>
-    <s:String x:Key="Tab2.Page1.Header">生成操作</s:String>
+    <s:String x:Key="Tab2.Page1.Header">布阵</s:String>
     <s:String x:Key="Tab2.Page1.Description">行、列号设为0表示整行/整列</s:String>
     <s:String x:Key="Tab2.Page1.Row">行：</s:String>
     <s:String x:Key="Tab2.Page1.Col">列：</s:String>
@@ -142,4 +143,5 @@
     <s:String x:Key="Tab1.Page6.PlantUpgrade">植物升级</s:String>
     <s:String x:Key="Tab2.Page2.BuffRefreshNoLimit">旅行词条无限刷新</s:String>
     <s:String x:Key="Tab2.Page1.VaseLineUp">罐子布阵：</s:String>
+    <s:String x:Key="Tab0.AbyssCheat">深渊作弊</s:String>
 </ResourceDictionary>

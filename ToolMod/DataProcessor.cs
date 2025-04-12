@@ -40,7 +40,7 @@ namespace ToolMod
                             {
                                 pl.thePlantMaxHealth = HealthPlants[pl.thePlantType];
                                 if (pl.thePlantHealth > pl.thePlantMaxHealth) pl.thePlantHealth = pl.thePlantHealth;
-                                pl.UpdateHealthText();
+                                pl.UpdateText();
                             }
                         }
                     }
@@ -143,13 +143,11 @@ namespace ToolMod
                 if (p.UndeadBullet is not null) UndeadBullet = (bool)p.UndeadBullet;
                 if (p.GarlicDay is not null) GarlicDay = (bool)p.GarlicDay;
                 if (p.DevLour is not null) DevLour = (bool)p.DevLour;
-                if (p.ImpToBeThrown is not null) ImpToBeThrown = (int)p.ImpToBeThrown;
                 if (p.HammerFullCD is not null) HammerFullCD = (double)p.HammerFullCD;
                 if (p.GloveFullCD is not null) GloveFullCD = (double)p.GloveFullCD;
                 if (p.NewZombieUpdateCD is not null) NewZombieUpdateCD = (float)p.NewZombieUpdateCD;
                 if (p.UltimateSuperGatling is not null) UltimateSuperGatling = (bool)p.UltimateSuperGatling;
                 if (p.PlantUpgrade is not null) PlantUpgrade = (bool)p.PlantUpgrade;
-                if (p.JachsonSummonType is not null) JachsonSummonType = (int)p.JachsonSummonType;
                 return;
             }
             if (data is InGameHotkeys h)
@@ -168,7 +166,7 @@ namespace ToolMod
                 }
                 if (s.UltiTravelBuff is not null)
                 {
-                    UltiBuffs = [.. s.UltiTravelBuff];
+                    PatchMgr.UltiBuffs = [.. s.UltiTravelBuff];
                 }
                 if (s.Debuffs is not null)
                 {
@@ -189,16 +187,6 @@ namespace ToolMod
                         InGameDebuffs = [.. s.DebuffsInGame];
                     }
                     UpdateInGameBuffs();
-                }
-                return;
-            }
-            if (data is CardProperties ca)
-            {
-                if (ca.CardReplaces is not null)
-                {
-                    CardReplaces = ca.CardReplaces;
-                    if (InGame())
-                        ChangeCard();
                 }
                 return;
             }
@@ -242,6 +230,12 @@ namespace ToolMod
                 {
                     ConveyBeltTypes = iga.ConveyBeltTypes;
                 }
+                if (iga.AbyssCheat is not null)
+                {
+                    GameAPP.gameAPP.GetComponent<AbyssManager>().money = 99999999;
+                    GameAPP.gameAPP.GetComponent<AbyssManager>().refreshCount = 99999999;
+                    GameAPP.gameAPP.GetComponent<AbyssManager>().maxPlantCount = 99999999;
+                }
                 if (!InGame()) return;
 
                 if (iga.Row is not null && iga.Column is not null && iga.PlantType is not null && iga.Times is not null)
@@ -250,42 +244,55 @@ namespace ToolMod
                     int r = (int)iga.Row;
                     int c = (int)iga.Column;
                     if (iga.Times > 50) iga.Times = 50;
-
-                    for (int n = 0; n < iga.Times; n++)
+                    try
                     {
-                        if (r * r + c * c == 0)
+                        for (int n = 0; n < iga.Times; n++)
                         {
-                            for (int i = 0; i < Board.Instance!.rowNum; i++)
+                            if (r * r + c * c == 0)
                             {
-                                for (int j = 0; j < Board.Instance.columnNum; j++)
+                                for (int i = 0; i < Board.Instance!.rowNum; i++)
                                 {
-                                    CreatePlant.Instance.SetPlant(j, i, (PlantType)id);
+                                    for (int j = 0; j < Board.Instance.columnNum; j++)
+                                    {
+                                        CreatePlant.Instance.SetPlant(j, i, (PlantType)id);
+                                    }
                                 }
+                                continue;
                             }
-                            continue;
-                        }
-                        ;
-                        if (r == 0 && c != 0)
-                        {
-                            for (int j = 0; j < Board.Instance!.columnNum; j++)
+                            ;
+                            if (r == 0 && c != 0)
                             {
-                                CreatePlant.Instance.SetPlant(c - 1, j, (PlantType)id);
+                                for (int j = 0; j < Board.Instance!.columnNum; j++)
+                                {
+                                    CreatePlant.Instance.SetPlant(c - 1, j, (PlantType)id);
+                                }
+                                continue;
                             }
-                            continue;
-                        }
-                        if (c == 0 && r != 0)
-                        {
-                            for (int j = 0; j < Board.Instance!.columnNum; j++)
+                            if (c == 0 && r != 0)
                             {
-                                CreatePlant.Instance.SetPlant(j, r - 1, (PlantType)id);
+                                for (int j = 0; j < Board.Instance!.columnNum; j++)
+                                {
+                                    CreatePlant.Instance.SetPlant(j, r - 1, (PlantType)id);
+                                }
+                                continue;
+                            }
+                            if (c > 0 && r > 0 && c <= Board.Instance!.columnNum && r <= Board.Instance.rowNum)
+                            {
+                                CreatePlant.Instance.SetPlant(c - 1, r - 1, (PlantType)id);
                             }
                             continue;
                         }
-                        if (c > 0 && r > 0 && c <= Board.Instance!.columnNum && r <= Board.Instance.rowNum)
+                    }
+                    catch
+                    {
+                        if (id is 300)
                         {
-                            CreatePlant.Instance.SetPlant(c - 1, r - 1, (PlantType)id);
+                            InGameText.Instance.ShowText("不支持此操作，用豌豆代替", 5);
                         }
-                        continue;
+                        else
+                        {
+                            throw;
+                        }
                     }
                 }
                 if (iga.Row is not null
@@ -378,7 +385,7 @@ namespace ToolMod
                             }
                         }
                     }
-                        ;
+
                     if (r == 0 && c != 0)
                     {
                         for (int j = 0; j < Board.Instance!.columnNum; j++)
@@ -500,15 +507,12 @@ namespace ToolMod
                         try { (Board.Instance.zombieArray[j])?.SetMindControl(); } catch { }
                     }
                 }
-                if (iga.Win is not null)
-                {
-                    Destroy(GameAPP.board);
-                    UIMgr.EnterMainMenu();
-                }
                 if (iga.ChangeLevelName is not null)
                 {
-                    var uimgr = GameObject.Find("InGameUIFHD").GetComponent<InGameUIMgr>();
-                    uimgr.ChangeString(new([
+                    var uimgr = InGameUI.Instance;
+                    if (uimgr is not null)
+                    {
+                        uimgr.ChangeString(new([
                         uimgr.LevelName1.GetComponent<TextMeshProUGUI>(),
                         uimgr.LevelName2.GetComponent<TextMeshProUGUI>(),
                         uimgr.LevelName3.GetComponent<TextMeshProUGUI>(),
@@ -516,12 +520,13 @@ namespace ToolMod
                         uimgr.LevelName2.transform.GetChild(0).GameObject().GetComponent<TextMeshProUGUI>(),
                         uimgr.LevelName3.transform.GetChild(0).GameObject().GetComponent<TextMeshProUGUI>(),
                         ]), iga.ChangeLevelName);
+                    }
                 }
                 if (iga.ShowText is not null)
                 {
                     try
                     {
-                        GameObject.Find("Tutor").GetComponent<InGameText>().EnableText(iga.ShowText, 5);
+                        InGameText.Instance.ShowText(iga.ShowText, 5);
                     }
                     catch { }
                 }
@@ -647,7 +652,7 @@ namespace ToolMod
                     List<VaseInfo> vases = [];
                     foreach (var vase in Board.Instance.griditemArray)
                     {
-                        if (vase is null || vase.theItemType is not 4 or 5 or 6) continue;
+                        if (vase is null || vase.theItemType is not (GridItemType)4 or (GridItemType)5 or (GridItemType)6) continue;
                         vases.Add(new()
                         {
                             Row = vase.theItemRow,
@@ -672,7 +677,7 @@ namespace ToolMod
                             {
                                 for (int i = Board.Instance.griditemArray.Count - 1; i >= 0; i--)
                                 {
-                                    if (Board.Instance.griditemArray[i] is not null && Board.Instance.griditemArray[i].theItemType is 4 or 5 or 6)
+                                    if (Board.Instance.griditemArray[i] is not null && Board.Instance.griditemArray[i].theItemType is (GridItemType)4 or (GridItemType)5 or (GridItemType)6)
                                     {
                                         Board.Instance.griditemArray[i].gameObject.active = false;
                                         UnityEngine.Object.Destroy(Board.Instance.griditemArray[i]);
@@ -694,7 +699,7 @@ namespace ToolMod
                 if (iga.Card is not null
                   && iga.PlantType is not null)
                 {
-                    Lawnf.SetDroppedCard(new(0f, 0f), (PlantType)iga.PlantType).GameObject().transform.SetParent(GameObject.Find("InGameUIFHD").transform);
+                    Lawnf.SetDroppedCard(new(0f, 0f), (PlantType)iga.PlantType).GameObject().transform.SetParent(InGameUI.Instance.transform);
                 }
                 if (iga.ReadZombies is not null)
                 {
@@ -769,32 +774,11 @@ namespace ToolMod
 
                 if (InGame())
                 {
-                    originalLevel = GameAPP.theBoardLevel;
                     var t = Board.Instance.boardTag;
                     t.isScaredyDream = PatchMgr.GameModes.ScaredyDream;
                     t.isColumn = PatchMgr.GameModes.ColumnPlanting;
                     t.isSeedRain = PatchMgr.GameModes.SeedRain;
-                    t.isShooting = PatchMgr.GameModes.IsShooting();
-                    t.isExchange = PatchMgr.GameModes.Exchange;
                     Board.Instance.boardTag = t;
-                    if (PatchMgr.GameModes.Shooting1)
-                    {
-                        GameAPP.theBoardLevel = 40;
-                    }
-
-                    if (PatchMgr.GameModes.Shooting2)
-                    {
-                        GameAPP.theBoardLevel = 72;
-                    }
-
-                    if (PatchMgr.GameModes.Shooting3)
-                    {
-                        GameAPP.theBoardLevel = 84;
-                    }
-                    if (PatchMgr.GameModes.Shooting4)
-                    {
-                        GameAPP.theBoardLevel = 88;
-                    }
                 }
                 return;
             }
@@ -829,11 +813,6 @@ namespace ToolMod
                             ProcessData(JsonSerializer.Deserialize<SyncTravelBuff>(json));
                             break;
                         }
-                    case 5:
-                        {
-                            ProcessData(JsonSerializer.Deserialize<CardProperties>(json));
-                            break;
-                        }
                     case 6:
                         {
                             ProcessData(JsonSerializer.Deserialize<InGameActions>(json));
@@ -850,7 +829,6 @@ namespace ToolMod
                             ProcessData((SyncTravelBuff)all.TravelBuffs!);
                             ProcessData((InGameActions)all.InGameActions!);
                             ProcessData((BasicProperties)all.BasicProperties!);
-                            ProcessData((CardProperties)all.CardProperties!);
                             ProcessData((ValueProperties)all.ValueProperties!);
                             ProcessData((GameModes)all.GameModes!);
                             break;
@@ -864,6 +842,10 @@ namespace ToolMod
                     default:
                         break;
                 }
+            }
+            catch (JsonException)
+            {
+                Core.Instance.Value.LoggerInstance.Error("操作失败，可能是点太快或设置词条时出错，取消后重设置一下吧。");
             }
             catch (Exception ex)
             {

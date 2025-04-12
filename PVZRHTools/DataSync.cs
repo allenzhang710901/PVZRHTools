@@ -159,7 +159,6 @@ namespace PVZRHTools
                 2 => BasicPropertiesSGC.Default.BasicProperties,
                 3 => InGameHotkeysSGC.Default.InGameHotkeys,
                 4 => SyncTravelBuffSGC.Default.SyncTravelBuff,
-                5 => CardPropertiesSGC.Default.CardProperties,
                 6 => InGameActionsSGC.Default.InGameActions,
                 7 => GameModesSGC.Default.GameModes,
                 15 => SyncAllSGC.Default.SyncAll,

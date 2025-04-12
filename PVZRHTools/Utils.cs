@@ -1,11 +1,8 @@
 ﻿using System.Collections;
-using System.Windows.Controls;
-using System.Windows;
 using System.Text.Json.Serialization;
+using System.Windows;
+using System.Windows.Controls;
 using ToolModData;
-using System.ComponentModel;
-using System.Globalization;
-using System.Resources;
 
 namespace PVZRHTools
 {
@@ -59,13 +56,6 @@ namespace PVZRHTools
     [JsonSourceGenerationOptions(WriteIndented = true)]
     [JsonSerializable(typeof(BasicProperties))]
     internal partial class BasicPropertiesSGC : JsonSerializerContext
-
-    {
-    }
-
-    [JsonSourceGenerationOptions(WriteIndented = true)]
-    [JsonSerializable(typeof(CardProperties))]
-    internal partial class CardPropertiesSGC : JsonSerializerContext
 
     {
     }

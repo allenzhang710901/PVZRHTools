@@ -1,20 +1,10 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-
-namespace PVZRHTools
+﻿namespace PVZRHTools
 {
     [Serializable]
     public struct ModifierSaveModel
     {
         public bool BuffRefreshNoLimit { get; set; }
         public bool CardNoInit { get; set; }
-        public List<CardUIVM> CardReplaces { get; set; }
         public bool ChomperNoCD { get; set; }
         public bool ClearOnWritingField { get; set; }
         public bool ClearOnWritingVases { get; set; }
@@ -43,11 +33,9 @@ namespace PVZRHTools
         public bool HardPlant { get; set; }
         public List<HotkeyUIVM> Hotkeys { get; set; }
         public bool HyponoEmperorNoCD { get; set; }
-        public int ImpToBeThrown { get; set; }
         public bool IsMindCtrl { get; set; }
         public bool ItemExistForever { get; set; }
         public int ItemType { get; set; }
-        public int JachsonSummonType { get; set; }
         public bool JackboxNotExplode { get; set; }
         public int LockBulletType { get; set; }
         public bool LockMoney { get; set; }

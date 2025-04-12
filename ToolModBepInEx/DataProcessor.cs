@@ -141,13 +141,11 @@ namespace ToolModBepInEx
                 if (p.UndeadBullet is not null) UndeadBullet = (bool)p.UndeadBullet;
                 if (p.GarlicDay is not null) GarlicDay = (bool)p.GarlicDay;
                 if (p.DevLour is not null) DevLour = (bool)p.DevLour;
-                if (p.ImpToBeThrown is not null) ImpToBeThrown = (int)p.ImpToBeThrown;
                 if (p.HammerFullCD is not null) HammerFullCD = (double)p.HammerFullCD;
                 if (p.GloveFullCD is not null) GloveFullCD = (double)p.GloveFullCD;
                 if (p.NewZombieUpdateCD is not null) NewZombieUpdateCD = (float)p.NewZombieUpdateCD;
                 if (p.UltimateSuperGatling is not null) UltimateSuperGatling = (bool)p.UltimateSuperGatling;
                 if (p.PlantUpgrade is not null) PlantUpgrade = (bool)p.PlantUpgrade;
-                if (p.JachsonSummonType is not null) JachsonSummonType = (int)p.JachsonSummonType;
                 return;
             }
             if (data is InGameHotkeys h)
@@ -187,16 +185,6 @@ namespace ToolModBepInEx
                         InGameDebuffs = [.. s.DebuffsInGame];
                     }
                     UpdateInGameBuffs();
-                }
-                return;
-            }
-            if (data is CardProperties ca)
-            {
-                if (ca.CardReplaces is not null)
-                {
-                    CardReplaces = ca.CardReplaces;
-                    if (InGame())
-                        ChangeCard();
                 }
                 return;
             }
@@ -499,11 +487,6 @@ namespace ToolModBepInEx
                         try { Board.Instance.zombieArray[j]?.SetMindControl(); } catch { }
                     }
                 }
-                if (iga.Win is not null)
-                {
-                    Destroy(GameAPP.board);
-                    UIMgr.EnterMainMenu();
-                }
                 if (iga.ChangeLevelName is not null)
                 {
                     var uimgr = GameObject.Find("InGameUIFHD").GetComponent<InGameUIMgr>();
@@ -772,27 +755,6 @@ namespace ToolModBepInEx
                     t.isScaredyDream = PatchMgr.GameModes.ScaredyDream;
                     t.isColumn = PatchMgr.GameModes.ColumnPlanting;
                     t.isSeedRain = PatchMgr.GameModes.SeedRain;
-                    t.isShooting = PatchMgr.GameModes.IsShooting();
-                    t.isExchange = PatchMgr.GameModes.Exchange;
-                    Board.Instance.boardTag = t;
-                    if (PatchMgr.GameModes.Shooting1)
-                    {
-                        GameAPP.theBoardLevel = 40;
-                    }
-
-                    if (PatchMgr.GameModes.Shooting2)
-                    {
-                        GameAPP.theBoardLevel = 72;
-                    }
-
-                    if (PatchMgr.GameModes.Shooting3)
-                    {
-                        GameAPP.theBoardLevel = 84;
-                    }
-                    if (PatchMgr.GameModes.Shooting4)
-                    {
-                        GameAPP.theBoardLevel = 88;
-                    }
                 }
                 return;
             }
@@ -827,11 +789,6 @@ namespace ToolModBepInEx
                             ProcessData(json.Deserialize<SyncTravelBuff>());
                             break;
                         }
-                    case 5:
-                        {
-                            ProcessData(json.Deserialize<CardProperties>());
-                            break;
-                        }
                     case 6:
                         {
                             ProcessData(json.Deserialize<InGameActions>());
@@ -848,7 +805,6 @@ namespace ToolModBepInEx
                             ProcessData((SyncTravelBuff)all.TravelBuffs!);
                             ProcessData((InGameActions)all.InGameActions!);
                             ProcessData((BasicProperties)all.BasicProperties!);
-                            ProcessData((CardProperties)all.CardProperties!);
                             ProcessData((ValueProperties)all.ValueProperties!);
                             ProcessData((GameModes)all.GameModes!);
                             break;

@@ -21,7 +21,7 @@ namespace ToolModBepInEx
         public static void Postfix() => Core.Instance.Value.LateInit();
     }
 
-    [BepInPlugin("inf75.toolmod", "ToolMod", "3.16")]
+    [BepInPlugin("inf75.toolmod", "ToolMod", "3.17")]
     public class Core : BasePlugin
     {
         public void LateInit()
@@ -99,7 +99,7 @@ namespace ToolModBepInEx
                     if (TravelMgr.advancedBuffs[i] is not null)
                     {
                         MLogger.LogInfo($"Dumping Advanced Buff String:#{i} {TravelMgr.advancedBuffs[i]}");
-                        advBuffs.Add(TravelMgr.advancedBuffs[i]);
+                        advBuffs.Add($"#{i} {TravelMgr.advancedBuffs[i]}");
                     }
                 }
                 List<string> ultiBuffs = [];
@@ -108,7 +108,7 @@ namespace ToolModBepInEx
                     if (TravelMgr.ultimateBuffs[i] is not null)
                     {
                         MLogger.LogInfo($"Dumping Ultimate Buff String:#{i} {TravelMgr.ultimateBuffs[i]}");
-                        ultiBuffs.Add(TravelMgr.ultimateBuffs[i]);
+                        ultiBuffs.Add($"#{i} {TravelMgr.ultimateBuffs[i]}");
                     }
                 }
                 List<string> debuffs = [];
@@ -177,7 +177,6 @@ namespace ToolModBepInEx
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             ClassInjector.RegisterTypeInIl2Cpp<PatchMgr>();
             ClassInjector.RegisterTypeInIl2Cpp<DataProcessor>();
-            ClassInjector.RegisterTypeInIl2Cpp<CardUIReplacer>();
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
             Instance = new(this);
             if (Time.timeScale == 0) Time.timeScale = 1;
