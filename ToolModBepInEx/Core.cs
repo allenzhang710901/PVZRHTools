@@ -15,13 +15,13 @@ using static ToolModBepInEx.PatchMgr;
 
 namespace ToolModBepInEx
 {
-    [HarmonyPatch(typeof(Help_), "Awake")]
+    [HarmonyPatch(typeof(NoticeMenu), "Awake")]
     public static class Help_Patch
     {
         public static void Postfix() => Core.Instance.Value.LateInit();
     }
 
-    [BepInPlugin("inf75.toolmod", "ToolMod", "3.17")]
+    [BepInPlugin("inf75.toolmod", "ToolMod", "3.20")]
     public class Core : BasePlugin
     {
         public void LateInit()
@@ -36,63 +36,73 @@ namespace ToolModBepInEx
                 MLogger.LogWarning("以下id信息为动态生成，仅适用于当前游戏实例！！！");
                 MLogger.LogWarning("以下id信息为动态生成，仅适用于当前游戏实例！！！");
                 MLogger.LogWarning("以下id信息为动态生成，仅适用于当前游戏实例！！！");
+
                 Dictionary<int, string> plants = [];
                 Dictionary<int, string> zombies = [];
                 GameObject gameObject = new();
-                GameObject back = new();
-                back.transform.SetParent(gameObject.transform);
-                GameObject name = new("Name");
-                GameObject shadow = new("Shadow");
-                shadow.AddComponent<TextMeshPro>();
-                shadow.transform.SetParent(name.transform);
-                var nameText = name.AddComponent<TextMeshPro>();
-                name.transform.SetParent(gameObject.transform);
-                GameObject info = new("Info");
-                info.AddComponent<TextMeshPro>();
-                info.transform.SetParent(gameObject.transform);
-                GameObject cost = new("Cost");
-                cost.AddComponent<TextMeshPro>();
-                cost.transform.SetParent(gameObject.transform);
-                var alm = gameObject.AddComponent<AlmanacMgr>();
-                var almz = gameObject.AddComponent<AlmanacMgrZombie>();
-                gameObject.AddComponent<TravelMgr>();
-                alm.plantName = name;
-                for (int i = 0; i < GameAPP.plantPrefab.Count; i++)
-                {
-                    if (GameAPP.plantPrefab[i] is not null)
-                    {
-                        alm.theSeedType = i;
-                        alm.InitNameAndInfoFromJson();
-                        string item = $"{i} : {alm.plantName.GetComponent<TextMeshPro>().text}";
-                        MLogger.Msg($"Dumping Plant String: {item}");
-                        plants.Add(i, item);
-                        HealthPlants.Add((PlantType)i, -1);
-                        alm.plantName.GetComponent<TextMeshPro>().text = "";
-                    }
-                }
-                for (int i = 0; i < GameAPP.zombiePrefab.Count; i++)
-                {
-                    if (GameAPP.zombiePrefab[i] is not null)
-                    {
-                        almz.theZombieType = (ZombieType)i;
-                        almz.InitNameAndInfoFromJson();
-                        HealthZombies.Add((ZombieType)i, -1);
+                GameObject back1 = new();
+                back1.transform.SetParent(gameObject.transform);
+                GameObject name1 = new("Name");
+                GameObject shadow1 = new("Shadow");
+                shadow1.transform.SetParent(name1.transform);
+                var nameText1 = name1.AddComponent<TextMeshPro>();
+                name1.transform.SetParent(gameObject.transform);
+                GameObject info1 = new("Info");
+                info1.transform.SetParent(gameObject.transform);
+                GameObject cost1 = new("Cost");
+                cost1.transform.SetParent(gameObject.transform);
+                var alm = gameObject.AddComponent<AlmanacPlantBank>();
+                alm.cost = cost1.AddComponent<TextMeshPro>();
+                alm.plantName_shadow = shadow1.AddComponent<TextMeshPro>();
+                alm.plantName = name1.GetComponent<TextMeshPro>();
+                alm.introduce = info1.AddComponent<TextMeshPro>(); ;
 
-                        if (!string.IsNullOrEmpty(almz.zombieName.GetComponent<TextMeshPro>().text))
-                        {
-                            string item = $"{i} : {almz.zombieName.GetComponent<TextMeshPro>().text}";
-                            MLogger.Msg($"Dumping Zombie String: {item}");
-                            zombies.Add(i, item);
-                            almz.zombieName.GetComponent<TextMeshPro>().text = "";
-                        }
-                    }
+                for (int i = 0; i < GameAPP.resourcesManager.allPlants.Count; i++)
+                {
+                    alm.theSeedType = (int)GameAPP.resourcesManager.allPlants[i];
+                    alm.InitNameAndInfoFromJson();
+                    string item = $"{(int)GameAPP.resourcesManager.allPlants[i]} : {alm.plantName.GetComponent<TextMeshPro>().text}";
+                    MLogger.LogInfo($"Dumping Plant String: {item}");
+                    plants.Add((int)GameAPP.resourcesManager.allPlants[i], item);
+                    HealthPlants.Add(GameAPP.resourcesManager.allPlants[i], -1);
+                    alm.plantName.GetComponent<TextMeshPro>().text = "";
                 }
-                zombies.Add(44, "44 : 僵王博士");
-                zombies.Add(46, "46 : 僵王博士(二阶段)");
-                MLogger.Msg($"Dumping Zombie String: 44 : 僵王博士");
-                MLogger.Msg($"Dumping Zombie String: 46 : 僵王博士(二阶段)");
-
                 UnityEngine.Object.Destroy(gameObject);
+
+                GameObject gameObject2 = new();
+                GameObject back2 = new();
+                back2.transform.SetParent(gameObject2.transform);
+                back2.AddComponent<SpriteRenderer>();
+                GameObject name2 = new("Name");
+                GameObject shadow2 = new("Name_1");
+                shadow2.transform.SetParent(name2.transform);
+                shadow2.AddComponent<TextMeshPro>();
+                name2.AddComponent<TextMeshPro>();
+                name2.transform.SetParent(gameObject2.transform);
+                name2.AddComponent<TextMeshPro>();
+                GameObject info2 = new("Info");
+                info2.transform.SetParent(gameObject2.transform);
+                var almz = gameObject2.AddComponent<AlmanacMgrZombie>();
+                almz.info = info2;
+                almz.zombieName = name2;
+                almz.introduce = info2.AddComponent<TextMeshPro>(); ;
+
+                for (int i = 0; i < GameAPP.resourcesManager.allZombieTypes.Count; i++)
+                {
+                    almz.theZombieType = GameAPP.resourcesManager.allZombieTypes[i];
+                    almz.InitNameAndInfoFromJson();
+                    HealthZombies.Add(GameAPP.resourcesManager.allZombieTypes[i], -1);
+
+                    if (!string.IsNullOrEmpty(almz.zombieName.GetComponent<TextMeshPro>().text))
+                    {
+                        string item = $"{(int)GameAPP.resourcesManager.allZombieTypes[i]} : {almz.zombieName.GetComponent<TextMeshPro>().text}";
+                        MLogger.LogInfo($"Dumping Zombie String: {item}");
+                        zombies.Add((int)GameAPP.resourcesManager.allZombieTypes[i], item);
+                        almz.zombieName.GetComponent<TextMeshPro>().text = "";
+                    }
+                }
+                UnityEngine.Object.Destroy(gameObject2);
+
                 List<string> advBuffs = [];
                 for (int i = 0; i < TravelMgr.advancedBuffs.Count; i++)
                 {
@@ -121,19 +131,19 @@ namespace ToolModBepInEx
                     }
                 }
                 AdvBuffs = new bool[TravelMgr.advancedBuffs.Count];
-                UltiBuffs = new bool[TravelMgr.ultimateBuffs.Count];
+                PatchMgr.UltiBuffs = new bool[TravelMgr.ultimateBuffs.Count];
                 Debuffs = new bool[TravelMgr.debuffs.Count];
 
                 Dictionary<int, string> bullets = [];
 
-                for (int i = 0; i < GameAPP.bulletPrefab.Count; i++)
+                for (int i = 0; i < GameAPP.resourcesManager.allBullets.Count; i++)
                 {
-                    if (GameAPP.bulletPrefab[i] is not null)
+                    if (GameAPP.resourcesManager.bulletPrefabs[GameAPP.resourcesManager.allBullets[i]] is not null)
                     {
-                        string text = $"{i} : {GameAPP.bulletPrefab[i].name}";
+                        string text = $"{(int)GameAPP.resourcesManager.allBullets[i]} : {GameAPP.resourcesManager.bulletPrefabs[GameAPP.resourcesManager.allBullets[i]].name}";
                         MLogger.LogInfo($"Dumping Bullet String: {text}");
-                        bullets.Add(i, text);
-                        BulletDamage.Add((BulletType)i, -1);
+                        bullets.Add((int)GameAPP.resourcesManager.allBullets[i], text);
+                        BulletDamage.Add(GameAPP.resourcesManager.allBullets[i], -1);
                     }
                 }
                 Dictionary<int, string> firsts = [];
@@ -167,7 +177,7 @@ namespace ToolModBepInEx
             }
             catch (Exception ex)
             {
-                LoggerInstance.Error(ex);
+                LoggerInstance.LogError(ex);
             }
             inited = true;
         }

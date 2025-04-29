@@ -73,11 +73,11 @@
                                 <ComboBox x:Name="ZombieType" HorizontalAlignment="Left" Height="30" VerticalAlignment="Center" Width="150" SelectedValuePath="Key" DisplayMemberPath="Value" ItemsSource="{Binding Zombies}" SelectedValue="{Binding ZombieType}" />
                             </hc:ElementGroup>
                             <CheckBox x:Name="IsMindCtrl" Content="{DynamicResource Tab2.Page1.IsMindCtrl}" Height="30" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding IsMindCtrl}" Style="{DynamicResource CheckBoxBaseStyle}" BorderBrush="#FF3F3F46" Margin="217,217,369,0" VerticalAlignment="Top" />
-                            <hc:ElementGroup Orientation="Horizontal" Layout="Stack" HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <hc:ElementGroup Orientation="Horizontal" Layout="Stack" HorizontalAlignment="Left" Margin="0,247,0,0">
                                 <Button x:Name="CreateItem" Content="{DynamicResource Tab2.Page1.CreateItem}" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="68" Command="{Binding CreateItemCommand}" />
                                 <ComboBox x:Name="ItemType" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="150" SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding ItemType}" ItemsSource="{Binding Items, Mode=OneWay}" />
                             </hc:ElementGroup>
-                            <StackPanel Width="688" Margin="0,276,0,-51">
+                            <StackPanel Width="688" Margin="0,276,0,0" Height="299" VerticalAlignment="Top">
                                 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                                     <Button x:Name="ChangeSun" Content="{DynamicResource Tab2.Page2.ChangeSun}" HorizontalAlignment="Left" Height="30" Margin="10,0,0,0" VerticalAlignment="Top" Width="75" Command="{Binding SunCommand}" />
                                     <hc:NumericUpDown DecimalPlaces="0" x:Name="Sun" HorizontalAlignment="Left" VerticalAlignment="Top" Width="94" Height="30" Value="{Binding NewSun, ValidatesOnNotifyDataErrors=True}" Increment="100" Maximum="2147483647" Minimum="0" Margin="10,0,0,0" />
@@ -119,7 +119,7 @@
                                     <hc:CheckComboBox x:Name="ConveyBeltTypes" local:SelectedItemsExt.SelectedItems="{Binding ConveyBeltTypes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding Plants2}" HorizontalAlignment="Left" Width="644" SelectedValuePath="Key" DisplayMemberPath="Value" IsSynchronizedWithCurrentItem="True" Margin="10,0,0,0" />
                                 </StackPanel>
                             </StackPanel>
-                            <hc:ButtonGroup Height="30" Width="auto" Margin="231,0,0,0" Style="{DynamicResource ButtonGroupSolid}" HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <hc:ButtonGroup Height="30" Width="auto" Margin="227,247,0,0" Style="{DynamicResource ButtonGroupSolid}" HorizontalAlignment="Left">
                                 <Button x:Name="CreatePassiveMateorite" Content="{DynamicResource Tab2.Page1.CreatePassiveMateorite}" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="auto"  Command="{Binding CreatePassiveMateoriteCommand}" Style="{DynamicResource ButtonGroupItemHorizontalFirst}" />
                                 <Button x:Name="CreateActiveMateorite" Content="{DynamicResource Tab2.Page1.CreateActiveMateorite}" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="auto" Command="{Binding CreateActiveMateoriteCommand}" Style="{DynamicResource ButtonGroupItemDefault}" />
                                 <Button x:Name="CreateUltimateMateorite" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="auto" Content="{DynamicResource Tab2.Page1.CreateUltimateMateorite}" Command="{Binding CreateUltimateMateoriteCommand}" Style="{DynamicResource ButtonGroupItemHorizontalLast}" />
@@ -140,7 +140,7 @@
                             <CheckBox x:Name="ColumnPlanting" Content="{DynamicResource Tab1.Page4.ColumnPlanting}" Height="21" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding ColumnPlanting}" Margin="415,68,203,0" VerticalAlignment="Top" />
                             <CheckBox x:Name="SeedRain" Content="{DynamicResource Tab1.Page4.SeedRain}" Height="21" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding SeedRain}" Margin="415,102,215,0" VerticalAlignment="Top" />
                             <CheckBox x:Name="ScaredyDream" Content="{DynamicResource Tab1.Page4.ScaredyDream}" Height="21" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding ScaredyDream}" Margin="563,68,43,0" VerticalAlignment="Top" />
-                            <Button x:Name="AbyssCheat" Content="{DynamicResource Tab0.AbyssCheat}" Height="30" Width="84" Command="{Binding AbyssCheatCommand}" HorizontalAlignment="Left" Margin="450,0,0,0" />
+                            <Button x:Name="AbyssCheat" Content="{DynamicResource Tab0.AbyssCheat}" Height="30" Width="84" Command="{Binding AbyssCheatCommand}" HorizontalAlignment="Left" Margin="450,247,0,0" VerticalAlignment="Top" />
                         </Grid>
                     </ScrollViewer>
                 </Border>

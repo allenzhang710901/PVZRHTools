@@ -381,7 +381,7 @@ namespace ToolMod
                         {
                             for (int j = 0; j < Board.Instance.columnNum; j++)
                             {
-                                GridItem.SetGridItem(j, i, GridItemType.ScaryPot).thePlantType = (PlantType)id;
+                                GridItem.SetGridItem(j, i, GridItemType.ScaryPot).Cast<ScaryPot>().thePlantType = (PlantType)id;
                             }
                         }
                     }
@@ -390,19 +390,19 @@ namespace ToolMod
                     {
                         for (int j = 0; j < Board.Instance!.columnNum; j++)
                         {
-                            GridItem.SetGridItem(c - 1, j, GridItemType.ScaryPot).thePlantType = (PlantType)id;
+                            GridItem.SetGridItem(c - 1, j, GridItemType.ScaryPot).Cast<ScaryPot>().thePlantType = (PlantType)id;
                         }
                     }
                     if (c == 0 && r != 0)
                     {
                         for (int j = 0; j < Board.Instance!.columnNum; j++)
                         {
-                            GridItem.SetGridItem(j, r - 1, GridItemType.ScaryPot).thePlantType = (PlantType)id;
+                            GridItem.SetGridItem(j, r - 1, GridItemType.ScaryPot).Cast<ScaryPot>().thePlantType = (PlantType)id;
                         }
                     }
                     if (c > 0 && r > 0 && c <= Board.Instance!.columnNum && r <= Board.Instance.rowNum)
                     {
-                        GridItem.SetGridItem(c - 1, r - 1, GridItemType.ScaryPot).thePlantType = (PlantType)id;
+                        GridItem.SetGridItem(c - 1, r - 1, GridItemType.ScaryPot).Cast<ScaryPot>().thePlantType = (PlantType)id;
                     }
                 }
                 if (iga.Row is not null && iga.Column is not null && iga.ZombieType is not null && iga.ZombieVase is not null)
@@ -416,7 +416,7 @@ namespace ToolMod
                         {
                             for (int j = 0; j < Board.Instance.columnNum; j++)
                             {
-                                GridItem.SetGridItem(j, i, GridItemType.ScaryPot).theZombieType = (ZombieType)id;
+                                GridItem.SetGridItem(j, i, GridItemType.ScaryPot).Cast<ScaryPot>().theZombieType = (ZombieType)id;
                             }
                         }
                     }
@@ -425,19 +425,19 @@ namespace ToolMod
                     {
                         for (int j = 0; j < Board.Instance!.columnNum; j++)
                         {
-                            GridItem.SetGridItem(c - 1, j, GridItemType.ScaryPot).theZombieType = (ZombieType)id;
+                            GridItem.SetGridItem(c - 1, j, GridItemType.ScaryPot).Cast<ScaryPot>().theZombieType = (ZombieType)id;
                         }
                     }
                     if (c == 0 && r != 0)
                     {
                         for (int j = 0; j < Board.Instance!.columnNum; j++)
                         {
-                            GridItem.SetGridItem(j, r - 1, GridItemType.ScaryPot).theZombieType = (ZombieType)id;
+                            GridItem.SetGridItem(j, r - 1, GridItemType.ScaryPot).Cast<ScaryPot>().theZombieType = (ZombieType)id;
                         }
                     }
                     if (c > 0 && r > 0 && c <= Board.Instance!.columnNum && r <= Board.Instance.rowNum)
                     {
-                        GridItem.SetGridItem(c - 1, r - 1, GridItemType.ScaryPot).theZombieType = (ZombieType)id;
+                        GridItem.SetGridItem(c - 1, r - 1, GridItemType.ScaryPot).Cast<ScaryPot>().theZombieType = (ZombieType)id;
                     }
                 }
 
@@ -657,8 +657,8 @@ namespace ToolMod
                         {
                             Row = vase.theItemRow,
                             Col = vase.theItemColumn,
-                            PlantType = (int)vase.thePlantType,
-                            ZombieType = (int)vase.theZombieType,
+                            PlantType = (int)vase.Cast<ScaryPot>().thePlantType,
+                            ZombieType = (int)vase.Cast<ScaryPot>().theZombieType,
                         });
                     }
                     DataSync.Instance.Value.SendData(new InGameActions()
@@ -687,8 +687,8 @@ namespace ToolMod
                             foreach (var vase in fieldVases)
                             {
                                 var g = GridItem.SetGridItem(vase.Col, vase.Row, GridItemType.ScaryPot);
-                                g.thePlantType = (PlantType)vase.PlantType;
-                                g.theZombieType = (ZombieType)vase.ZombieType;
+                                g.Cast<ScaryPot>().thePlantType = (PlantType)vase.PlantType;
+                                g.Cast<ScaryPot>().theZombieType = (ZombieType)vase.ZombieType;
                             }
                         }
                     }
@@ -893,6 +893,8 @@ namespace ToolMod
             Resources.Load<GameObject>("Items/Machine"),
             Resources.Load<GameObject>("Items/SuperMachine"),
             Resources.Load<GameObject>("Items/SproutPotPrize/SproutPotPrize"),
+                                    Resources.Load<GameObject>("Items/PortalHeart"),
+
         ];
     }
 }

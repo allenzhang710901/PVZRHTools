@@ -13,6 +13,7 @@ using System.Runtime.CompilerServices;
 using System.IO.Compression;
 using System.Text;
 using System.Collections;
+using System.Linq;
 
 namespace ToolMod
 {
@@ -71,9 +72,9 @@ namespace ToolMod
         {
             try
             {
-                if (BulletDamage[(BulletType)__instance.theBulletType] >= 0 && __instance.Damage != BulletDamage[(BulletType)__instance.theBulletType])
+                if (BulletDamage[__instance.theBulletType] >= 0 && __instance.Damage != BulletDamage[__instance.theBulletType])
                 {
-                    __instance.Damage = BulletDamage[(BulletType)__instance.theBulletType];
+                    __instance.Damage = BulletDamage[__instance.theBulletType];
                 }
             }
             catch { }
@@ -92,6 +93,40 @@ namespace ToolMod
                 return false;
             }
             return true;
+        }
+    }
+
+    [HarmonyPatch(typeof(CardUI))]
+    public static class CardUIPatch
+    {
+        [HarmonyPostfix]
+        [HarmonyPatch("Start")]
+        public static void Postfix(CardUI __instance)
+        {
+            GameObject obj = new("ModifierCardCD");
+            var text = obj.AddComponent<TextMeshProUGUI>();
+            text.font = Resources.Load<TMP_FontAsset>("Fonts/ContinuumBold SDF");
+            text.color = new(228f / 256f, 155f / 256f, 38f / 256f);
+            obj.transform.SetParent(__instance.transform);
+            obj.transform.localScale = new(0.7f, 0.7f, 0.7f);
+            obj.transform.localPosition = new(39f, 0, 0);
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch("Update")]
+        public static void PostUpdate(CardUI __instance)
+        {
+            var child = __instance.transform.FindChild("ModifierCardCD");
+            if (child is null) return;
+            if (__instance.isAvailable || !ShowGameInfo)
+            {
+                child.GameObject().active = false;
+            }
+            else
+            {
+                child.GameObject().active = true;
+                child.GameObject().GetComponent<TextMeshProUGUI>().text = $"{__instance.CD:N1}/{__instance.fullCD}";
+            }
         }
     }
 
@@ -140,18 +175,19 @@ namespace ToolMod
         }
     }
 
-    [HarmonyPatch(typeof(CreateBullet), "SetBullet")]
+    [HarmonyPatch(typeof(CreateBullet), "SetBullet", [typeof(float), typeof(float), typeof(int), typeof(BulletType), typeof(int), typeof(bool)])]
+    [HarmonyPatch(typeof(CreateBullet), "SetBullet", [typeof(float), typeof(float), typeof(int), typeof(BulletType), typeof(BulletMoveWay), typeof(bool)])]
     public static class CreateBulletPatch
     {
-        public static void Prefix(ref int theBulletType)
+        public static void Prefix(ref BulletType theBulletType)
         {
             if (LockBulletType == -1)
             {
-                theBulletType = (int)Enum.GetValues<BulletType>()[UnityEngine.Random.Range(0, Enum.GetValues<BulletType>().Length)];
+                theBulletType = Enum.GetValues<BulletType>()[UnityEngine.Random.Range(0, Enum.GetValues<BulletType>().Length)];
             }
             if (LockBulletType >= 0)
             {
-                theBulletType = LockBulletType;
+                theBulletType = (BulletType)LockBulletType;
             }
         }
     }
@@ -667,7 +703,7 @@ namespace ToolMod
         }
     }
 
-    [HarmonyPatch(typeof(TravelRefresh), "OnMouseDown")]
+    [HarmonyPatch(typeof(TravelRefresh), "OnMouseUpAsButton")]
     public static class TravelRefreshPatch
     {
         public static void Postfix(TravelRefresh __instance)
@@ -759,7 +795,6 @@ namespace ToolMod
             }
         }
 
-        //public static PlantDataLoader.PlantData_ PlantData => PlantDataLoader.plantDatas;
         public PatchMgr() : base(ClassInjector.DerivedConstructorPointer<PatchMgr>()) => ClassInjector.DerivedConstructorBody(this);
 
         public PatchMgr(IntPtr i) : base(i)
@@ -790,7 +825,7 @@ namespace ToolMod
             return Encoding.UTF8.GetString(buffer);
         }
 
-        public static bool InGame() => Board.Instance is not null && GameAPP.theGameStatus != -2 && GameAPP.theGameStatus != -1 && GameAPP.theGameStatus != 4;
+        public static bool InGame() => Board.Instance is not null && GameAPP.theGameStatus is not GameStatus.OpenOptions or GameStatus.OutGame or GameStatus.Almanac;
 
         public static IEnumerator PostInitBoard()
         {
@@ -901,7 +936,7 @@ namespace ToolMod
 
         public void Update()
         {
-            if (GameAPP.theGameStatus is 0 or 2 or 3)
+            if (GameAPP.theGameStatus is GameStatus.InGame or GameStatus.InInterlude or GameStatus.Selecting)
             {
                 if (Input.GetKeyDown(Core.KeyTimeStop.Value.Value))
                 {
@@ -930,23 +965,26 @@ namespace ToolMod
                 {
                     Time.timeScale = 0;
                 }
-
                 try
                 {
-                    var slow = GameObject.Find("SlowTrigger").transform;
-                    slow.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text = $"时停(x{Time.timeScale})";
-                    slow.GetChild(1).gameObject.GetComponent<TextMeshProUGUI>().text = $"时停(x{Time.timeScale})";
-                    if (Input.GetKeyDown(Core.KeyTopMostCardBank.Value.Value))
+                    try
                     {
-                        if (GameAPP.canvas.GetComponent<Canvas>().sortingLayerName == "Default")
+                        var slow = GameObject.Find("SlowTrigger").transform;
+                        slow.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text = $"时停(x{Time.timeScale})";
+                        slow.GetChild(1).gameObject.GetComponent<TextMeshProUGUI>().text = $"时停(x{Time.timeScale})";
+                        if (Input.GetKeyDown(Core.KeyTopMostCardBank.Value.Value))
                         {
-                            GameAPP.canvas.GetComponent<Canvas>().sortingLayerName = "UI";
-                        }
-                        else
-                        {
-                            GameAPP.canvas.GetComponent<Canvas>().sortingLayerName = "Default";
+                            if (GameAPP.canvas.GetComponent<Canvas>().sortingLayerName == "Default")
+                            {
+                                GameAPP.canvas.GetComponent<Canvas>().sortingLayerName = "UI";
+                            }
+                            else
+                            {
+                                GameAPP.canvas.GetComponent<Canvas>().sortingLayerName = "Default";
+                            }
                         }
                     }
+                    catch { }
 
                     if (Input.GetKeyDown(Core.KeyAlmanacCreatePlant.Value.Value) && AlmanacSeedType != -1)
                     {
@@ -969,56 +1007,63 @@ namespace ToolMod
                     }
                     if (Input.GetKeyDown(Core.KeyAlmanacCreatePlantVase.Value.Value) && AlmanacSeedType != -1)
                     {
-                        GridItem.SetGridItem(Mouse.Instance.theMouseColumn, Mouse.Instance.theMouseRow, GridItemType.ScaryPot).thePlantType = (PlantType)AlmanacSeedType;
+                        GridItem.SetGridItem(Mouse.Instance.theMouseColumn, Mouse.Instance.theMouseRow, GridItemType.ScaryPot).Cast<ScaryPot>().thePlantType = (PlantType)AlmanacSeedType;
                     }
                     if (Input.GetKeyDown(Core.KeyAlmanacCreateZombieVase.Value.Value) && AlmanacZombieType is not ZombieType.Nothing)
                     {
-                        GridItem.SetGridItem(Mouse.Instance.theMouseColumn, Mouse.Instance.theMouseRow, GridItemType.ScaryPot).theZombieType = AlmanacZombieType;
+                        GridItem.SetGridItem(Mouse.Instance.theMouseColumn, Mouse.Instance.theMouseRow, GridItemType.ScaryPot).Cast<ScaryPot>().theZombieType = AlmanacZombieType;
                     }
-                    var t = Board.Instance.boardTag;
-                    t.enableTravelPlant = t.enableTravelPlant || UnlockAllFusions;
-                    Board.Instance.boardTag = t;
-                }
-                catch (NullReferenceException) { }
-            }
-            if (!InGame()) return;
-            if (LockSun)
-            {
-                Board.Instance.theSun = LockSunCount;
-            }
-            if (LockMoney)
-            {
-                Board.Instance.theMoney = LockMoneyCount;
-            }
-            if (StopSummon)
-            {
-                Board.Instance.iceDoomFreezeTime = 1;
-            }
-            if (ZombieSea)
-            {
-                if (++seaTime >= ZombieSeaCD &&
-                    Board.Instance.theWave is not 0 && Board.Instance.theWave < Board.Instance.theMaxWave &&
-                    GameAPP.theGameStatus == (int)GameStatus.InGame)
-                {
-                    foreach (var j in SeaTypes)
+                    if (Board.Instance is not null)
                     {
-                        if (j < 0) continue;
-                        for (int i = 0; i < Board.Instance.rowNum; i++)
-                        {
-                            CreateZombie.Instance.SetZombie(i, (ZombieType)j);
-                        }
+                        var t = Board.Instance.boardTag;
+                        t.enableTravelPlant = t.enableTravelPlant || UnlockAllFusions;
+                        Board.Instance.boardTag = t;
                     }
-                    seaTime = 0;
+                    else
+                    {
+                        return;
+                    }
                 }
-            }
-            if (GarlicDay && ++garlicDayTime >= 500 && GameAPP.theGameStatus == (int)GameStatus.InGame)
-            {
-                garlicDayTime = 0;
-                _ = FindObjectsOfTypeAll(Il2CppType.Of<Zombie>()).All(b =>
+                catch (NullReferenceException e) { MLogger.Error(e); }
+
+                if (LockSun)
                 {
-                    b?.TryCast<Zombie>()?.StartCoroutine_Auto(b?.TryCast<Zombie>()?.DeLayGarliced(0.1f, false, false));
-                    return true;
-                });
+                    Board.Instance.theSun = LockSunCount;
+                }
+                if (LockMoney)
+                {
+                    Board.Instance.theMoney = LockMoneyCount;
+                }
+                if (StopSummon)
+                {
+                    Board.Instance.iceDoomFreezeTime = 1;
+                }
+                if (ZombieSea)
+                {
+                    if (++seaTime >= ZombieSeaCD &&
+                        Board.Instance.theWave is not 0 && Board.Instance.theWave < Board.Instance.theMaxWave &&
+                        GameAPP.theGameStatus == (int)GameStatus.InGame)
+                    {
+                        foreach (var j in SeaTypes)
+                        {
+                            if (j < 0) continue;
+                            for (int i = 0; i < Board.Instance.rowNum; i++)
+                            {
+                                CreateZombie.Instance.SetZombie(i, (ZombieType)j);
+                            }
+                        }
+                        seaTime = 0;
+                    }
+                }
+                if (GarlicDay && ++garlicDayTime >= 500 && GameAPP.theGameStatus == (int)GameStatus.InGame)
+                {
+                    garlicDayTime = 0;
+                    _ = FindObjectsOfTypeAll(Il2CppType.Of<Zombie>()).All(b =>
+                    {
+                        b?.TryCast<Zombie>()?.StartCoroutine_Auto(b?.TryCast<Zombie>()?.DeLayGarliced(0.1f, false, false));
+                        return true;
+                    });
+                }
             }
         }
 

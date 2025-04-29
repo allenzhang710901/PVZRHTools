@@ -13,6 +13,8 @@ using TMPro;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP.Utils;
 using System.Collections;
+using MonoMod.RuntimeDetour;
+using UnityEngine.SocialPlatforms;
 
 namespace ToolModBepInEx
 {
@@ -25,10 +27,7 @@ namespace ToolModBepInEx
     [HarmonyPatch(typeof(AlmanacPlantCtrl), "GetSeedType")]
     public static class AlmanacPlantCtrlPatch
     {
-        public static void Postfix(AlmanacPlantCtrl __instance)
-        {
-            AlmanacSeedType = __instance.plantSelected;
-        }
+        public static void Postfix(AlmanacPlantCtrl __instance) => AlmanacSeedType = __instance.plantSelected;
     }
 
     [HarmonyPatch(typeof(Board), "Awake")]
@@ -43,11 +42,6 @@ namespace ToolModBepInEx
             t.isSeedRain |= PatchMgr.GameModes.SeedRain;
             t.enableAllTravelPlant |= UnlockAllFusions;
             Board.Instance.boardTag = t;
-        }
-
-        public static void Prefix()
-        {
-            originalLevel = GameAPP.theBoardLevel;
         }
     }
 
@@ -79,9 +73,9 @@ namespace ToolModBepInEx
         {
             try
             {
-                if (BulletDamage[(BulletType)__instance.theBulletType] >= 0 && __instance.theBulletDamage != BulletDamage[(BulletType)__instance.theBulletType])
+                if (BulletDamage[__instance.theBulletType] >= 0 && __instance.Damage != BulletDamage[__instance.theBulletType])
                 {
-                    __instance.theBulletDamage = BulletDamage[(BulletType)__instance.theBulletType];
+                    __instance.Damage = BulletDamage[__instance.theBulletType];
                 }
             }
             catch { }
@@ -100,6 +94,40 @@ namespace ToolModBepInEx
                 return false;
             }
             return true;
+        }
+    }
+
+    [HarmonyPatch(typeof(CardUI))]
+    public static class CardUIPatch
+    {
+        [HarmonyPostfix]
+        [HarmonyPatch("Start")]
+        public static void Postfix(CardUI __instance)
+        {
+            GameObject obj = new("ModifierCardCD");
+            var text = obj.AddComponent<TextMeshProUGUI>();
+            text.font = Resources.Load<TMP_FontAsset>("Fonts/ContinuumBold SDF");
+            text.color = new(228f / 256f, 155f / 256f, 38f / 256f);
+            obj.transform.SetParent(__instance.transform);
+            obj.transform.localScale = new(0.7f, 0.7f, 0.7f);
+            obj.transform.localPosition = new(39f, 0, 0);
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch("Update")]
+        public static void PostUpdate(CardUI __instance)
+        {
+            var child = __instance.transform.FindChild("ModifierCardCD");
+            if (child is null) return;
+            if (__instance.isAvailable || !ShowGameInfo)
+            {
+                child.GameObject().active = false;
+            }
+            else
+            {
+                child.GameObject().active = true;
+                child.GameObject().GetComponent<TextMeshProUGUI>().text = $"{__instance.CD:N1}/{__instance.fullCD}";
+            }
         }
     }
 
@@ -148,18 +176,19 @@ namespace ToolModBepInEx
         }
     }
 
-    [HarmonyPatch(typeof(CreateBullet), "SetBullet")]
+    [HarmonyPatch(typeof(CreateBullet), "SetBullet", [typeof(float), typeof(float), typeof(int), typeof(BulletType), typeof(int), typeof(bool)])]
+    [HarmonyPatch(typeof(CreateBullet), "SetBullet", [typeof(float), typeof(float), typeof(int), typeof(BulletType), typeof(BulletMoveWay), typeof(bool)])]
     public static class CreateBulletPatch
     {
-        public static void Prefix(ref int theBulletType)
+        public static void Prefix(ref BulletType theBulletType)
         {
             if (LockBulletType == -1)
             {
-                theBulletType = (int)Enum.GetValues<BulletType>()[UnityEngine.Random.Range(0, Enum.GetValues<BulletType>().Length)];
+                theBulletType = Enum.GetValues<BulletType>()[UnityEngine.Random.Range(0, Enum.GetValues<BulletType>().Length)];
             }
             if (LockBulletType >= 0)
             {
-                theBulletType = LockBulletType;
+                theBulletType = (BulletType)LockBulletType;
             }
         }
     }
@@ -258,10 +287,10 @@ namespace ToolModBepInEx
         public static bool Flag { get; set; } = false;
     }
 
-    [HarmonyPatch(typeof(GloveMgr), "Update")]
-    public static class GloveMgrPatchA
+    [HarmonyPatch(typeof(Glove), "Update")]
+    public static class GlovePatchA
     {
-        public static void Postfix(GloveMgr __instance)
+        public static void Postfix(Glove __instance)
         {
             __instance.gameObject.transform.GetChild(0).gameObject.SetActive(!GloveNoCD);
             if (GloveFullCD > 0)
@@ -284,10 +313,10 @@ namespace ToolModBepInEx
         }
     }
 
-    [HarmonyPatch(typeof(GloveMgr), "Start")]
-    public static class GloveMgrPatchB
+    [HarmonyPatch(typeof(Glove), "Start")]
+    public static class GlovePatchB
     {
-        public static void Postfix(GloveMgr __instance)
+        public static void Postfix(Glove __instance)
         {
             GameObject obj = new("ModifierGloveCD");
             var text = obj.AddComponent<TextMeshProUGUI>();
@@ -392,14 +421,14 @@ namespace ToolModBepInEx
             }
             if (__instance.buttonNumber == 13)
             {
-                BottomEnabled = GameObject.Find("InGameUIFHD").GetComponent<InGameUIMgr>().Bottom.active;
+                BottomEnabled = GameObject.Find("Bottom") is not null;
             }
         }
 
         public static bool BottomEnabled { get; set; } = false;
     }
 
-    [HarmonyPatch(typeof(InGameText), "EnableText")]
+    [HarmonyPatch(typeof(InGameText), "ShowText")]
     public static class InGameTextPatch
     {
         public static void Postfix()
@@ -476,7 +505,7 @@ namespace ToolModBepInEx
                 {
                     __instance.thePlantMaxHealth = HealthPlants[__instance.thePlantType];
                     __instance.thePlantHealth = __instance.thePlantMaxHealth;
-                    __instance.UpdateHealthText();
+                    __instance.UpdateText();
                 }
             }
             catch { }
@@ -666,7 +695,7 @@ namespace ToolModBepInEx
         }
     }
 
-    [HarmonyPatch(typeof(SuperSnowGatling), "AnimShoot")]
+    [HarmonyPatch(typeof(SuperSnowGatling), "Shoot1")]
     public static class SuperSnowGatlingPatchB
     {
         public static void Postfix(SuperSnowGatling __instance)
@@ -675,7 +704,7 @@ namespace ToolModBepInEx
         }
     }
 
-    [HarmonyPatch(typeof(TravelRefresh), "OnMouseDown")]
+    [HarmonyPatch(typeof(TravelRefresh), "OnMouseUpAsButton")]
     public static class TravelRefreshPatch
     {
         public static void Postfix(TravelRefresh __instance)
@@ -724,15 +753,6 @@ namespace ToolModBepInEx
         }
     }
 
-    public static class Utils
-    {
-        public static void Error(this ManualLogSource manualLogSource, string s) => manualLogSource.LogError(s);
-
-        public static void Error(this ManualLogSource manualLogSource, Exception s) => manualLogSource.LogError(s);
-
-        public static void Msg(this ManualLogSource manualLogSource, string s) => manualLogSource.LogInfo(s);
-    }
-
     [HarmonyPatch(typeof(Zombie), "Start")]
     public static class ZombiePatch
     {
@@ -775,6 +795,7 @@ namespace ToolModBepInEx
             }
         }
 
+        //public static PlantDataLoader.PlantData_ PlantData => PlantDataLoader.plantDatas;
         public PatchMgr() : base(ClassInjector.DerivedConstructorPointer<PatchMgr>()) => ClassInjector.DerivedConstructorBody(this);
 
         public PatchMgr(IntPtr i) : base(i)
@@ -805,14 +826,14 @@ namespace ToolModBepInEx
             return Encoding.UTF8.GetString(buffer);
         }
 
-        public static bool InGame() => Board.Instance is not null && GameAPP.theGameStatus != -2 && GameAPP.theGameStatus != -1 && GameAPP.theGameStatus != 4;
+        public static bool InGame() => Board.Instance is not null && GameAPP.theGameStatus is not GameStatus.OpenOptions or GameStatus.OutGame or GameStatus.Almanac;
 
         public static IEnumerator PostInitBoard()
         {
             var travelMgr = GameAPP.gameAPP.GetOrAddComponent<TravelMgr>();
             Board.Instance.freeCD = FreeCD;
             yield return null;
-            if (!(GameAPP.theBoardType == 3 && Board.Instance.theCurrentSurvivalRound != 1))
+            if (!(GameAPP.theBoardType == (LevelType)3 && Board.Instance.theCurrentSurvivalRound != 1))
             {
                 yield return null;
 
@@ -916,13 +937,41 @@ namespace ToolModBepInEx
 
         public void Update()
         {
-            if (GameAPP.theGameStatus is 0 or 2 or 3)
+            if (GameAPP.theGameStatus is GameStatus.InGame or GameStatus.InInterlude or GameStatus.Selecting)
+            {
+                if (Input.GetKeyDown(Core.KeyTimeStop.Value.Value))
+                {
+                    TimeStop = !TimeStop;
+                    TimeSlow = false;
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha3))
+                {
+                    TimeStop = false;
+                    TimeSlow = !TimeSlow;
+                }
+                if (Input.GetKeyDown(Core.KeyShowGameInfo.Value.Value))
+                {
+                    ShowGameInfo = !ShowGameInfo;
+                }
+                if (!TimeStop && !TimeSlow)
+                {
+                    Time.timeScale = SyncSpeed;
+                }
+
+                if (!TimeStop && TimeSlow)
+                {
+                    Time.timeScale = 0.2f;
+                }
+                if (InGameBtnPatch.BottomEnabled || TimeStop && !TimeSlow)
+                {
+                    Time.timeScale = 0;
+                }
+
                 try
                 {
-                    var slow = GameObject.Find("InGameUIFHD").GetComponent<InGameUIMgr>().SlowTrigger.transform;
+                    var slow = GameObject.Find("SlowTrigger").transform;
                     slow.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text = $"时停(x{Time.timeScale})";
                     slow.GetChild(1).gameObject.GetComponent<TextMeshProUGUI>().text = $"时停(x{Time.timeScale})";
-
                     if (Input.GetKeyDown(Core.KeyTopMostCardBank.Value.Value))
                     {
                         if (GameAPP.canvas.GetComponent<Canvas>().sortingLayerName == "Default")
@@ -935,46 +984,10 @@ namespace ToolModBepInEx
                         }
                     }
 
-                    if (Input.GetKeyDown(Core.KeyTimeStop.Value.Value))
-                    {
-                        TimeStop = !TimeStop;
-                        TimeSlow = false;
-                    }
-                    if (Input.GetKeyDown(KeyCode.Alpha3))
-                    {
-                        TimeStop = false;
-                        TimeSlow = !TimeSlow;
-                    }
-                    if (Input.GetKeyDown(Core.KeyShowGameInfo.Value.Value))
-                    {
-                        ShowGameInfo = !ShowGameInfo;
-                    }
-                    if (!TimeStop && !TimeSlow)
-                    {
-                        Time.timeScale = SyncSpeed;
-                    }
-
-                    if (!TimeStop && TimeSlow)
-                    {
-                        Time.timeScale = 0.2f;
-                    }
-                    if (InGameBtnPatch.BottomEnabled || TimeStop && !TimeSlow)
-                    {
-                        Time.timeScale = 0;
-                    }
                     if (Input.GetKeyDown(Core.KeyAlmanacCreatePlant.Value.Value) && AlmanacSeedType != -1)
                     {
                         CreatePlant.Instance.SetPlant(Mouse.Instance.theMouseColumn, Mouse.Instance.theMouseRow, (PlantType)AlmanacSeedType);
                     }
-                    if (Input.GetKeyDown(Core.KeyAlmanacCreatePlantVase.Value.Value) && AlmanacSeedType != -1)
-                    {
-                        GridItem.SetGridItem(Mouse.Instance.theMouseColumn, Mouse.Instance.theMouseRow, GridItemType.ScaryPot).thePlantType = (PlantType)AlmanacSeedType;
-                    }
-                    if (Input.GetKeyDown(Core.KeyAlmanacCreateZombieVase.Value.Value) && AlmanacZombieType is not ZombieType.Nothing)
-                    {
-                        GridItem.SetGridItem(Mouse.Instance.theMouseColumn, Mouse.Instance.theMouseRow, GridItemType.ScaryPot).theZombieType = AlmanacZombieType;
-                    }
-
                     if (Input.GetKeyDown(Core.KeyAlmanacZombieMindCtrl.Value.Value))
                     {
                         Core.AlmanacZombieMindCtrl.Value.Value = !Core.AlmanacZombieMindCtrl.Value.Value;
@@ -990,16 +1003,21 @@ namespace ToolModBepInEx
                             CreateZombie.Instance.SetZombie(Mouse.Instance.theMouseRow, AlmanacZombieType, Mouse.Instance.mouseX);
                         }
                     }
+                    if (Input.GetKeyDown(Core.KeyAlmanacCreatePlantVase.Value.Value) && AlmanacSeedType != -1)
+                    {
+                        GridItem.SetGridItem(Mouse.Instance.theMouseColumn, Mouse.Instance.theMouseRow, GridItemType.ScaryPot).Cast<ScaryPot>().thePlantType = (PlantType)AlmanacSeedType;
+                    }
+                    if (Input.GetKeyDown(Core.KeyAlmanacCreateZombieVase.Value.Value) && AlmanacZombieType is not ZombieType.Nothing)
+                    {
+                        GridItem.SetGridItem(Mouse.Instance.theMouseColumn, Mouse.Instance.theMouseRow, GridItemType.ScaryPot).Cast<ScaryPot>().theZombieType = AlmanacZombieType;
+                    }
                     var t = Board.Instance.boardTag;
                     t.enableTravelPlant = t.enableTravelPlant || UnlockAllFusions;
                     Board.Instance.boardTag = t;
                 }
                 catch (NullReferenceException) { }
-            if (!InGame()) return;
-            if (GameAPP.theGameStatus is 1)
-            {
-                GameAPP.theBoardLevel = originalLevel;
             }
+            if (!InGame()) return;
             if (LockSun)
             {
                 Board.Instance.theSun = LockSunCount;
@@ -1118,7 +1136,6 @@ namespace ToolModBepInEx
         public static bool ZombieSea { get; set; } = false;
         public static int ZombieSeaCD { get; set; } = 40;
         public static bool ZombieSeaLow { get; set; } = false;
-        internal static int originalLevel;
         internal static bool originalTravel;
         private static int garlicDayTime = 0;
         private static int seaTime = 0;

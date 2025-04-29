@@ -71,24 +71,6 @@ namespace ToolMod
 
                 Dictionary<int, string> plants = [];
                 Dictionary<int, string> zombies = [];
-
-                //GameObject gameObject = new();
-                //GameObject back = new();
-                //back.transform.SetParent(gameObject.transform);
-                //GameObject name = new("Name");
-                //GameObject shadow = new("Shadow");
-                //shadow.AddComponent<TextMeshPro>();
-                //shadow.transform.SetParent(name.transform);
-                //var nameText = name.AddComponent<TextMeshPro>();
-                //name.transform.SetParent(gameObject.transform);
-                //GameObject info = new("Info");
-                //info.AddComponent<TextMeshPro>();
-                //info.transform.SetParent(gameObject.transform);
-                //GameObject cost = new("Cost");
-                //cost.AddComponent<TextMeshPro>();
-                //cost.transform.SetParent(gameObject.transform);
-                //var almz = gameObject.AddComponent<AlmanacMgrZombie>();
-                //gameObject.AddComponent<TravelMgr>();
                 GameObject gameObject = new();
                 GameObject back1 = new();
                 back1.transform.SetParent(gameObject.transform);
@@ -113,7 +95,7 @@ namespace ToolMod
                     alm.InitNameAndInfoFromJson();
                     string item = $"{(int)GameAPP.resourcesManager.allPlants[i]} : {alm.plantName.GetComponent<TextMeshPro>().text}";
                     MLogger.Msg($"Dumping Plant String: {item}");
-                    plants.Add(i, item);
+                    plants.Add((int)GameAPP.resourcesManager.allPlants[i], item);
                     HealthPlants.Add(GameAPP.resourcesManager.allPlants[i], -1);
                     alm.plantName.GetComponent<TextMeshPro>().text = "";
                 }
@@ -137,21 +119,18 @@ namespace ToolMod
                 almz.zombieName = name2;
                 almz.introduce = info2.AddComponent<TextMeshPro>(); ;
 
-                for (int i = 0; i < GameAPP.zombiePrefab.Count; i++)
+                for (int i = 0; i < GameAPP.resourcesManager.allZombieTypes.Count; i++)
                 {
-                    if (GameAPP.zombiePrefab[i] is not null)
-                    {
-                        almz.theZombieType = (ZombieType)i;
-                        almz.InitNameAndInfoFromJson();
-                        HealthZombies.Add((ZombieType)i, -1);
+                    almz.theZombieType = GameAPP.resourcesManager.allZombieTypes[i];
+                    almz.InitNameAndInfoFromJson();
+                    HealthZombies.Add(GameAPP.resourcesManager.allZombieTypes[i], -1);
 
-                        if (!string.IsNullOrEmpty(almz.zombieName.GetComponent<TextMeshPro>().text))
-                        {
-                            string item = $"{i} : {almz.zombieName.GetComponent<TextMeshPro>().text}";
-                            MLogger.Msg($"Dumping Zombie String: {item}");
-                            zombies.Add(i, item);
-                            almz.zombieName.GetComponent<TextMeshPro>().text = "";
-                        }
+                    if (!string.IsNullOrEmpty(almz.zombieName.GetComponent<TextMeshPro>().text))
+                    {
+                        string item = $"{(int)GameAPP.resourcesManager.allZombieTypes[i]} : {almz.zombieName.GetComponent<TextMeshPro>().text}";
+                        MLogger.Msg($"Dumping Zombie String: {item}");
+                        zombies.Add((int)GameAPP.resourcesManager.allZombieTypes[i], item);
+                        almz.zombieName.GetComponent<TextMeshPro>().text = "";
                     }
                 }
                 UnityEngine.Object.Destroy(gameObject2);

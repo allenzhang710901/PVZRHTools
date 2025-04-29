@@ -38,7 +38,7 @@ namespace ToolModBepInEx
                             {
                                 pl.thePlantMaxHealth = HealthPlants[pl.thePlantType];
                                 if (pl.thePlantHealth > pl.thePlantMaxHealth) pl.thePlantHealth = pl.thePlantHealth;
-                                pl.UpdateHealthText();
+                                pl.UpdateText();
                             }
                         }
                     }
@@ -164,7 +164,7 @@ namespace ToolModBepInEx
                 }
                 if (s.UltiTravelBuff is not null)
                 {
-                    UltiBuffs = [.. s.UltiTravelBuff];
+                    PatchMgr.UltiBuffs = [.. s.UltiTravelBuff];
                 }
                 if (s.Debuffs is not null)
                 {
@@ -220,7 +220,6 @@ namespace ToolModBepInEx
                 {
                     BuffRefreshNoLimit = (bool)iga.BuffRefreshNoLimit;
                 }
-
                 if (iga.StopSummon is not null)
                 {
                     StopSummon = (bool)iga.StopSummon;
@@ -228,6 +227,12 @@ namespace ToolModBepInEx
                 if (iga.ConveyBeltTypes is not null)
                 {
                     ConveyBeltTypes = iga.ConveyBeltTypes;
+                }
+                if (iga.AbyssCheat is not null)
+                {
+                    GameAPP.gameAPP.GetComponent<AbyssManager>().money = 99999999;
+                    GameAPP.gameAPP.GetComponent<AbyssManager>().refreshCount = 99999999;
+                    GameAPP.gameAPP.GetComponent<AbyssManager>().maxPlantCount = 99999999;
                 }
                 if (!InGame()) return;
 
@@ -237,42 +242,55 @@ namespace ToolModBepInEx
                     int r = (int)iga.Row;
                     int c = (int)iga.Column;
                     if (iga.Times > 50) iga.Times = 50;
-
-                    for (int n = 0; n < iga.Times; n++)
+                    try
                     {
-                        if (r * r + c * c == 0)
+                        for (int n = 0; n < iga.Times; n++)
                         {
-                            for (int i = 0; i < Board.Instance!.rowNum; i++)
+                            if (r * r + c * c == 0)
                             {
-                                for (int j = 0; j < Board.Instance.columnNum; j++)
+                                for (int i = 0; i < Board.Instance!.rowNum; i++)
                                 {
-                                    CreatePlant.Instance.SetPlant(j, i, (PlantType)id);
+                                    for (int j = 0; j < Board.Instance.columnNum; j++)
+                                    {
+                                        CreatePlant.Instance.SetPlant(j, i, (PlantType)id);
+                                    }
                                 }
+                                continue;
                             }
-                            continue;
-                        }
-                        ;
-                        if (r == 0 && c != 0)
-                        {
-                            for (int j = 0; j < Board.Instance!.columnNum; j++)
+                            ;
+                            if (r == 0 && c != 0)
                             {
-                                CreatePlant.Instance.SetPlant(c - 1, j, (PlantType)id);
+                                for (int j = 0; j < Board.Instance!.columnNum; j++)
+                                {
+                                    CreatePlant.Instance.SetPlant(c - 1, j, (PlantType)id);
+                                }
+                                continue;
                             }
-                            continue;
-                        }
-                        if (c == 0 && r != 0)
-                        {
-                            for (int j = 0; j < Board.Instance!.columnNum; j++)
+                            if (c == 0 && r != 0)
                             {
-                                CreatePlant.Instance.SetPlant(j, r - 1, (PlantType)id);
+                                for (int j = 0; j < Board.Instance!.columnNum; j++)
+                                {
+                                    CreatePlant.Instance.SetPlant(j, r - 1, (PlantType)id);
+                                }
+                                continue;
+                            }
+                            if (c > 0 && r > 0 && c <= Board.Instance!.columnNum && r <= Board.Instance.rowNum)
+                            {
+                                CreatePlant.Instance.SetPlant(c - 1, r - 1, (PlantType)id);
                             }
                             continue;
                         }
-                        if (c > 0 && r > 0 && c <= Board.Instance!.columnNum && r <= Board.Instance.rowNum)
+                    }
+                    catch
+                    {
+                        if (id is 300)
                         {
-                            CreatePlant.Instance.SetPlant(c - 1, r - 1, (PlantType)id);
+                            InGameText.Instance.ShowText("不支持此操作，用豌豆代替", 5);
                         }
-                        continue;
+                        else
+                        {
+                            throw;
+                        }
                     }
                 }
                 if (iga.Row is not null
@@ -295,11 +313,11 @@ namespace ToolModBepInEx
                                 {
                                     if (!(bool)iga.SummonMindControlledZombies)
                                     {
-                                        CreateZombie.Instance.SetZombie(i, (ZombieType)id, -5f + j * 1.37f);
+                                        CreateZombie.Instance.SetZombie(i, (ZombieType)id, -5f + (j) * 1.37f);
                                     }
                                     else
                                     {
-                                        CreateZombie.Instance.SetZombieWithMindControl(i, (ZombieType)id, -5f + j * 1.37f);
+                                        CreateZombie.Instance.SetZombieWithMindControl(i, (ZombieType)id, -5f + (j) * 1.37f);
                                     }
                                 }
                             }
@@ -327,11 +345,11 @@ namespace ToolModBepInEx
                             {
                                 if (!(bool)iga.SummonMindControlledZombies)
                                 {
-                                    CreateZombie.Instance.SetZombie(r - 1, (ZombieType)id, -5f + j * 1.37f);
+                                    CreateZombie.Instance.SetZombie(r - 1, (ZombieType)id, -5f + (j) * 1.37f);
                                 }
                                 else
                                 {
-                                    CreateZombie.Instance.SetZombieWithMindControl(r - 1, (ZombieType)id, -5f + j * 1.37f);
+                                    CreateZombie.Instance.SetZombieWithMindControl(r - 1, (ZombieType)id, -5f + (j) * 1.37f);
                                 }
                             }
                             continue;
@@ -361,28 +379,28 @@ namespace ToolModBepInEx
                         {
                             for (int j = 0; j < Board.Instance.columnNum; j++)
                             {
-                                GridItem.SetGridItem(j, i, GridItemType.ScaryPot).thePlantType = (PlantType)id;
+                                GridItem.SetGridItem(j, i, GridItemType.ScaryPot).Cast<ScaryPot>().thePlantType = (PlantType)id;
                             }
                         }
                     }
-                        ;
+
                     if (r == 0 && c != 0)
                     {
                         for (int j = 0; j < Board.Instance!.columnNum; j++)
                         {
-                            GridItem.SetGridItem(c - 1, j, GridItemType.ScaryPot).thePlantType = (PlantType)id;
+                            GridItem.SetGridItem(c - 1, j, GridItemType.ScaryPot).Cast<ScaryPot>().thePlantType = (PlantType)id;
                         }
                     }
                     if (c == 0 && r != 0)
                     {
                         for (int j = 0; j < Board.Instance!.columnNum; j++)
                         {
-                            GridItem.SetGridItem(j, r - 1, GridItemType.ScaryPot).thePlantType = (PlantType)id;
+                            GridItem.SetGridItem(j, r - 1, GridItemType.ScaryPot).Cast<ScaryPot>().thePlantType = (PlantType)id;
                         }
                     }
                     if (c > 0 && r > 0 && c <= Board.Instance!.columnNum && r <= Board.Instance.rowNum)
                     {
-                        GridItem.SetGridItem(c - 1, r - 1, GridItemType.ScaryPot).thePlantType = (PlantType)id;
+                        GridItem.SetGridItem(c - 1, r - 1, GridItemType.ScaryPot).Cast<ScaryPot>().thePlantType = (PlantType)id;
                     }
                 }
                 if (iga.Row is not null && iga.Column is not null && iga.ZombieType is not null && iga.ZombieVase is not null)
@@ -396,7 +414,7 @@ namespace ToolModBepInEx
                         {
                             for (int j = 0; j < Board.Instance.columnNum; j++)
                             {
-                                GridItem.SetGridItem(j, i, GridItemType.ScaryPot).theZombieType = (ZombieType)id;
+                                GridItem.SetGridItem(j, i, GridItemType.ScaryPot).Cast<ScaryPot>().theZombieType = (ZombieType)id;
                             }
                         }
                     }
@@ -405,19 +423,19 @@ namespace ToolModBepInEx
                     {
                         for (int j = 0; j < Board.Instance!.columnNum; j++)
                         {
-                            GridItem.SetGridItem(c - 1, j, GridItemType.ScaryPot).theZombieType = (ZombieType)id;
+                            GridItem.SetGridItem(c - 1, j, GridItemType.ScaryPot).Cast<ScaryPot>().theZombieType = (ZombieType)id;
                         }
                     }
                     if (c == 0 && r != 0)
                     {
                         for (int j = 0; j < Board.Instance!.columnNum; j++)
                         {
-                            GridItem.SetGridItem(j, r - 1, GridItemType.ScaryPot).theZombieType = (ZombieType)id;
+                            GridItem.SetGridItem(j, r - 1, GridItemType.ScaryPot).Cast<ScaryPot>().theZombieType = (ZombieType)id;
                         }
                     }
                     if (c > 0 && r > 0 && c <= Board.Instance!.columnNum && r <= Board.Instance.rowNum)
                     {
-                        GridItem.SetGridItem(c - 1, r - 1, GridItemType.ScaryPot).theZombieType = (ZombieType)id;
+                        GridItem.SetGridItem(c - 1, r - 1, GridItemType.ScaryPot).Cast<ScaryPot>().theZombieType = (ZombieType)id;
                     }
                 }
 
@@ -463,7 +481,7 @@ namespace ToolModBepInEx
                     }
                     for (int j = Board.Instance.zombieArray.Count; j >= 0; j--)
                     {
-                        try { Board.Instance.zombieArray[j]?.Die(); } catch { }
+                        try { (Board.Instance.zombieArray[j])?.Die(); } catch { }
                     }
                     Board.Instance.zombieArray.Clear();
                 }
@@ -484,13 +502,15 @@ namespace ToolModBepInEx
                     }
                     for (int j = Board.Instance.zombieArray.Count; j >= 0; j--)
                     {
-                        try { Board.Instance.zombieArray[j]?.SetMindControl(); } catch { }
+                        try { (Board.Instance.zombieArray[j])?.SetMindControl(); } catch { }
                     }
                 }
                 if (iga.ChangeLevelName is not null)
                 {
-                    var uimgr = GameObject.Find("InGameUIFHD").GetComponent<InGameUIMgr>();
-                    uimgr.ChangeString(new([
+                    var uimgr = InGameUI.Instance;
+                    if (uimgr is not null)
+                    {
+                        uimgr.ChangeString(new([
                         uimgr.LevelName1.GetComponent<TextMeshProUGUI>(),
                         uimgr.LevelName2.GetComponent<TextMeshProUGUI>(),
                         uimgr.LevelName3.GetComponent<TextMeshProUGUI>(),
@@ -498,12 +518,13 @@ namespace ToolModBepInEx
                         uimgr.LevelName2.transform.GetChild(0).GameObject().GetComponent<TextMeshProUGUI>(),
                         uimgr.LevelName3.transform.GetChild(0).GameObject().GetComponent<TextMeshProUGUI>(),
                         ]), iga.ChangeLevelName);
+                    }
                 }
                 if (iga.ShowText is not null)
                 {
                     try
                     {
-                        GameObject.Find("Tutor").GetComponent<InGameText>().EnableText(iga.ShowText, 5);
+                        InGameText.Instance.ShowText(iga.ShowText, 5);
                     }
                     catch { }
                 }
@@ -629,13 +650,13 @@ namespace ToolModBepInEx
                     List<VaseInfo> vases = [];
                     foreach (var vase in Board.Instance.griditemArray)
                     {
-                        if (vase is null || vase.theItemType is not 4 or 5 or 6) continue;
+                        if (vase is null || vase.theItemType is not (GridItemType)4 or (GridItemType)5 or (GridItemType)6) continue;
                         vases.Add(new()
                         {
                             Row = vase.theItemRow,
                             Col = vase.theItemColumn,
-                            PlantType = (int)vase.thePlantType,
-                            ZombieType = (int)vase.theZombieType,
+                            PlantType = (int)vase.Cast<ScaryPot>().thePlantType,
+                            ZombieType = (int)vase.Cast<ScaryPot>().theZombieType,
                         });
                     }
                     DataSync.Instance.Value.SendData(new InGameActions()
@@ -654,7 +675,7 @@ namespace ToolModBepInEx
                             {
                                 for (int i = Board.Instance.griditemArray.Count - 1; i >= 0; i--)
                                 {
-                                    if (Board.Instance.griditemArray[i] is not null && Board.Instance.griditemArray[i].theItemType is 4 or 5 or 6)
+                                    if (Board.Instance.griditemArray[i] is not null && Board.Instance.griditemArray[i].theItemType is (GridItemType)4 or (GridItemType)5 or (GridItemType)6)
                                     {
                                         Board.Instance.griditemArray[i].gameObject.active = false;
                                         UnityEngine.Object.Destroy(Board.Instance.griditemArray[i]);
@@ -664,19 +685,19 @@ namespace ToolModBepInEx
                             foreach (var vase in fieldVases)
                             {
                                 var g = GridItem.SetGridItem(vase.Col, vase.Row, GridItemType.ScaryPot);
-                                g.thePlantType = (PlantType)vase.PlantType;
-                                g.theZombieType = (ZombieType)vase.ZombieType;
+                                g.Cast<ScaryPot>().thePlantType = (PlantType)vase.PlantType;
+                                g.Cast<ScaryPot>().theZombieType = (ZombieType)vase.ZombieType;
                             }
                         }
                     }
-                    catch (JsonException) { MLogger.Error("布阵代码存在错误！"); }
-                    catch (NotSupportedException) { MLogger.Error("布阵代码存在错误！"); }
+                    catch (JsonException) { MLogger.LogError("布阵代码存在错误！"); }
+                    catch (NotSupportedException) { MLogger.LogError("布阵代码存在错误！"); }
                 }
 
                 if (iga.Card is not null
                   && iga.PlantType is not null)
                 {
-                    Lawnf.SetDroppedCard(new(0f, 0f), (PlantType)iga.PlantType).GameObject().transform.SetParent(GameObject.Find("InGameUIFHD").transform);
+                    Lawnf.SetDroppedCard(new(0f, 0f), (PlantType)iga.PlantType).GameObject().transform.SetParent(InGameUI.Instance.transform);
                 }
                 if (iga.ReadZombies is not null)
                 {
@@ -721,8 +742,8 @@ namespace ToolModBepInEx
                             }
                         }
                     }
-                    catch (JsonException) { MLogger.Error("布阵代码存在错误！"); }
-                    catch (NotSupportedException) { MLogger.Error("布阵代码存在错误！"); }
+                    catch (JsonException) { MLogger.LogError("布阵代码存在错误！"); }
+                    catch (NotSupportedException) { MLogger.LogError("布阵代码存在错误！"); }
                 }
                 if (iga.StartMower is not null)
                 {
@@ -744,17 +765,18 @@ namespace ToolModBepInEx
                     Lawnf.SetAward(Board.Instance, Vector2.zero);
                 }
             }
+
             if (data is GameModes ga)
             {
                 PatchMgr.GameModes = ga;
 
                 if (InGame())
                 {
-                    originalLevel = GameAPP.theBoardLevel;
                     var t = Board.Instance.boardTag;
                     t.isScaredyDream = PatchMgr.GameModes.ScaredyDream;
                     t.isColumn = PatchMgr.GameModes.ColumnPlanting;
                     t.isSeedRain = PatchMgr.GameModes.SeedRain;
+                    Board.Instance.boardTag = t;
                 }
                 return;
             }
@@ -765,43 +787,43 @@ namespace ToolModBepInEx
             try
             {
                 if (string.IsNullOrWhiteSpace(data) || string.IsNullOrEmpty(data)) return;
-                if (Dev) MLogger.Msg(data);
+                if (Dev) MLogger.LogError(data);
                 JsonObject json = JsonNode.Parse(data)!.AsObject();
                 switch ((int)json["ID"]!)
                 {
                     case 1:
                         {
-                            ProcessData(json.Deserialize<ValueProperties>());
+                            ProcessData(JsonSerializer.Deserialize<ValueProperties>(json));
                             break;
                         }
                     case 2:
                         {
-                            ProcessData(json.Deserialize<BasicProperties>());
+                            ProcessData(JsonSerializer.Deserialize<BasicProperties>(json));
                             break;
                         }
                     case 3:
                         {
-                            ProcessData(json.Deserialize<InGameHotkeys>());
+                            ProcessData(JsonSerializer.Deserialize<InGameHotkeys>(json));
                             break;
                         }
                     case 4:
                         {
-                            ProcessData(json.Deserialize<SyncTravelBuff>());
+                            ProcessData(JsonSerializer.Deserialize<SyncTravelBuff>(json));
                             break;
                         }
                     case 6:
                         {
-                            ProcessData(json.Deserialize<InGameActions>());
+                            ProcessData(JsonSerializer.Deserialize<InGameActions>(json));
                             break;
                         }
                     case 7:
                         {
-                            ProcessData(json.Deserialize<GameModes>());
+                            ProcessData(JsonSerializer.Deserialize<GameModes>(json));
                             break;
                         }
                     case 15:
                         {
-                            SyncAll all = json.Deserialize<SyncAll>();
+                            SyncAll all = JsonSerializer.Deserialize<SyncAll>(json);
                             ProcessData((SyncTravelBuff)all.TravelBuffs!);
                             ProcessData((InGameActions)all.InGameActions!);
                             ProcessData((BasicProperties)all.BasicProperties!);
@@ -819,18 +841,21 @@ namespace ToolModBepInEx
                         break;
                 }
             }
+            catch (JsonException)
+            {
+                Core.Instance.Value.LoggerInstance.LogError("操作失败，可能是点太快或设置词条时出错，取消后重设置一下吧。");
+            }
             catch (Exception ex)
             {
-                Core.Instance.Value.LoggerInstance.Error(ex.ToString() + ex.StackTrace);
+                Core.Instance.Value.LoggerInstance.LogError(ex.ToString() + ex.StackTrace);
             }
         }
 
         public void Awake() => Task.Run(() =>
         {
-            Thread.Sleep(100);
-            DataSync.Instance.Value.SendData(new InGameHotkeys() { KeyCodes = [.. from i in Core.KeyBindings.Value select (int)i.Value] });
-            Thread.Sleep(100);
+            Thread.Sleep(3000);
             DataSync.Instance.Value.SendData(new SyncAll());
+            DataSync.Instance.Value.SendData(new InGameHotkeys() { KeyCodes = [.. from i in Core.KeyBindings.Value select (int)i.Value] });
         });
 
         public void Update()
@@ -847,8 +872,8 @@ namespace ToolModBepInEx
 
         protected static void EnableAll<T>(bool enabled) where T : Component => _ = FindObjectsOfTypeAll(Il2CppType.Of<T>()).All((c) =>
         {
-            var v = (c?.Cast<T>())?.gameObject.GetComponent<BoxCollider2D>();
-            var v2 = (c?.Cast<T>())?.gameObject.GetComponent<PolygonCollider2D>();
+            var v = ((c?.Cast<T>())?.gameObject.GetComponent<BoxCollider2D>());
+            var v2 = ((c?.Cast<T>())?.gameObject.GetComponent<PolygonCollider2D>());
             if (v is not null) v.enabled = enabled;
             if (v2 is not null) v2.enabled = enabled;
             return true;
@@ -865,7 +890,8 @@ namespace ToolModBepInEx
             Resources.Load<GameObject>("Items/Pickaxe"),
             Resources.Load<GameObject>("Items/Machine"),
             Resources.Load<GameObject>("Items/SuperMachine"),
-                        Resources.Load<GameObject>("Items/SproutPotPrize/SproutPotPrize"),
+            Resources.Load<GameObject>("Items/SproutPotPrize/SproutPotPrize"),
+                        Resources.Load<GameObject>("Items/PortalHeart"),
 
         ];
     }

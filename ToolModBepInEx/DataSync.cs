@@ -66,7 +66,7 @@ namespace ToolModBepInEx
             }
             catch (Exception e)
             {
-                Core.Instance.Value.LoggerInstance.Error(e);
+                Core.Instance.Value.LoggerInstance.LogError(e);
                 Application.Quit();
             }
         }
@@ -75,7 +75,7 @@ namespace ToolModBepInEx
         {
             if (Dev)
             {
-                Core.Instance.Value.LoggerInstance.Msg("Send:" + JsonSerializer.Serialize(data));
+                Core.Instance.Value.LoggerInstance.LogInfo("Send:" + JsonSerializer.Serialize(data));
             }
             modifierSocket.SendAsync(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(data)), SocketFlags.None);
             Thread.Sleep(5);

@@ -1039,7 +1039,8 @@ namespace PVZRHTools
             {4, "镐子 Pickaxe"},
             {5, "机甲碎片 Machine"},
             {6, "超级机甲碎片 SuperMachine" },
-            {7,"花园植物礼盒 GardenPresent" }
+            {7,"花园植物礼盒 GardenPresent" },
+            {8,"超时空碎片 PortalHeart" },
         };
 
         public List<(string, Action)> KeyCommands =>
