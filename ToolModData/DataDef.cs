@@ -95,6 +95,7 @@
         public int? CurrentSun { get; set; }
         public readonly int ID => 6;
         public int? ItemType { get; set; }
+        public bool? LoadCustomPlantData { get; set; }
         public bool? LockMoney { get; set; }
         public bool? LockSun { get; set; }
         public bool? MindControlAllZombies { get; set; }
@@ -111,6 +112,7 @@
         public bool? StartMower { get; set; }
         public bool? StopSummon { get; set; }
         public bool? SummonMindControlledZombies { get; set; }
+
         public int? Times { get; set; }
         public string? WriteField { get; set; }
         public string? WriteVases { get; set; }

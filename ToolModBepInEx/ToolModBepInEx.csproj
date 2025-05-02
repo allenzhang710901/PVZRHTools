@@ -118,6 +118,9 @@
     <Reference Include="StableNameDotNet">
       <HintPath>..\..\..\pvz\rhbep\BepInEx\core\StableNameDotNet.dll</HintPath>
     </Reference>
+    <Reference Include="System.Drawing.Common">
+      <HintPath>..\..\..\pvz\rhex\MelonLoader\net6\System.Drawing.Common.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.2D.Animation.Runtime">
       <HintPath>..\..\..\pvz\rhbep\BepInEx\interop\Unity.2D.Animation.Runtime.dll</HintPath>
     </Reference>

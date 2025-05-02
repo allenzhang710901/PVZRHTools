@@ -236,6 +236,13 @@ namespace ToolMod
                     GameAPP.gameAPP.GetComponent<AbyssManager>().refreshCount = 99999999;
                     GameAPP.gameAPP.GetComponent<AbyssManager>().maxPlantCount = 99999999;
                 }
+                if (iga.LoadCustomPlantData is not null)
+                {
+                    if (!Utils.LoadPlantData())
+                    {
+                        MLogger.Error("Failed to reload custom plant data.");
+                    }
+                }
                 if (!InGame()) return;
 
                 if (iga.Row is not null && iga.Column is not null && iga.PlantType is not null && iga.Times is not null)

@@ -4,6 +4,7 @@
 已构建版本的链接在b站视频简介中    
 
 模组部分基于[MelonLoader](https://github.com/LavaGang/MelonLoader)与[BepInEx](https://github.com/BepInEx/BepInEx)开发      
+内置了花园修改器[pvzRH-GardenEditor](https://github.com/CarefreeSongs712/pvzRH-GardenEditor)     
 修改窗口使用了[HandyControl](https://github.com/HandyOrg/HandyControl), [FastHotKeyForWPF](https://github.com/Axvser/FastHotKeyForWPF),[Tommy](https://github.com/dezhidki/Tommy)     
 
 融合版制作组：    

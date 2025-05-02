@@ -143,4 +143,7 @@
     <s:String x:Key="Tab2.Page2.BuffRefreshNoLimit">BuffRefreshNoLimit</s:String>
     <s:String x:Key="Tab2.Page1.VaseLineUp">VaseLineUp</s:String>
     <s:String x:Key="Tab0.AbyssCheat">AbyssCheat</s:String>
+    <s:String x:Key="Tab0.GardenTools">GardenTools by @听雨夜荷</s:String>
+    <s:String x:Key="Tab0.LoadCustomPlantData">LoadCustomPlantData</s:String>
+    <s:String x:Key="Tab0.LoadCustomPlantData.Tooltip">Due to code limits, some settings may not be effective.</s:String>
 </ResourceDictionary>

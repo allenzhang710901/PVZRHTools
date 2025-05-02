@@ -45,39 +45,86 @@
                 <Border Background="#FF212125" Margin="0,8,0,0" BorderBrush="#FF2FA42F" BorderThickness="2,2,2,2">
                     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                         <Grid>
+                            <StackPanel Orientation="Vertical">
+                                <Grid>
+                                </Grid>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="{DynamicResource Tab1.Page1.Header}" HorizontalAlignment="Left" Margin="16,4,0,0" VerticalAlignment="Top" Foreground="#FF2FA42F" Style="{DynamicResource LabelBaseStyle}" />
+                                    <Rectangle Height="2" Margin="10,17,0,0" VerticalAlignment="Top" Fill="#FF2FA42F" Width="323" />
+                                    <hc:ComboBox hc:TitleElement.MinWidth="120" hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="语言/Language/Язык" Height="17" Style="{DynamicResource ComboBoxExtend}" SelectionChanged="ComboBox_SelectionChanged" HorizontalAlignment="Right" Width="255" VerticalAlignment="Top" Margin="10,3,0,0">
+                                        <ComboBoxItem Content="简体中文" IsSelected="True" />
+                                        <ComboBoxItem Content="English" />
+                                        <ComboBoxItem Content="Русский" />
+                                    </hc:ComboBox>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <CheckBox x:Name="DeveloperMode" Content="{DynamicResource Tab1.Page1.DevMode}" Height="21" Margin="10,0,0,0" VerticalAlignment="Top" Foreground="White" IsChecked="{Binding DeveloperMode}" BorderThickness="2,2,2,2" HorizontalAlignment="Left" />
+                                    <CheckBox x:Name="GloveNoCD" IsChecked="{Binding GloveNoCD}" Content="{DynamicResource Tab1.Page1.GloveNoCD}" Height="21" Margin="10,0,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left" />
+                                    <CheckBox x:Name="HammerNoCD" IsChecked="{Binding HammerNoCD}" Content="{DynamicResource Tab1.Page1.HammerNoCD}" Height="21" Margin="10,0,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left" />
+                                    <CheckBox x:Name="PlantingNoCD" IsChecked="{Binding PlantingNoCD}" Content="{DynamicResource Tab1.Page1.PlantingNoCD}" Height="21" Margin="10,0,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Center" />
+                                    <CheckBox x:Name="FreePlanting" IsChecked="{Binding FreePlanting}" Content="{DynamicResource Tab1.Page1.FreePlanting}" Height="21" Margin="10,0,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left" />
+                                    <CheckBox x:Name="UnlockAllFusions" IsChecked="{Binding UnlockAllFusions}" Content="{DynamicResource Tab1.Page1.UnlockAllFusions}" Height="21" Margin="10,0,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                                    <CheckBox x:Name="GloveFullCDEnabled" Height="21" Margin="10,0,0,0" VerticalAlignment="Top" Foreground="White" IsChecked="{Binding GloveFullCDEnabled}" BorderThickness="2,2,2,2" HorizontalAlignment="Left" Content="{DynamicResource Tab1.Page1.LockGloveCD}" />
 
-                            <CheckBox x:Name="DeveloperMode" Content="{DynamicResource Tab1.Page1.DevMode}" Height="21" Margin="10,33,0,0" VerticalAlignment="Top" Foreground="White" IsChecked="{Binding DeveloperMode}" BorderThickness="2,2,2,2" HorizontalAlignment="Left" />
-                            <CheckBox x:Name="GloveNoCD" IsChecked="{Binding GloveNoCD}" Content="{DynamicResource Tab1.Page1.GloveNoCD}" Height="21" Margin="109,33,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left" Width="89" />
-                            <CheckBox x:Name="HammerNoCD" IsChecked="{Binding HammerNoCD}" Content="{DynamicResource Tab1.Page1.HammerNoCD}" Height="21" Margin="203,33,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left" Width="107" />
-                            <CheckBox x:Name="PlantingNoCD" IsChecked="{Binding PlantingNoCD}" Content="{DynamicResource Tab1.Page1.PlantingNoCD}" Height="21" Margin="0,33,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Center" />
-                            <CheckBox x:Name="FreePlanting" IsChecked="{Binding FreePlanting}" Content="{DynamicResource Tab1.Page1.FreePlanting}" Height="21" Margin="414,33,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left" />
-                            <CheckBox x:Name="UnlockAllFusions" IsChecked="{Binding UnlockAllFusions}" Content="{DynamicResource Tab1.Page1.UnlockAllFusions}" Height="21" Margin="504,33,0,0" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" HorizontalAlignment="Left" />
-                            <hc:NumericUpDown IsEnabled="{Binding GloveFullCDEnabled}" DecimalPlaces="1" x:Name="GloveFullCD" HorizontalAlignment="Left" Margin="109,65,0,0" VerticalAlignment="Top" Width="80" Height="20" Value="{Binding GloveFullCD}" Increment="0.1" Minimum="0" SelectionOpacity="0.1" />
-                            <hc:NumericUpDown IsEnabled="{Binding HammerFullCDEnabled}" DecimalPlaces="1" x:Name="HammerFullCD" HorizontalAlignment="Center" VerticalAlignment="Top" Width="80" Height="20" Value="{Binding HammerFullCD}" Margin="0,65,0,0" Minimum="0" Increment="0.1" SelectionOpacity="0.2" />
-                            <CheckBox x:Name="HammerFullCDEnabled" Content="{DynamicResource Tab1.Page1.LockHammerCD}" Height="21" Margin="203,68,0,0" VerticalAlignment="Top" Foreground="White" IsChecked="{Binding HammerFullCDEnabled}" BorderThickness="2,2,2,2" HorizontalAlignment="Left" />
-                            <CheckBox x:Name="GloveFullCDEnabled" Height="21" Margin="10,68,0,0" VerticalAlignment="Top" Foreground="White" IsChecked="{Binding GloveFullCDEnabled}" BorderThickness="2,2,2,2" HorizontalAlignment="Left" Content="{DynamicResource Tab1.Page1.LockGloveCD}" />
-                            <hc:NumericUpDown hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="{DynamicResource Tab1.Page1.NextWaveCD}" hc:TitleElement.TitleWidth="120" DecimalPlaces="1" x:Name="NewZombieUpdateCD" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Height="20" Value="{Binding NewZombieUpdateCD}" Margin="10,98,0,0" Minimum="0" SelectionOpacity="0.2" Style="{DynamicResource NumericUpDownExtend}" ToolTip="{DynamicResource Tab1.Page1.NextWaveCD.Tootip}" Maximum="30" />
-                            <hc:NumericUpDown hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="{DynamicResource Tab1.Page1.GameSpeed}" hc:TitleElement.TitleWidth="90" DecimalPlaces="3" x:Name="GameSpeed" HorizontalAlignment="Left" Margin="227,98,0,0" VerticalAlignment="Top" Width="167" Height="20" Value="{Binding GameSpeed,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Increment="0.1" Minimum="0" SelectionOpacity="0.1" Maximum="16" Style="{DynamicResource NumericUpDownExtend}" />
-                            <hc:NumericUpDown DecimalPlaces="0" hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="{DynamicResource Tab2.Page1.Row}" hc:TitleElement.TitleWidth="35" x:Name="Row" HorizontalAlignment="Left" Margin="190,154,0,0" VerticalAlignment="Top" Width="90" Value="{Binding Row}" Maximum="12" Minimum="0" Style="{DynamicResource NumericUpDownExtend}" />
-                            <Label Content="{DynamicResource Tab2.Page1.Description}" HorizontalAlignment="Left" Margin="0,154,0,0" VerticalAlignment="Top" Foreground="White" Style="{DynamicResource LabelBaseStyle}" />
-                            <hc:NumericUpDown DecimalPlaces="0" hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="{DynamicResource Tab2.Page1.Col}" hc:TitleElement.TitleWidth="30" x:Name="Column" HorizontalAlignment="Left" Margin="285,154,0,0"  VerticalAlignment="Top" Width="90" Value="{Binding Col}" Maximum="24" Minimum="0" Style="{DynamicResource NumericUpDownExtend}" />
-                            <hc:NumericUpDown DecimalPlaces="0" hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="{DynamicResource Tab2.Page1.RepeatTimes}" hc:TitleElement.TitleWidth="100" x:Name="Times" HorizontalAlignment="Left" Margin="380,154,0,0" VerticalAlignment="Top" Width="224" Value="{Binding Times}" Maximum="50" Minimum="1" Style="{DynamicResource NumericUpDownExtend}" />
-                            <hc:ElementGroup Orientation="Horizontal" Layout="Stack" Margin="0,187,0,0" Width="552" HorizontalAlignment="Left" Style="{DynamicResource ElementGroupSolid}">
-                                <Button x:Name="CreatePlant" Content="{DynamicResource Tab2.Page1.CreatePlant}" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="68" Command="{Binding CreatePlantCommand}" Style="{DynamicResource ButtonGroupItemHorizontalFirst}" />
-                                <ComboBox x:Name="PlantType" SelectedValuePath="Key" DisplayMemberPath="Value" ItemsSource="{Binding Plants2}" SelectedValue="{Binding PlantType}" Style="{DynamicResource ComboBoxExtend}" Width="150" HorizontalAlignment="Left" VerticalContentAlignment="Center" Margin="-34,0,0,0" VerticalAlignment="Center" Height="30" />
-                                <Button x:Name="CreateCard" Content="{DynamicResource Tab2.Page1.CreateCard}" Width="122" Command="{Binding CreateCardCommand}" Height="30" />
-                                <Button x:Name="SimplePresents" Content="{DynamicResource Tab2.Page1.SimplePresents}" Width="215" Command="{Binding SimplePresentsCommand}" Height="30" />
-                            </hc:ElementGroup>
-                            <hc:ElementGroup Orientation="Horizontal" Layout="Stack" Margin="0,217,0,0" Width="217" HorizontalAlignment="Left">
-                                <Button x:Name="CreateZombie" Content="{DynamicResource Tab2.Page1.CreateZombie}" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="68" Command="{Binding CreateZombieCommand}" />
-                                <ComboBox x:Name="ZombieType" HorizontalAlignment="Left" Height="30" VerticalAlignment="Center" Width="150" SelectedValuePath="Key" DisplayMemberPath="Value" ItemsSource="{Binding Zombies}" SelectedValue="{Binding ZombieType}" />
-                            </hc:ElementGroup>
-                            <CheckBox x:Name="IsMindCtrl" Content="{DynamicResource Tab2.Page1.IsMindCtrl}" Height="30" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding IsMindCtrl}" Style="{DynamicResource CheckBoxBaseStyle}" BorderBrush="#FF3F3F46" Margin="217,217,369,0" VerticalAlignment="Top" />
-                            <hc:ElementGroup Orientation="Horizontal" Layout="Stack" HorizontalAlignment="Left" Margin="0,247,0,0">
-                                <Button x:Name="CreateItem" Content="{DynamicResource Tab2.Page1.CreateItem}" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="68" Command="{Binding CreateItemCommand}" />
-                                <ComboBox x:Name="ItemType" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="150" SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding ItemType}" ItemsSource="{Binding Items, Mode=OneWay}" />
-                            </hc:ElementGroup>
-                            <StackPanel Width="688" Margin="0,276,0,0" Height="299" VerticalAlignment="Top">
+                                    <hc:NumericUpDown IsEnabled="{Binding GloveFullCDEnabled}" DecimalPlaces="1" x:Name="GloveFullCD" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Width="80" Height="20" Value="{Binding GloveFullCD}" Increment="0.1" Minimum="0" SelectionOpacity="0.1" />
+                                    <CheckBox x:Name="HammerFullCDEnabled" Content="{DynamicResource Tab1.Page1.LockHammerCD}" Height="21" Margin="10,0,0,0" VerticalAlignment="Top" Foreground="White" IsChecked="{Binding HammerFullCDEnabled}" BorderThickness="2,2,2,2" HorizontalAlignment="Left" />
+
+                                    <hc:NumericUpDown IsEnabled="{Binding HammerFullCDEnabled}" DecimalPlaces="1" x:Name="HammerFullCD" HorizontalAlignment="Center" VerticalAlignment="Top" Width="80" Height="20" Value="{Binding HammerFullCD}" Margin="10,0,0,0" Minimum="0" Increment="0.1" SelectionOpacity="0.2" />
+                                    <CheckBox x:Name="ColumnPlanting" Content="{DynamicResource Tab1.Page4.ColumnPlanting}" Height="21" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding ColumnPlanting}" Margin="10,0,0,0" VerticalAlignment="Top" />
+                                    <CheckBox x:Name="SeedRain" Content="{DynamicResource Tab1.Page4.SeedRain}" Height="21" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding SeedRain}" Margin="10,0,0,0" VerticalAlignment="Top" />
+                                    <CheckBox x:Name="ScaredyDream" Content="{DynamicResource Tab1.Page4.ScaredyDream}" Height="21" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding ScaredyDream}" Margin="10,0,0,0" VerticalAlignment="Top" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <hc:NumericUpDown hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="{DynamicResource Tab1.Page1.NextWaveCD}" hc:TitleElement.TitleWidth="120" DecimalPlaces="1" x:Name="NewZombieUpdateCD" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Height="20" Value="{Binding NewZombieUpdateCD}" Margin="10,0,0,0" Minimum="0" SelectionOpacity="0.2" Style="{DynamicResource NumericUpDownExtend}" ToolTip="{DynamicResource Tab1.Page1.NextWaveCD.Tootip}" Maximum="30" />
+                                    <hc:NumericUpDown hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="{DynamicResource Tab1.Page1.GameSpeed}" hc:TitleElement.TitleWidth="90" DecimalPlaces="3" x:Name="GameSpeed" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Width="167" Height="20" Value="{Binding GameSpeed,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Increment="0.1" Minimum="0" SelectionOpacity="0.1" Maximum="16" Style="{DynamicResource NumericUpDownExtend}" />
+                                    <Button x:Name="GardenTools" Content="{DynamicResource Tab0.GardenTools}" Command="{Binding GardenToolsCommand}" Margin="10,0,0,0" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="{DynamicResource Tab2.Page2.Header}" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Foreground="#FF2FA42F" Style="{DynamicResource LabelBaseStyle}" />
+
+                                    <Rectangle HorizontalAlignment="Left" Height="2" Margin="10,14,0,0" VerticalAlignment="Top" Width="552" Fill="#FF2FA42F" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="{DynamicResource Tab2.Page1.Description}" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Foreground="White" Style="{DynamicResource LabelBaseStyle}" />
+
+                                    <hc:NumericUpDown DecimalPlaces="0" hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="{DynamicResource Tab2.Page1.Row}" hc:TitleElement.TitleWidth="35" x:Name="Row" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Width="90" Value="{Binding Row}" Maximum="12" Minimum="0" Style="{DynamicResource NumericUpDownExtend}" />
+                                    <hc:NumericUpDown DecimalPlaces="0" hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="{DynamicResource Tab2.Page1.Col}" hc:TitleElement.TitleWidth="30" x:Name="Column" HorizontalAlignment="Left" Margin="10,0,0,0"  VerticalAlignment="Top" Width="90" Value="{Binding Col}" Maximum="24" Minimum="0" Style="{DynamicResource NumericUpDownExtend}" />
+                                    <hc:NumericUpDown DecimalPlaces="0" hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="{DynamicResource Tab2.Page1.RepeatTimes}" hc:TitleElement.TitleWidth="100" x:Name="Times" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Width="224" Value="{Binding Times}" Maximum="50" Minimum="1" Style="{DynamicResource NumericUpDownExtend}" />
+                                </StackPanel>
+                                <hc:ElementGroup Orientation="Horizontal" Layout="Stack" Width="552" HorizontalAlignment="Left" Style="{DynamicResource ElementGroupSolid}" Margin="10,0,0,0">
+                                    <Button x:Name="CreatePlant" Content="{DynamicResource Tab2.Page1.CreatePlant}" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="68" Command="{Binding CreatePlantCommand}" Style="{DynamicResource ButtonGroupItemHorizontalFirst}" />
+                                    <ComboBox x:Name="PlantType" SelectedValuePath="Key" DisplayMemberPath="Value" ItemsSource="{Binding Plants2}" SelectedValue="{Binding PlantType}" Style="{DynamicResource ComboBoxExtend}" Width="150" HorizontalAlignment="Left" VerticalContentAlignment="Center" Margin="-34,0,0,0" VerticalAlignment="Center" Height="30" />
+                                    <Button x:Name="CreateCard" Content="{DynamicResource Tab2.Page1.CreateCard}" Width="122" Command="{Binding CreateCardCommand}" Height="30" />
+                                    <Button x:Name="SimplePresents" Content="{DynamicResource Tab2.Page1.SimplePresents}" Width="215" Command="{Binding SimplePresentsCommand}" Height="30" />
+                                </hc:ElementGroup>
+                                <StackPanel Orientation="Horizontal">
+                                    <hc:ElementGroup Orientation="Horizontal" Layout="Stack" Width="217" HorizontalAlignment="Left" Margin="10,0,0,0">
+                                        <Button x:Name="CreateZombie" Content="{DynamicResource Tab2.Page1.CreateZombie}" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="68" Command="{Binding CreateZombieCommand}" />
+                                        <ComboBox x:Name="ZombieType" HorizontalAlignment="Left" Height="30" VerticalAlignment="Center" Width="150" SelectedValuePath="Key" DisplayMemberPath="Value" ItemsSource="{Binding Zombies}" SelectedValue="{Binding ZombieType}" />
+                                    </hc:ElementGroup>
+                                    <CheckBox x:Name="IsMindCtrl" Content="{DynamicResource Tab2.Page1.IsMindCtrl}" Height="30" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding IsMindCtrl}" Style="{DynamicResource CheckBoxBaseStyle}" BorderBrush="#FF3F3F46" Margin="10,0,0,0" VerticalAlignment="Top" />
+                                    <hc:ButtonGroup Margin="10,0,0,0">
+                                        <Button x:Name="PlantVase" Content="{DynamicResource Tab2.Page1.PlantVase}" Command="{Binding PlantVaseCommand}" />
+                                        <Button x:Name="ZombieVase" Content="{DynamicResource Tab2.Page1.ZombieVase}" Command="{Binding ZombieVaseCommand}" />
+                                    </hc:ButtonGroup>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <hc:ElementGroup Orientation="Horizontal" Layout="Stack" HorizontalAlignment="Left" Margin="10,0,0,0">
+                                        <Button x:Name="CreateItem" Content="{DynamicResource Tab2.Page1.CreateItem}" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="68" Command="{Binding CreateItemCommand}" />
+                                        <ComboBox x:Name="ItemType" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="150" SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding ItemType}" ItemsSource="{Binding Items, Mode=OneWay}" />
+
+                                    </hc:ElementGroup>
+                                    <hc:ButtonGroup Height="30" Width="auto" Margin="10,0,0,0" Style="{DynamicResource ButtonGroupSolid}" HorizontalAlignment="Left">
+                                        <Button x:Name="CreatePassiveMateorite" Content="{DynamicResource Tab2.Page1.CreatePassiveMateorite}" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="auto"  Command="{Binding CreatePassiveMateoriteCommand}" Style="{DynamicResource ButtonGroupItemHorizontalFirst}" />
+                                        <Button x:Name="CreateActiveMateorite" Content="{DynamicResource Tab2.Page1.CreateActiveMateorite}" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="auto" Command="{Binding CreateActiveMateoriteCommand}" Style="{DynamicResource ButtonGroupItemDefault}" />
+                                        <Button x:Name="CreateUltimateMateorite" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="auto" Content="{DynamicResource Tab2.Page1.CreateUltimateMateorite}" Command="{Binding CreateUltimateMateoriteCommand}" Style="{DynamicResource ButtonGroupItemHorizontalLast}" />
+                                    </hc:ButtonGroup>
+                                    <Button x:Name="AbyssCheat" Content="{DynamicResource Tab0.AbyssCheat}" Height="30" Command="{Binding AbyssCheatCommand}" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" />
+                                    <Button x:Name="LoadCustomPlantData" Content="{DynamicResource Tab0.LoadCustomPlantData}" Command="{Binding LoadCustomPlantDataCommand}" Height="30" Margin="10,0,0,0" ToolTip="{DynamicResource Tab0.LoadCustomPlantData.Tooltip}"/>
+                                
+                                </StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                                     <Button x:Name="ChangeSun" Content="{DynamicResource Tab2.Page2.ChangeSun}" HorizontalAlignment="Left" Height="30" Margin="10,0,0,0" VerticalAlignment="Top" Width="75" Command="{Binding SunCommand}" />
                                     <hc:NumericUpDown DecimalPlaces="0" x:Name="Sun" HorizontalAlignment="Left" VerticalAlignment="Top" Width="94" Height="30" Value="{Binding NewSun, ValidatesOnNotifyDataErrors=True}" Increment="100" Maximum="2147483647" Minimum="0" Margin="10,0,0,0" />
@@ -108,7 +155,6 @@
                                     <Button x:Name="ShowText" Content="{DynamicResource Tab2.Page2.ShowText}" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="106" Command="{Binding ShowingTextCommand}" Margin="10,0,0,0" />
                                     <TextBox x:Name="Text" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Width="229" Height="20" Text="{Binding ShowText}" Margin="10,0,0,0" />
                                 </StackPanel>
-
                                 <hc:ButtonGroup Height="30" HorizontalAlignment="Left" Margin="10,10,0,0">
                                     <Button x:Name="StartMower" Content="{DynamicResource Tab2.Page2.StartMower}"  Command="{Binding StartMowerCommand}" />
                                     <Button x:Name="CreateMower" Content="{DynamicResource Tab2.Page2.CreateMower}"  Command="{Binding CreateMowerCommand}" ToolTip="{DynamicResource Tab2.Page2.CreateMower.Tooltip}" />
@@ -119,28 +165,6 @@
                                     <hc:CheckComboBox x:Name="ConveyBeltTypes" local:SelectedItemsExt.SelectedItems="{Binding ConveyBeltTypes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding Plants2}" HorizontalAlignment="Left" Width="644" SelectedValuePath="Key" DisplayMemberPath="Value" IsSynchronizedWithCurrentItem="True" Margin="10,0,0,0" />
                                 </StackPanel>
                             </StackPanel>
-                            <hc:ButtonGroup Height="30" Width="auto" Margin="227,247,0,0" Style="{DynamicResource ButtonGroupSolid}" HorizontalAlignment="Left">
-                                <Button x:Name="CreatePassiveMateorite" Content="{DynamicResource Tab2.Page1.CreatePassiveMateorite}" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="auto"  Command="{Binding CreatePassiveMateoriteCommand}" Style="{DynamicResource ButtonGroupItemHorizontalFirst}" />
-                                <Button x:Name="CreateActiveMateorite" Content="{DynamicResource Tab2.Page1.CreateActiveMateorite}" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="auto" Command="{Binding CreateActiveMateoriteCommand}" Style="{DynamicResource ButtonGroupItemDefault}" />
-                                <Button x:Name="CreateUltimateMateorite" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="auto" Content="{DynamicResource Tab2.Page1.CreateUltimateMateorite}" Command="{Binding CreateUltimateMateoriteCommand}" Style="{DynamicResource ButtonGroupItemHorizontalLast}" />
-                            </hc:ButtonGroup>
-                            <hc:ButtonGroup Margin="344,218,136,0">
-                                <Button x:Name="PlantVase" Content="{DynamicResource Tab2.Page1.PlantVase}" Command="{Binding PlantVaseCommand}" />
-                                <Button x:Name="ZombieVase" Content="{DynamicResource Tab2.Page1.ZombieVase}" Command="{Binding ZombieVaseCommand}" />
-                            </hc:ButtonGroup>
-                            <Rectangle HorizontalAlignment="Left" Height="2" Margin="108,140,0,0" VerticalAlignment="Top" Width="552" Fill="#FF2FA42F" />
-                            <Label Content="{DynamicResource Tab2.Page2.Header}" HorizontalAlignment="Left" Margin="16,126,0,0" VerticalAlignment="Top" Foreground="#FF2FA42F" Style="{DynamicResource LabelBaseStyle}" />
-                            <Rectangle Height="2" Margin="89,18,270,0" VerticalAlignment="Top" Fill="#FF2FA42F" />
-                            <Label Content="{DynamicResource Tab1.Page1.Header}" HorizontalAlignment="Left" Margin="16,4,0,0" VerticalAlignment="Top" Foreground="#FF2FA42F" Style="{DynamicResource LabelBaseStyle}" />
-                            <hc:ComboBox hc:TitleElement.MinWidth="120" hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="语言/Language/Язык" Height="17" Style="{DynamicResource ComboBoxExtend}" SelectionChanged="ComboBox_SelectionChanged" Margin="0,4,0,0" HorizontalAlignment="Right" Width="255" VerticalAlignment="Top">
-                                <ComboBoxItem Content="简体中文" IsSelected="True" />
-                                <ComboBoxItem Content="English" />
-                                <ComboBoxItem Content="Русский" />
-                            </hc:ComboBox>
-                            <CheckBox x:Name="ColumnPlanting" Content="{DynamicResource Tab1.Page4.ColumnPlanting}" Height="21" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding ColumnPlanting}" Margin="415,68,203,0" VerticalAlignment="Top" />
-                            <CheckBox x:Name="SeedRain" Content="{DynamicResource Tab1.Page4.SeedRain}" Height="21" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding SeedRain}" Margin="415,102,215,0" VerticalAlignment="Top" />
-                            <CheckBox x:Name="ScaredyDream" Content="{DynamicResource Tab1.Page4.ScaredyDream}" Height="21" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding ScaredyDream}" Margin="563,68,43,0" VerticalAlignment="Top" />
-                            <Button x:Name="AbyssCheat" Content="{DynamicResource Tab0.AbyssCheat}" Height="30" Width="84" Command="{Binding AbyssCheatCommand}" HorizontalAlignment="Left" Margin="450,247,0,0" VerticalAlignment="Top" />
                         </Grid>
                     </ScrollViewer>
                 </Border>

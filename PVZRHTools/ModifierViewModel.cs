@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using FastHotKeyForWPF;
 using HandyControl.Tools.Extension;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -458,6 +459,26 @@ namespace PVZRHTools
         }
 
         [RelayCommand]
+        public void GardenTools()
+        {
+            try
+            {
+                Process modifier = new();
+                ProcessStartInfo info = new()
+                {
+                    FileName = "PVZRHTools\\GardenTools\\start.bat",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                };
+                modifier.StartInfo = info;
+                modifier.Start();
+            }
+            catch
+            {
+            }
+        }
+
+        [RelayCommand]
         public void Health1st() => App.DataSync.Value.SendData(new ValueProperties() { FirstArmorsHealth = new(Health1stType, (int)Health1stValue) });
 
         [RelayCommand]
@@ -542,6 +563,9 @@ namespace PVZRHTools
 
         [RelayCommand]
         public void LevelName() => App.DataSync.Value.SendData(new InGameActions() { ChangeLevelName = NewLevelName });
+
+        [RelayCommand]
+        public void LoadCustomPlantData() => App.DataSync.Value.SendData(new InGameActions() { LoadCustomPlantData = true });
 
         [RelayCommand]
         public void LockBullet() => App.DataSync.Value.SendData(new ValueProperties() { LockBulletType = LockBulletType });

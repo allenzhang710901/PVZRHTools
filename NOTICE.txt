@@ -20,15 +20,6 @@
    HandyControl:MIT License
    FastHotKeyForWPF:MIT License
 
-   此项目使用MelonLoader,构建版本中修改内容如下： 
-   1.删除MelonLoader/Il2CppAssemblyGenerator文件夹以禁止下载Cpp2IL与Unity Runtime Libraries、连接远程API与构建缓存
-   2.内置了预构建好的融合版游戏运行缓存
-
-   File changes of MelonLoader in releases:
-   1.Delete everything in MelonLoader/Il2CppAssemblyGenerator to prevent downloading Cpp2IL and Unity Runtime Libraries, 
-   connecting RemoteAPIs and generating unused libraries.
-   2.Add the built-in libraries for PVZ Fusion.
-
 Copies of the licenses/notices of dependencies:
 
 For MelonLoader:(https://github.com/LavaGang/MelonLoader)
