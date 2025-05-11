@@ -493,24 +493,6 @@ namespace ToolMod
         }
     }
 
-    [HarmonyPatch(typeof(Plant), "Start")]
-    public static class PlantPatchA
-    {
-        public static void Postfix(Plant __instance)
-        {
-            try
-            {
-                if (HealthPlants[__instance.thePlantType] >= 0 && __instance.thePlantMaxHealth != HealthPlants[__instance.thePlantType])
-                {
-                    __instance.thePlantMaxHealth = HealthPlants[__instance.thePlantType];
-                    __instance.thePlantHealth = __instance.thePlantMaxHealth;
-                    __instance.UpdateText();
-                }
-            }
-            catch { }
-        }
-    }
-
     [HarmonyPatch(typeof(Plant), "PlantShootUpdate")]
     public static class PlantPatchB
     {
@@ -524,30 +506,11 @@ namespace ToolMod
         }
     }
 
-    [HarmonyPatch(typeof(Plant), "Die")]
-    public static class PlantPatchC
-    {
-        public static bool Prefix(Plant __instance)
-        {
-            if (HardPlant && __instance.thePlantHealth <= 0)
-            {
-                __instance.thePlantHealth = __instance.thePlantMaxHealth;
-                return false;
-            }
-            return true;
-        }
-    }
-
     [HarmonyPatch(typeof(Plant), "Update")]
     public static class PlantPatchD
     {
         public static void Postfix(Plant __instance)
         {
-            if (__instance.TryCast<CobCannon>() is not null && CobCannonNoCD
-                && __instance.attributeCountdown > 0.1f)
-            {
-                __instance.attributeCountdown = 0.1f;
-            }
             if (PlantUpgrade && __instance.theLevel is not 3)
             {
                 __instance.Upgrade(3, true);
