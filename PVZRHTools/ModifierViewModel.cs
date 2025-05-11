@@ -333,7 +333,9 @@ namespace PVZRHTools
                 try
                 {
                     InGameBuffs.Add(new(new(bi, b, true, false)));
-                    TravelBuffs[bi].TravelBuff.Text = b;
+                    TravelBuffs.Add(new(new(bi, b, true, false)));
+                    if (bi < s.TravelBuffs.Count)
+                        TravelBuffs[bi].TravelBuff.Enabled = s.TravelBuffs[bi].Enabled;
                 }
                 catch { }
                 bi++;
@@ -343,7 +345,9 @@ namespace PVZRHTools
                 try
                 {
                     InGameBuffs.Add(new(new(bi, b, true, false)));
-                    TravelBuffs[bi].TravelBuff.Text = b;
+                    TravelBuffs.Add(new(new(bi, b, true, false)));
+                    if (bi < s.TravelBuffs.Count)
+                        TravelBuffs[bi].TravelBuff.Enabled = s.TravelBuffs[bi].Enabled;
                 }
                 catch { }
                 bi++;

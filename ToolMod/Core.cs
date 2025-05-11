@@ -70,11 +70,15 @@ namespace ToolMod
                     MessageBox(0, "Port值无效，已使用默认值13531", "修改器警告", 0);
                     Port.Value.Value = 13531;
                 }
-                bool needRegen = false;
                 string hash = Utils.ComputeFolderHash(MelonEnvironment.ModsDirectory);
-                if (ModsHash.Value.Value != hash)
+                bool needRegen = ModsHash.Value.Value != hash;
+
+#if false
+                needRegen = false;
+#endif
+
+                if (needRegen)
                 {
-                    needRegen = true;
                     ModsHash.Value.Value = hash;
 
                     if (Directory.Exists("PVZRHTools\\GardenTools\\res"))
@@ -260,7 +264,6 @@ namespace ToolMod
                     Debuffs = [.. debuffs],
                 };
                 File.WriteAllText("./PVZRHTools/InitData.json", JsonSerializer.Serialize(data));
-                Utils.LoadPlantData();
                 _ = DataSync.Instance.Value;
             }
             catch (Exception ex)
@@ -295,7 +298,7 @@ namespace ToolMod
         {
             using SHA256 sha256 = SHA256.Create();
             sha256.Initialize();
-            ProcessDirectory(folderPath, folderPath, sha256);
+            ProcessDirectory(folderPath, sha256);
             sha256.TransformFinalBlock([], 0, 0);
             return BytesToHex(sha256.Hash!);
         }
@@ -447,14 +450,16 @@ namespace ToolMod
                             PlantDataLoader.plantDatas[(PlantType)int.Parse(fields[0])].field_Public_Int32_0 = int.Parse(fields[4]);
                             PlantDataLoader.plantDatas[(PlantType)int.Parse(fields[0])].field_Public_Single_2 = float.Parse(fields[5]);
                             PlantDataLoader.plantDatas[(PlantType)int.Parse(fields[0])].field_Public_Int32_1 = int.Parse(fields[6]);
+                            if (int.Parse(fields[0]) < PlantDataLoader.plantData.Count)
+                                PlantDataLoader.plantData[int.Parse(fields[0])] = PlantDataLoader.plantDatas[(PlantType)int.Parse(fields[0])];
                         }
                     }
                     catch (FormatException ex)
                     {
                         MLogger.Error($"Error parsing data at line {i + 1}: {ex.Message}");
                     }
-                    return true;
                 }
+                return true;
             }
             catch (FileNotFoundException e1)
             {
@@ -538,16 +543,16 @@ namespace ToolMod
             return relativePath;
         }
 
-        private static void ProcessDirectory(string rootDir, string currentDir, SHA256 sha256)
+        private static void ProcessDirectory(string rootDir, SHA256 sha256)
         {
             // 处理当前目录下的所有文件，按相对路径排序
-            var files = Directory.GetFiles(currentDir)
+            var files = Directory.GetFiles(rootDir)
                 .Select(f => new { FullPath = f, RelativePath = GetRelativePath(rootDir, f) })
                 .OrderBy(f => f.RelativePath, StringComparer.Ordinal);
 
             foreach (var file in files)
             {
-                if (file.RelativePath.Contains("ToolMod") || file.FullPath.Contains("ModifiedPlus") || file.FullPath.Contains("UnityExplorer"))
+                if (file.RelativePath.Contains("ToolMod") || file.RelativePath.Contains("CustomizeLib") || file.FullPath.Contains("ModifiedPlus") || file.FullPath.Contains("UnityExplorer"))
                     continue;
                 // 将相对路径作为元数据添加到哈希
                 byte[] pathBytes = Encoding.UTF8.GetBytes(file.RelativePath);
@@ -561,18 +566,6 @@ namespace ToolMod
                 {
                     sha256.TransformBlock(buffer, 0, bytesRead, null, 0);
                 }
-            }
-
-            // 处理子目录，按相对路径排序
-            var directories = Directory.GetDirectories(currentDir)
-                .Select(d => new { FullPath = d, RelativePath = GetRelativePath(rootDir, d) })
-                .OrderBy(d => d.RelativePath, StringComparer.Ordinal);
-
-            foreach (var dir in directories)
-            {
-                if (dir.FullPath.Contains("UnityExplorer"))
-                    continue;
-                ProcessDirectory(rootDir, dir.FullPath, sha256);
             }
         }
 

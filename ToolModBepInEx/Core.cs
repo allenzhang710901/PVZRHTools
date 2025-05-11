@@ -25,7 +25,7 @@ namespace ToolModBepInEx
         public static void Postfix() => Core.Instance.Value.LateInit();
     }
 
-    [BepInPlugin("inf75.toolmod", "ToolMod", "3.21")]
+    [BepInPlugin("inf75.toolmod", "ToolMod", "3.22")]
     public class Core : BasePlugin
     {
         public void LateInit()
@@ -230,7 +230,6 @@ namespace ToolModBepInEx
                     Debuffs = [.. debuffs],
                 };
                 File.WriteAllText("./PVZRHTools/InitData.json", JsonSerializer.Serialize(data));
-                Utils.LoadPlantData();
                 _ = DataSync.Instance.Value;
             }
             catch (Exception ex)
@@ -311,7 +310,7 @@ namespace ToolModBepInEx
         {
             using SHA256 sha256 = SHA256.Create();
             sha256.Initialize();
-            ProcessDirectory(folderPath, folderPath, sha256);
+            ProcessDirectory(folderPath, sha256);
             sha256.TransformFinalBlock([], 0, 0);
             return BytesToHex(sha256.Hash!);
         }
@@ -463,14 +462,16 @@ namespace ToolModBepInEx
                             PlantDataLoader.plantDatas[(PlantType)int.Parse(fields[0])].field_Public_Int32_0 = int.Parse(fields[4]);
                             PlantDataLoader.plantDatas[(PlantType)int.Parse(fields[0])].field_Public_Single_2 = float.Parse(fields[5]);
                             PlantDataLoader.plantDatas[(PlantType)int.Parse(fields[0])].field_Public_Int32_1 = int.Parse(fields[6]);
+                            if (int.Parse(fields[0]) < PlantDataLoader.plantData.Count)
+                                PlantDataLoader.plantData[int.Parse(fields[0])] = PlantDataLoader.plantDatas[(PlantType)int.Parse(fields[0])];
                         }
                     }
                     catch (FormatException ex)
                     {
                         MLogger.LogError($"Error parsing data at line {i + 1}: {ex.Message}");
                     }
-                    return true;
                 }
+                return true;
             }
             catch (FileNotFoundException e1)
             {
@@ -554,16 +555,16 @@ namespace ToolModBepInEx
             return relativePath;
         }
 
-        private static void ProcessDirectory(string rootDir, string currentDir, SHA256 sha256)
+        private static void ProcessDirectory(string rootDir, SHA256 sha256)
         {
             // 处理当前目录下的所有文件，按相对路径排序
-            var files = Directory.GetFiles(currentDir)
+            var files = Directory.GetFiles(rootDir)
                 .Select(f => new { FullPath = f, RelativePath = GetRelativePath(rootDir, f) })
                 .OrderBy(f => f.RelativePath, StringComparer.Ordinal);
 
             foreach (var file in files)
             {
-                if (file.RelativePath.Contains("ToolMod") || file.FullPath.Contains("ModifiedPlus") || file.FullPath.Contains("UnityExplorer"))
+                if (file.RelativePath.Contains("ToolMod") || file.RelativePath.Contains("CustomizeLib") || file.FullPath.Contains("ModifiedPlus") || file.FullPath.Contains("UnityExplorer"))
                     continue;
                 // 将相对路径作为元数据添加到哈希
                 byte[] pathBytes = Encoding.UTF8.GetBytes(file.RelativePath);
@@ -577,18 +578,6 @@ namespace ToolModBepInEx
                 {
                     sha256.TransformBlock(buffer, 0, bytesRead, null, 0);
                 }
-            }
-
-            // 处理子目录，按相对路径排序
-            var directories = Directory.GetDirectories(currentDir)
-                .Select(d => new { FullPath = d, RelativePath = GetRelativePath(rootDir, d) })
-                .OrderBy(d => d.RelativePath, StringComparer.Ordinal);
-
-            foreach (var dir in directories)
-            {
-                if (dir.FullPath.Contains("UnityExplorer"))
-                    continue;
-                ProcessDirectory(rootDir, dir.FullPath, sha256);
             }
         }
 
