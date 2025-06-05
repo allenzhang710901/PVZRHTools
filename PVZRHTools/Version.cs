@@ -1,8 +1,8 @@
-﻿//ver2069
+﻿//ver2100
 namespace PVZRHTools;
 
 public static class ModifierVersion
 {
-    public static string GameVersion => "2.5.1";
-    public static string Version => "3.22.2069";
+    public static string GameVersion => "2.6.1";
+    public static string Version => "3.23.2100";
 } 

@@ -535,6 +535,13 @@ namespace ToolModBepInEx
                     }
                     catch { }
                 }
+                if (iga.SetZombieIdle is not null)
+                {
+                    foreach (var z in Board.Instance.zombieArray)
+                    {
+                        z?.anim.Play("idle");
+                    }
+                }
                 if (iga.ClearAllIceRoads is not null)
                 {
                     for (int i = 0; i < Board.Instance.iceRoadFadeTime.Count; i++)

@@ -258,6 +258,7 @@
                                 <Button x:Name="WriteFieldVases" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="105" Content="{DynamicResource Tab2.Page1.WriteField}" Command="{Binding WriteVasesCommand}" />
                                 <hc:TextBox hc:InfoElement.ShowClearButton="True" x:Name="FieldStringZombies1" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top" Width="488" Text="{Binding VasesFieldString}" Height="30" />
                             </hc:ElementGroup>
+
                             <StackPanel Margin="0,184,0,0">
                                 <StackPanel Orientation="Horizontal">
                                     <CheckBox x:Name="ZombieSeaEnabled" Content="{DynamicResource Tab2.Page3.ZombieSeaEnabled}" Height="21" Foreground="White" BorderThickness="2,2,2,2" IsChecked="{Binding ZombieSeaEnabled}" Width="133" VerticalAlignment="Top" />
@@ -265,6 +266,8 @@
                                 </StackPanel>
                                 <CheckBox x:Name="ZombieSeaLowEnabled" Content="{DynamicResource Tab2.Page3.ZombieSeaLowEnabled}" Height="21" Foreground="White" BorderThickness="2,2,2,2" IsChecked="{Binding ZombieSeaLowEnabled}" Width="463" HorizontalAlignment="Left" />
                                 <hc:CheckComboBox local:SelectedItemsExt.SelectedItems="{Binding ZombieSeaTypes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="{DynamicResource Tab2.Page3.ZombieSeaTypes}" hc:TitleElement.TitleWidth="80" Style="{DynamicResource CheckComboBoxExtend}" ItemsSource="{Binding Zombies}" SelectedValuePath="Key" DisplayMemberPath="Value" Width="361" HorizontalAlignment="Left" IsSynchronizedWithCurrentItem="True" />
+                                <Button x:Name="SetZombieIdle" Content="{DynamicResource Tab2.SetZombieIdle}" Height="30" Command="{Binding SetZombieIdleCommand}" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" />
+                                
                             </StackPanel>
                         </Grid>
                     </ScrollViewer>

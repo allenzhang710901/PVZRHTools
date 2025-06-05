@@ -25,7 +25,7 @@ namespace ToolModBepInEx
         public static void Postfix() => Core.Instance.Value.LateInit();
     }
 
-    [BepInPlugin("inf75.toolmod", "ToolMod", "3.22")]
+    [BepInPlugin("inf75.toolmod", "ToolMod", "3.23")]
     public class Core : BasePlugin
     {
         public void LateInit()

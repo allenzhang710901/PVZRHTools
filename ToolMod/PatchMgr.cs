@@ -2,18 +2,18 @@
 using Il2Cpp;
 using Il2CppInterop.Runtime;
 using Il2CppInterop.Runtime.Injection;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppTMPro;
 using MelonLoader;
+using System.Collections;
+using System.IO.Compression;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Text;
 using ToolModData;
 using Unity.VisualScripting;
 using UnityEngine;
 using static ToolMod.PatchMgr;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.IO.Compression;
-using System.Text;
-using System.Collections;
-using System.Linq;
 
 namespace ToolMod
 {
@@ -198,40 +198,6 @@ namespace ToolMod
         public static void Prefix(ref bool isFreeSet) => isFreeSet = FreePlanting || isFreeSet;
     }
 
-    [HarmonyPatch(typeof(CreateZombie), "SetZombie")]
-    public static class CreateZombiePatch
-    {
-        public static void Postfix(GameObject __result)
-        {
-            if (GargantuarPatch.Flag)
-            {
-                __result.AddComponent<ImpZombie>();
-            }
-        }
-
-        public static void Prefix(ref ZombieType theZombieType)
-        {
-            if (GargantuarPatch.Flag)
-            {
-                theZombieType = (ZombieType)ImpToBeThrown;
-            }
-            if (DancePolevaulterZombiePatch.Flag)
-            {
-                theZombieType = (ZombieType)JachsonSummonType;
-            }
-        }
-    }
-
-    [HarmonyPatch(typeof(DancePolevaulterZombie), "JumpOver")]
-    public static class DancePolevaulterZombiePatch
-    {
-        public static void Postfix() => Flag = false;
-
-        public static void Prefix() => Flag = JachsonSummonType is not 7;
-
-        public static bool Flag { get; set; } = false;
-    }
-
     [HarmonyPatch(typeof(DriverZombie), "PositionUpdate")]
     public static class DriverZombiePatch
     {
@@ -274,16 +240,6 @@ namespace ToolMod
             obj.AddComponent<DataProcessor>();
             obj.AddComponent<PatchMgr>();
         }
-    }
-
-    [HarmonyPatch(typeof(Gargantuar), "AnimThrow")]
-    public static class GargantuarPatch
-    {
-        public static void Postfix() => Flag = false;
-
-        public static void Prefix() => Flag = ImpToBeThrown is not 37;
-
-        public static bool Flag { get; set; } = false;
     }
 
     [HarmonyPatch(typeof(Glove), "Update")]
@@ -392,21 +348,6 @@ namespace ToolMod
         }
     }
 
-    [HarmonyPatch(typeof(ImpZombie), "Thrown")]
-    public static class ImpZombiePatch
-    {
-        public static bool Prefix(ImpZombie __instance)
-        {
-            if (ImpToBeThrown != 37)
-            {
-                __instance.theStatus = ZombieStatus.Default;
-                UnityEngine.Object.DestroyImmediate(__instance);
-                return false;
-            }
-            return true;
-        }
-    }
-
     [HarmonyPatch(typeof(InGameBtn), "OnMouseUpAsButton")]
     public static class InGameBtnPatch
     {
@@ -442,7 +383,7 @@ namespace ToolMod
             }
             for (int i = 0; i < InGameUltiBuffs.Length; i++)
             {
-                if (InGameUltiBuffs[i] != GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().ultimateUpgrades[i])
+                if (InGameUltiBuffs[i] != GetBoolArray(GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().ultimateUpgrades)[i])
                 {
                     SyncInGameBuffs();
                     return;
@@ -494,7 +435,7 @@ namespace ToolMod
     }
 
     [HarmonyPatch(typeof(Plant), "PlantShootUpdate")]
-    public static class PlantPatchB
+    public static class PlantPatch
     {
         public static void Prefix(Plant __instance)
         {
@@ -502,18 +443,6 @@ namespace ToolMod
             if (FastShooting && s is not null)
             {
                 s.AnimShoot();
-            }
-        }
-    }
-
-    [HarmonyPatch(typeof(Plant), "Update")]
-    public static class PlantPatchD
-    {
-        public static void Postfix(Plant __instance)
-        {
-            if (PlantUpgrade && __instance.theLevel is not 3)
-            {
-                __instance.Upgrade(3, true);
             }
         }
     }
@@ -788,6 +717,10 @@ namespace ToolMod
             return Encoding.UTF8.GetString(buffer);
         }
 
+        public static bool[] GetBoolArray(Il2CppStructArray<int> list) => [.. from i in list select i > 0];
+
+        public static Il2CppStructArray<int> GetIntArray(bool[] array) => new([.. from i in array select (i ? 1 : 0)]);
+
         public static bool InGame() => Board.Instance is not null && GameAPP.theGameStatus is not GameStatus.OpenOptions or GameStatus.OutGame or GameStatus.Almanac;
 
         public static IEnumerator PostInitBoard()
@@ -810,7 +743,7 @@ namespace ToolMod
                 var ultis = travelMgr.ultimateUpgrades;
                 for (int i = 0; i < ultis.Count; i++)
                 {
-                    ultis[i] = UltiBuffs[i] || ultis[i];
+                    ultis[i] = (UltiBuffs[i] || ultis[i] is 1) ? 1 : 0;
                     yield return null;
                 }
 
@@ -828,7 +761,7 @@ namespace ToolMod
             yield return null;
 
             InGameAdvBuffs = travelMgr.advancedUpgrades;
-            InGameUltiBuffs = travelMgr.ultimateUpgrades;
+            InGameUltiBuffs = GetBoolArray(travelMgr.ultimateUpgrades);
             InGameDebuffs = travelMgr.debuff;
             yield return null;
             Task.Run(SyncInGameBuffs);
@@ -876,7 +809,7 @@ namespace ToolMod
             DataSync.Instance.Value.SendData(new SyncTravelBuff()
             {
                 AdvInGame = [.. GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().advancedUpgrades!],
-                UltiInGame = [.. GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().ultimateUpgrades!],
+                UltiInGame = [.. GetBoolArray(GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().ultimateUpgrades!)],
                 DebuffsInGame = [.. GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().debuff!]
             });
         }
@@ -889,7 +822,7 @@ namespace ToolMod
             }
             for (int i = 0; i < GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().ultimateUpgrades.Count; i++)
             {
-                GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().ultimateUpgrades![i] = InGameUltiBuffs[i];
+                GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().ultimateUpgrades![i] = GetIntArray(InGameUltiBuffs)[i];
             }
             for (int i = 0; i < GameAPP.gameAPP.GetOrAddComponent<TravelMgr>().debuff.Count; i++)
             {

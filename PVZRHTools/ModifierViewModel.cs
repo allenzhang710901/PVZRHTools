@@ -687,6 +687,9 @@ namespace PVZRHTools
         public void SetAward() => App.DataSync.Value.SendData(new InGameActions() { SetAward = true });
 
         [RelayCommand]
+        public void SetZombieIdle() => App.DataSync.Value.SendData(new InGameActions() { SetZombieIdle = true });
+
+        [RelayCommand]
         public void ShowingText() => App.DataSync.Value.SendData(new InGameActions() { ShowText = ShowText });
 
         [RelayCommand]

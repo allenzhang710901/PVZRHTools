@@ -108,6 +108,7 @@
         public bool? ReadZombies { get; set; }
         public int? Row { get; set; }
         public bool? SetAward { get; set; }
+        public bool? SetZombieIdle { get; set; }
         public string? ShowText { get; set; }
         public bool? StartMower { get; set; }
         public bool? StopSummon { get; set; }
