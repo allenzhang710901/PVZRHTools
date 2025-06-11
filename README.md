@@ -1,17 +1,19 @@
+# å·²å¼ƒå‘ã€‚
+
 # PVZRHTools
-Ö²Îï´óÕ½½©Ê¬ÈÚºÏ°æĞŞ¸ÄÆ÷ by [@Infinite75](https://space.bilibili.com/672619350)    
-ÊÊÅäÓÎÏ·°æ±¾2.6.1      
-ÒÑ¹¹½¨°æ±¾µÄÁ´½ÓÔÚbÕ¾ÊÓÆµ¼ò½éÖĞ    
+æ¤ç‰©å¤§æˆ˜åƒµå°¸èåˆç‰ˆä¿®æ”¹å™¨ by [@Infinite75](https://space.bilibili.com/672619350)    
+é€‚é…æ¸¸æˆç‰ˆæœ¬2.6.1      
+å·²æ„å»ºç‰ˆæœ¬çš„é“¾æ¥åœ¨bç«™è§†é¢‘ç®€ä»‹ä¸­    
 
-Ä£×é²¿·Ö»ùÓÚ[MelonLoader](https://github.com/LavaGang/MelonLoader)Óë[BepInEx](https://github.com/BepInEx/BepInEx)¿ª·¢      
-ÄÚÖÃÁËÌıÓêÒ¹ºÉµÄ»¨Ô°ĞŞ¸ÄÆ÷[pvzRH-GardenEditor](https://github.com/CarefreeSongs712/pvzRH-GardenEditor)£¬²¢ÎªÆäÊÊÅäÁË¶¯Ì¬idºÍÌùÍ¼¼ÓÔØ     
-ĞŞ¸Ä´°¿ÚÊ¹ÓÃÁË[HandyControl](https://github.com/HandyOrg/HandyControl), [FastHotKeyForWPF](https://github.com/Axvser/FastHotKeyForWPF)
+æ¨¡ç»„éƒ¨åˆ†åŸºäº[MelonLoader](https://github.com/LavaGang/MelonLoader)ä¸[BepInEx](https://github.com/BepInEx/BepInEx)å¼€å‘      
+å†…ç½®äº†å¬é›¨å¤œè·çš„èŠ±å›­ä¿®æ”¹å™¨[pvzRH-GardenEditor](https://github.com/CarefreeSongs712/pvzRH-GardenEditor)ï¼Œå¹¶ä¸ºå…¶é€‚é…äº†åŠ¨æ€idå’Œè´´å›¾åŠ è½½     
+ä¿®æ”¹çª—å£ä½¿ç”¨äº†[HandyControl](https://github.com/HandyOrg/HandyControl), [FastHotKeyForWPF](https://github.com/Axvser/FastHotKeyForWPF)
 
-ÈÚºÏ°æÖÆ×÷×é£º    
-[@À¶Æ®Æ®fly](https://space.bilibili.com/3546619314178489) ÇëÔÚ´Ë´¦ÏÂÔØÓÎÏ·±¾Ìå  
-[@»úÓãÍÂË¾](https://space.bilibili.com/85881762)   
-[@ÃÎçóÑ½](https://space.bilibili.com/270840380)    
-[@À¶µûµûStarryfly](https://space.bilibili.com/27033629)    
+èåˆç‰ˆåˆ¶ä½œç»„ï¼š    
+[@è“é£˜é£˜fly](https://space.bilibili.com/3546619314178489) è¯·åœ¨æ­¤å¤„ä¸‹è½½æ¸¸æˆæœ¬ä½“  
+[@æœºé±¼åå¸](https://space.bilibili.com/85881762)   
+[@æ¢¦çå‘€](https://space.bilibili.com/270840380)    
+[@è“è¶è¶Starryfly](https://space.bilibili.com/27033629)    
 
-¸ĞĞ»[@¸ßÊı´øÎÒ·É](https://space.bilibili.com/1117414477)(Github:[@LibraHp](https://github.com/LibraHp/))µÄ¼¼ÊõÖ§³Ö    
+æ„Ÿè°¢[@é«˜æ•°å¸¦æˆ‘é£](https://space.bilibili.com/1117414477)(Github:[@LibraHp](https://github.com/LibraHp/))çš„æŠ€æœ¯æ”¯æŒ    
 
