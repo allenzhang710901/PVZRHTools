@@ -1,4 +1,8 @@
-# 已弃坑。
+# 纪念伟大的infinite75
+
+自己比较菜，但试图去做吧。
+一些计划：将花园修改部分从存档修改直接改为tcp与游戏内mod通讯
+
 
 # PVZRHTools
 植物大战僵尸融合版修改器 by [@Infinite75](https://space.bilibili.com/672619350)    
