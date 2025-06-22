@@ -1,8 +1,8 @@
 # 纪念伟大的infinite75
 
 自己比较菜，但试图去做吧。
-花园修改器的项目以后合并到这里，原项目不再更新
-此外，我找到了花园修改器新的维护者。他可能会和我共同开发。
+
+如果你想要一个稳定的fork适配新版本，请到 https://github.com/TuanAnh2901/PVZRHTools
 
 # PVZRHTools
 植物大战僵尸融合版修改器 by [@Infinite75](https://space.bilibili.com/672619350)    
