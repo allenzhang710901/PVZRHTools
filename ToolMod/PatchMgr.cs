@@ -647,15 +647,15 @@ namespace ToolMod
             text2.font = Resources.Load<TMP_FontAsset>("Fonts/ContinuumBold SDF");
             text2.color = new(0, 1, 0, 1);
             text2.text = "原作者@Infinite75已停更，这是@听雨夜荷的一个fork\n" +
-                         "项目地址：https://github.com/CarefreeSongs712/PVZRHTools\n" +
+                         "项目地址: https://github.com/CarefreeSongs712/PVZRHTools\n" +
                          "因为时间和精力有限，目前只同步melonloader版本的。\n" +
                          "\n" +
-                         "修改器2.6.1-3.23.2110更新日志:\n" +
+                         "修改器2.6.1-3.23.2111更新日志:\n" +
                          "1.可以生成更多的物品，如阳光，金币，梯子。";
             obj2.transform.SetParent(GameObject.Find("Leaves").transform);
             obj2.transform.localScale = new(0.5f, 0.5f, 0.5f);
             obj2.GetComponent<RectTransform>().sizeDelta = new(800, 50);
-            obj2.transform.localPosition = new(-340.5f, 55f, 0);
+            obj2.transform.localPosition = new(-345.5f, 55f, 0);
         }
     }
 
