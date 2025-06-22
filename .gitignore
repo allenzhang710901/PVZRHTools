@@ -369,4 +369,4 @@ FodyWeavers.xsd
 # Speical Settings
 *.txt
 *.bat
-/releases/
+*.7z
