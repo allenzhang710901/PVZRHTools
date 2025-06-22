@@ -1072,6 +1072,22 @@ namespace PVZRHTools
             {6, "超级机甲碎片 SuperMachine" },
             {7,"花园植物礼盒 GardenPresent" },
             {8,"超时空碎片 PortalHeart" },
+            {64 + 0,"阳光 Sun"},
+            {64 + 1,"大阳光 BigSun"},
+            {64 + 2,"小阳光 SmallSun"},
+            //{64 + 4,"铁桶 Bucket"},
+            //{64 + 6,"橄榄头盔 Helmet"},
+            //{64 + 7,"小丑礼盒 Jackbox"},
+            //{64 + 8,"镐子 Pickaxe"},
+            {64 + 13,"小阳光 LittleSun"},
+            {64 + 34,"银币 SilverCoin"},
+            {64 + 35,"金币 GoldCoin"},
+            {64 + 36,"钻石 DiamondCoin"},
+            //{64 + 37," Bean"},
+            {64 + 38,"小银币 SmallSilverCoin"},
+            {64 + 39,"小金币 SmallGoldCoin"},
+            //{64 + 41,"机甲碎片 Machine"},
+            {64 + 42,"梯子 Portal"},
         };
 
         public List<(string, Action)> KeyCommands =>

@@ -365,3 +365,7 @@ FodyWeavers.xsd
 /PVZRHTools/RunGame.bat
 /PVZRHToolsInstaller/PVZRHTools.zip
 /PVZRHToolsInstaller/PVZRHTools.7z
+
+# Speical Settings
+*.txt
+*.bat

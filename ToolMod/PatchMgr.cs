@@ -632,15 +632,30 @@ namespace ToolMod
     {
         public static void Postfix()
         {
-            GameObject obj = new("ModifierInfo");
-            var text = obj.AddComponent<TextMeshProUGUI>();
-            text.font = Resources.Load<TMP_FontAsset>("Fonts/ContinuumBold SDF");
-            text.color = new(1, 1, 0, 1);
-            text.text = "修改器作者为b站@Infinite75\n若存在任何付费/要求三连+关注/私信发链接的情况\n说明你被盗版骗了，请注意隐私和财产安全！！！\n此信息仅在游戏主菜单和修改窗口显示";
-            obj.transform.SetParent(GameObject.Find("Leaves").transform);
-            obj.transform.localScale = new(0.5f, 0.5f, 0.5f);
-            obj.GetComponent<RectTransform>().sizeDelta = new(800, 50);
-            obj.transform.localPosition = new(-345.5f, -42.6f, 0);
+            GameObject obj1 = new("ModifierInfo");
+            var text1 = obj1.AddComponent<TextMeshProUGUI>();
+            text1.font = Resources.Load<TMP_FontAsset>("Fonts/ContinuumBold SDF");
+            text1.color = new(1, 1, 0, 1);
+            text1.text = "修改器作者为b站@Infinite75\n若存在任何付费/要求三连+关注/私信发链接的情况\n说明你被盗版骗了，请注意隐私和财产安全！！！\n此信息仅在游戏主菜单和修改窗口显示";
+            obj1.transform.SetParent(GameObject.Find("Leaves").transform);
+            obj1.transform.localScale = new(0.5f, 0.5f, 0.5f);
+            obj1.GetComponent<RectTransform>().sizeDelta = new(800, 50);
+            obj1.transform.localPosition = new(-345.5f, -76.1f, 0);
+            
+            GameObject obj2 = new("UpgradeInfo");
+            var text2 = obj2.AddComponent<TextMeshProUGUI>();
+            text2.font = Resources.Load<TMP_FontAsset>("Fonts/ContinuumBold SDF");
+            text2.color = new(0, 1, 0, 1);
+            text2.text = "原作者@Infinite75已停更，这是@听雨夜荷的一个fork\n" +
+                         "项目地址：https://github.com/CarefreeSongs712/PVZRHTools\n" +
+                         "因为时间和精力有限，目前只同步melonloader版本的。\n" +
+                         "\n" +
+                         "修改器2.6.1-3.23.2110更新日志:\n" +
+                         "1.可以生成更多的物品，如阳光，金币，梯子。";
+            obj2.transform.SetParent(GameObject.Find("Leaves").transform);
+            obj2.transform.localScale = new(0.5f, 0.5f, 0.5f);
+            obj2.GetComponent<RectTransform>().sizeDelta = new(800, 50);
+            obj2.transform.localPosition = new(-340.5f, 55f, 0);
         }
     }
 

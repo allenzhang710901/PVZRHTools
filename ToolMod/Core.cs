@@ -1,4 +1,4 @@
-﻿using Il2Cpp;
+using Il2Cpp;
 using Il2CppTMPro;
 using MelonLoader;
 using MelonLoader.Utils;
@@ -27,6 +27,7 @@ namespace ToolMod
                 DataSync.Instance.Value.modifierSocket.Shutdown(SocketShutdown.Both);
                 DataSync.Instance.Value.modifierSocket.Close();
             }
+
             inited = false;
         }
 
@@ -42,7 +43,8 @@ namespace ToolMod
             KeyShowGameInfo = new(Config.Value.CreateEntry(nameof(KeyShowGameInfo), KeyCode.BackQuote));
             KeyAlmanacCreatePlant = new(Config.Value.CreateEntry(nameof(KeyAlmanacCreatePlant), KeyCode.B));
             KeyAlmanacCreateZombie = new(Config.Value.CreateEntry(nameof(KeyAlmanacCreateZombie), KeyCode.N));
-            KeyAlmanacZombieMindCtrl = new(Config.Value.CreateEntry(nameof(KeyAlmanacZombieMindCtrl), KeyCode.LeftControl));
+            KeyAlmanacZombieMindCtrl =
+                new(Config.Value.CreateEntry(nameof(KeyAlmanacZombieMindCtrl), KeyCode.LeftControl));
             KeyTopMostCardBank = new(Config.Value.CreateEntry(nameof(KeyTopMostCardBank), KeyCode.Tab));
             KeyAlmanacCreatePlantVase = new(Config.Value.CreateEntry(nameof(KeyAlmanacCreatePlantVase), KeyCode.J));
             KeyAlmanacCreateZombieVase = new(Config.Value.CreateEntry(nameof(KeyAlmanacCreateZombieVase), KeyCode.K));
@@ -50,9 +52,9 @@ namespace ToolMod
 
             KeyBindings = new
             ([
-                KeyTimeStop.Value,KeyTopMostCardBank.Value,KeyShowGameInfo.Value,
-                KeyAlmanacCreatePlant.Value,KeyAlmanacCreateZombie.Value,KeyAlmanacZombieMindCtrl.Value,
-                KeyAlmanacCreatePlantVase.Value,KeyAlmanacCreateZombieVase.Value,
+                KeyTimeStop.Value, KeyTopMostCardBank.Value, KeyShowGameInfo.Value,
+                KeyAlmanacCreatePlant.Value, KeyAlmanacCreateZombie.Value, KeyAlmanacZombieMindCtrl.Value,
+                KeyAlmanacCreatePlantVase.Value, KeyAlmanacCreateZombieVase.Value,
             ]);
 
             Port.Value.Description = "修改窗口无法出现时可尝试修改此数值，范围10000~60000";
@@ -70,6 +72,7 @@ namespace ToolMod
                     MessageBox(0, "Port值无效，已使用默认值13531", "修改器警告", 0);
                     Port.Value.Value = 13531;
                 }
+
                 string hash = Utils.ComputeFolderHash(MelonEnvironment.ModsDirectory);
                 bool needRegen = ModsHash.Value.Value != hash;
 
@@ -90,6 +93,7 @@ namespace ToolMod
                                 File.Delete(f);
                             }
                         }
+
                         foreach (var f in Directory.GetFiles("PVZRHTools\\GardenTools\\res\\1"))
                         {
                             if (!(f.EndsWith("-1.png") || f.EndsWith("error.png")))
@@ -97,6 +101,7 @@ namespace ToolMod
                                 File.Delete(f);
                             }
                         }
+
                         foreach (var f in Directory.GetFiles("PVZRHTools\\GardenTools\\res\\2"))
                         {
                             if (!(f.EndsWith("-1.png") || f.EndsWith("error.png")))
@@ -106,6 +111,8 @@ namespace ToolMod
                         }
                     }
                 }
+
+#if true
 
                 MLogger.Warning("以下id信息为动态生成，仅适用于当前游戏实例！！！");
                 MLogger.Warning("以下id信息为动态生成，仅适用于当前游戏实例！！！");
@@ -135,18 +142,22 @@ namespace ToolMod
 
                 for (int i = 0; i < GameAPP.resourcesManager.allPlants.Count; i++)
                 {
-                    alm.theSeedType = (int)GameAPP.resourcesManager.allPlants[i];
+                    alm.theSeedType = (int)(object)GameAPP.resourcesManager.allPlants[i];
                     alm.InitNameAndInfoFromJson();
-                    string item = $"{(int)GameAPP.resourcesManager.allPlants[i]} : {alm.plantName.GetComponent<TextMeshPro>().text}";
+                    string item =
+                        $"{(int)GameAPP.resourcesManager.allPlants[i]} : {alm.plantName.GetComponent<TextMeshPro>().text}";
                     MLogger.Msg($"Dumping Plant String: {item}");
                     plants.Add((int)GameAPP.resourcesManager.allPlants[i], item);
                     HealthPlants.Add(GameAPP.resourcesManager.allPlants[i], -1);
                     if (needRegen)
                     {
-                        gardenIds = Utils.OutputGardenTexture(i, alm.plantName.GetComponent<TextMeshPro>().text, gardenIds);
+                        gardenIds = Utils.OutputGardenTexture(i, alm.plantName.GetComponent<TextMeshPro>().text,
+                            gardenIds);
                     }
+
                     alm.plantName.GetComponent<TextMeshPro>().text = "";
                 }
+
                 UnityEngine.Object.Destroy(gameObject);
                 if (needRegen)
                 {
@@ -154,12 +165,14 @@ namespace ToolMod
                     {
                         File.Delete("PVZRHTools/GardenTools/plant_id.txt");
                     }
+
                     using FileStream gid = new("PVZRHTools/GardenTools/plant_id.txt", FileMode.Create);
                     byte[] buffer = Encoding.UTF8.GetBytes(gardenIds);
                     gid.Write(buffer, 0, buffer.Length);
                     gid.Flush();
                     Utils.GenerateGardenData();
                 }
+
                 GameObject gameObject2 = new();
                 GameObject back2 = new();
                 back2.transform.SetParent(gameObject2.transform);
@@ -176,7 +189,8 @@ namespace ToolMod
                 var almz = gameObject2.AddComponent<AlmanacMgrZombie>();
                 almz.info = info2;
                 almz.zombieName = name2;
-                almz.introduce = info2.AddComponent<TextMeshPro>(); ;
+                almz.introduce = info2.AddComponent<TextMeshPro>();
+                ;
 
                 for (int i = 0; i < GameAPP.resourcesManager.allZombieTypes.Count; i++)
                 {
@@ -186,14 +200,16 @@ namespace ToolMod
 
                     if (!string.IsNullOrEmpty(almz.zombieName.GetComponent<TextMeshPro>().text))
                     {
-                        string item = $"{(int)GameAPP.resourcesManager.allZombieTypes[i]} : {almz.zombieName.GetComponent<TextMeshPro>().text}";
+                        string item =
+                            $"{(int)GameAPP.resourcesManager.allZombieTypes[i]} : {almz.zombieName.GetComponent<TextMeshPro>().text}";
                         MLogger.Msg($"Dumping Zombie String: {item}");
                         zombies.Add((int)GameAPP.resourcesManager.allZombieTypes[i], item);
                         almz.zombieName.GetComponent<TextMeshPro>().text = "";
                     }
                 }
+
                 UnityEngine.Object.Destroy(gameObject2);
-                zombies.Add(54, "54 : 试验假人僵尸");
+                //zombies.Add(54, "54 : 试验假人僵尸");
 
                 List<string> advBuffs = [];
                 for (int i = 0; i < TravelMgr.advancedBuffs.Count; i++)
@@ -204,6 +220,7 @@ namespace ToolMod
                         advBuffs.Add($"#{i} {TravelMgr.advancedBuffs[i]}");
                     }
                 }
+
                 List<string> ultiBuffs = [];
                 for (int i = 0; i < TravelMgr.ultimateBuffs.Count; i++)
                 {
@@ -213,6 +230,7 @@ namespace ToolMod
                         ultiBuffs.Add($"#{i} {TravelMgr.ultimateBuffs[i]}");
                     }
                 }
+
                 List<string> debuffs = [];
                 for (int i = 0; i < TravelMgr.debuffs.Count; i++)
                 {
@@ -222,6 +240,7 @@ namespace ToolMod
                         debuffs.Add(TravelMgr.debuffs[i]);
                     }
                 }
+
                 AdvBuffs = new bool[TravelMgr.advancedBuffs.Count];
                 PatchMgr.UltiBuffs = new bool[TravelMgr.ultimateBuffs.Count];
                 Debuffs = new bool[TravelMgr.debuffs.Count];
@@ -232,26 +251,29 @@ namespace ToolMod
                 {
                     if (GameAPP.resourcesManager.bulletPrefabs[GameAPP.resourcesManager.allBullets[i]] is not null)
                     {
-                        string text = $"{(int)GameAPP.resourcesManager.allBullets[i]} : {GameAPP.resourcesManager.bulletPrefabs[GameAPP.resourcesManager.allBullets[i]].name}";
+                        string text =
+                            $"{(int)GameAPP.resourcesManager.allBullets[i]} : {GameAPP.resourcesManager.bulletPrefabs[GameAPP.resourcesManager.allBullets[i]].name}";
                         MLogger.Msg($"Dumping Bullet String: {text}");
                         bullets.Add((int)GameAPP.resourcesManager.allBullets[i], text);
                         BulletDamage.Add(GameAPP.resourcesManager.allBullets[i], -1);
                     }
                 }
+
                 Dictionary<int, string> firsts = [];
                 foreach (var first in Enum.GetValues(typeof(Zombie.FirstArmorType)))
                 {
                     firsts.Add((int)first, $"{first}");
                 }
+
                 Dictionary<int, string> seconds = [];
                 foreach (var second in Enum.GetValues(typeof(Zombie.SecondArmorType)))
                 {
                     seconds.Add((int)second, $"{second}");
                 }
-                MLogger.Warning("以上id信息为动态生成，仅适用于当前游戏实例！！！");
-                MLogger.Warning("以上id信息为动态生成，仅适用于当前游戏实例！！！");
-                MLogger.Warning("以上id信息为动态生成，仅适用于当前游戏实例！！！");
 
+                MLogger.Warning("以上id信息为动态生成，仅适用于当前游戏实例！！！");
+                MLogger.Warning("以上id信息为动态生成，仅适用于当前游戏实例！！！");
+                MLogger.Warning("以上id信息为动态生成，仅适用于当前游戏实例！！！");
                 InitData data = new()
                 {
                     Plants = plants,
@@ -265,6 +287,7 @@ namespace ToolMod
                 };
                 File.WriteAllText("./PVZRHTools/InitData.json", JsonSerializer.Serialize(data));
                 _ = DataSync.Instance.Value;
+#endif
             }
             catch (Exception ex)
             {
@@ -309,7 +332,7 @@ namespace ToolMod
                 source.width,
                 source.height,
                 0,
-                RenderTextureFormat.ARGB32  // 指定兼容格式
+                RenderTextureFormat.ARGB32 // 指定兼容格式
             );
 
             // 将原纹理复制到RenderTexture
@@ -368,18 +391,18 @@ namespace ToolMod
                 int plantType = (int)plantids[i];
 
                 var plantDict = new Dictionary<string, object>
-            {
-                { "thePlantRow", row },
-                { "thePlantColumn", column },
-                { "thePlantType", plantType },
-                { "growStage", 2 },
-                { "waterLevel", 100 },
-                { "love", 100 },
-                { "nextTime", 11451419198L },
-                { "needTool", 1 },
-                { "page", page },
-                { "GrowStage", 2 }
-            };
+                {
+                    { "thePlantRow", row },
+                    { "thePlantColumn", column },
+                    { "thePlantType", plantType },
+                    { "growStage", 2 },
+                    { "waterLevel", 100 },
+                    { "love", 100 },
+                    { "nextTime", 11451419198L },
+                    { "needTool", 1 },
+                    { "page", page },
+                    { "GrowStage", 2 }
+                };
 
                 if (page != currentPage)
                 {
@@ -387,6 +410,7 @@ namespace ToolMod
                     {
                         WritePage(currentPlants, currentPage);
                     }
+
                     currentPage = page;
                     currentPlants.Clear();
                 }
@@ -404,11 +428,13 @@ namespace ToolMod
         public static bool LoadPlantData()
         {
             try
-            {// 加载文本资源
+            {
+                // 加载文本资源
                 string text = "";
                 if (File.Exists("PVZRHTools\\plant_data.csv"))
                 {
-                    text = new StreamReader(File.Open("PVZRHTools\\plant_data.csv", FileMode.Open, FileAccess.Read, FileShare.ReadWrite)).ReadToEnd();
+                    text = new StreamReader(File.Open("PVZRHTools\\plant_data.csv", FileMode.Open, FileAccess.Read,
+                        FileShare.ReadWrite)).ReadToEnd();
                 }
                 else
                 {
@@ -421,6 +447,7 @@ namespace ToolMod
                         f.Write(buffer, 0, buffer.Length);
                         f.Flush();
                     }
+
                     return true;
                 }
 
@@ -444,14 +471,21 @@ namespace ToolMod
                     {
                         if (PlantDataLoader.plantDatas.ContainsKey((PlantType)int.Parse(fields[0])))
                         {
-                            PlantDataLoader.plantDatas[(PlantType)int.Parse(fields[0])].field_Public_Single_0 = float.Parse(fields[1]);
-                            PlantDataLoader.plantDatas[(PlantType)int.Parse(fields[0])].field_Public_Single_1 = float.Parse(fields[2]);
-                            PlantDataLoader.plantDatas[(PlantType)int.Parse(fields[0])].attackDamage = int.Parse(fields[3]);
-                            PlantDataLoader.plantDatas[(PlantType)int.Parse(fields[0])].field_Public_Int32_0 = int.Parse(fields[4]);
-                            PlantDataLoader.plantDatas[(PlantType)int.Parse(fields[0])].field_Public_Single_2 = float.Parse(fields[5]);
-                            PlantDataLoader.plantDatas[(PlantType)int.Parse(fields[0])].field_Public_Int32_1 = int.Parse(fields[6]);
+                            PlantDataLoader.plantDatas[(PlantType)int.Parse(fields[0])].field_Public_Single_0 =
+                                float.Parse(fields[1]);
+                            PlantDataLoader.plantDatas[(PlantType)int.Parse(fields[0])].field_Public_Single_1 =
+                                float.Parse(fields[2]);
+                            PlantDataLoader.plantDatas[(PlantType)int.Parse(fields[0])].attackDamage =
+                                int.Parse(fields[3]);
+                            PlantDataLoader.plantDatas[(PlantType)int.Parse(fields[0])].field_Public_Int32_0 =
+                                int.Parse(fields[4]);
+                            PlantDataLoader.plantDatas[(PlantType)int.Parse(fields[0])].field_Public_Single_2 =
+                                float.Parse(fields[5]);
+                            PlantDataLoader.plantDatas[(PlantType)int.Parse(fields[0])].field_Public_Int32_1 =
+                                int.Parse(fields[6]);
                             if (int.Parse(fields[0]) < PlantDataLoader.plantData.Count)
-                                PlantDataLoader.plantData[int.Parse(fields[0])] = PlantDataLoader.plantDatas[(PlantType)int.Parse(fields[0])];
+                                PlantDataLoader.plantData[int.Parse(fields[0])] =
+                                    PlantDataLoader.plantDatas[(PlantType)int.Parse(fields[0])];
                         }
                     }
                     catch (FormatException ex)
@@ -459,6 +493,7 @@ namespace ToolMod
                         MLogger.Error($"Error parsing data at line {i + 1}: {ex.Message}");
                     }
                 }
+
                 return true;
             }
             catch (FileNotFoundException e1)
@@ -482,10 +517,13 @@ namespace ToolMod
             int[] sizes = [30, 45, 60];
             try
             {
-                Sprite sprite = GameAPP.resourcesManager.plantPreviews[GameAPP.resourcesManager.allPlants[i]].GetComponent<SpriteRenderer>().sprite;
+                Sprite sprite = GameAPP.resourcesManager.plantPreviews[GameAPP.resourcesManager.allPlants[i]]
+                    .GetComponent<SpriteRenderer>().sprite;
 
                 using Image originalImage = Image.FromStream(
-                    new MemoryStream([.. ImageConversion.EncodeToPNG(ConvertViaRenderTexture(ExtractSpriteTexture(sprite)))]));
+                    new MemoryStream([
+                        .. ImageConversion.EncodeToPNG(ConvertViaRenderTexture(ExtractSpriteTexture(sprite)))
+                    ]));
                 for (int ii = 0; ii < sizes.Length; ii++)
                 {
                     int size = sizes[ii];
@@ -516,6 +554,7 @@ namespace ToolMod
             {
                 Console.WriteLine($"处理 {filename} 时出错: {ex}");
             }
+
             return string.Concat(gardenIds.Concat($"ID: {(int)GameAPP.resourcesManager.allPlants[i]}, {name}\n"));
         }
 
@@ -552,7 +591,8 @@ namespace ToolMod
 
             foreach (var file in files)
             {
-                if (file.RelativePath.Contains("ToolMod") || file.RelativePath.Contains("CustomizeLib") || file.FullPath.Contains("ModifiedPlus") || file.FullPath.Contains("UnityExplorer"))
+                if (file.RelativePath.Contains("ToolMod") || file.RelativePath.Contains("CustomizeLib") ||
+                    file.FullPath.Contains("ModifiedPlus") || file.FullPath.Contains("UnityExplorer"))
                     continue;
                 // 将相对路径作为元数据添加到哈希
                 byte[] pathBytes = Encoding.UTF8.GetBytes(file.RelativePath);
@@ -579,7 +619,9 @@ namespace ToolMod
             string jsonString = JsonSerializer.Serialize(jsonData);
 
             // 自动处理数组末尾逗号问题
-            string fileName = page == 0 ? "PVZRHTools\\GardenTools\\gar_all\\GardenData.json" : $"PVZRHTools\\GardenTools\\gar_all\\GardenData{page}.json";
+            string fileName = page == 0
+                ? "PVZRHTools\\GardenTools\\gar_all\\GardenData.json"
+                : $"PVZRHTools\\GardenTools\\gar_all\\GardenData{page}.json";
             fileName = Path.Combine(MelonEnvironment.MelonBaseDirectory, fileName);
             // 获取桌面路径示例（可根据需要修改）
             string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);

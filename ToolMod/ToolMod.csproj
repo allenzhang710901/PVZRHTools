@@ -444,9 +444,9 @@
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
 	</PropertyGroup>
-
+	<!--
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 		<Exec Command="COPY &quot;$(TargetPath)&quot; &quot;D:\Beta\pvz\rhex\Mods&quot;" />
 	</Target>
-
+	-->
 </Project>
