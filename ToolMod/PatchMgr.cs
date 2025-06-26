@@ -648,10 +648,10 @@ namespace ToolMod
             text2.color = new(0, 1, 0, 1);
             text2.text = "原作者@Infinite75已停更，这是@听雨夜荷的一个fork\n" +
                          "项目地址: https://github.com/CarefreeSongs712/PVZRHTools\n" +
-                         "目前同步更新MelonLoader版本和BepInEx版本。\n" +
                          "\n" +
                          "修改器2.6.1-3.23.2120更新日志:\n" +
-                         "1.可以生成更多的物品，如阳光，金币，梯子。";
+                         "1.可以生成更多的物品，如阳光，金币，梯子。\n" +
+                         "2.适配了新的花园修改器";
             obj2.transform.SetParent(GameObject.Find("Leaves").transform);
             obj2.transform.localScale = new(0.5f, 0.5f, 0.5f);
             obj2.GetComponent<RectTransform>().sizeDelta = new(800, 50);
