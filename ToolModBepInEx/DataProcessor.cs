@@ -448,7 +448,14 @@ namespace ToolModBepInEx
 
                 if (iga.ItemType is not null)
                 {
-                    Instantiate(Items[(int)iga.ItemType]).transform.SetParent(GameAPP.board.transform);
+                    if(iga.ItemType<=8 && iga.ItemType>=0)
+                        Instantiate(Items[(int)iga.ItemType]).transform.SetParent(GameAPP.board.transform);
+                    else if (iga.ItemType >= 64)
+                    {
+                        //处理 coin 类的物品
+                        int newItemType = (int)(iga.ItemType - 64);
+                        CreateItem.Instance.SetCoin(0, 0,  newItemType, 0, Vector3.zero, false);
+                    }
                 }
                 if (iga.CreatePassiveMateorite is not null)
                 {
