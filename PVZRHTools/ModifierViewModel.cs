@@ -259,6 +259,7 @@ namespace PVZRHTools
             ClearOnWritingField = s.ClearOnWritingField;
             ClearOnWritingZombies = s.ClearOnWritingZombies;
             ClearOnWritingVases = s.ClearOnWritingVases;
+            GaoShuMode = s.GaoShuMode;
             CobCannonNoCD = s.CobCannonNoCD;
             Col = s.Col;
             ColumnPlanting = s.ColumnPlanting;
@@ -393,13 +394,16 @@ namespace PVZRHTools
         public void ClearIceRoads() => App.DataSync.Value.SendData(new InGameActions() { ClearAllIceRoads = true });
 
         [RelayCommand]
-        public void CopyFieldScripts() => App.DataSync.Value.SendData(new InGameActions() { ReadField = true });
+        public void CopyFieldScripts() => App.DataSync.Value.SendData(new InGameActions() { ReadField = true,GaoShuMode=GaoShuMode });
 
         [RelayCommand]
         public void CopyVasesScripts() => App.DataSync.Value.SendData(new InGameActions() { ReadVases = true });
 
         [RelayCommand]
         public void CopyZombieScripts() => App.DataSync.Value.SendData(new InGameActions() { ReadZombies = true });
+        
+        [RelayCommand]
+        public void CopyMixScripts() => App.DataSync.Value.SendData(new InGameActions() { ReadMix = true });
 
         [RelayCommand]
         public void CreateActiveMateorite() => App.DataSync.Value.SendData(new InGameActions() { CreateActiveMateorite = true });
@@ -561,7 +565,7 @@ namespace PVZRHTools
             ];
             InGameHotkeys.ListChanged += (_, _) => SyncInGameHotkeys();
         }
-
+                
         [RelayCommand]
         public void KillAllZombies() => App.DataSync.Value.SendData(new InGameActions() { ClearAllZombies = true });
 
@@ -600,6 +604,7 @@ namespace PVZRHTools
                 CardNoInit = CardNoInit,
                 ChomperNoCD = ChomperNoCD,
                 ClearOnWritingField = ClearOnWritingField,
+                GaoShuMode = GaoShuMode,
                 ClearOnWritingVases = ClearOnWritingVases,
                 ClearOnWritingZombies = ClearOnWritingZombies,
                 CobCannonNoCD = CobCannonNoCD,
@@ -736,6 +741,7 @@ namespace PVZRHTools
                 ZombieSeaEnabled = ZombieSeaEnabled,
                 ZombieSeaTypes = [],
                 ZombieType = ZombieType,
+                GaoShuMode = GaoShuMode,
             };
             iga.ZombieSeaTypes.AddRange(from zst in ZombieSeaTypes select zst.Key);
             SyncAll syncAll = new()
@@ -886,13 +892,16 @@ namespace PVZRHTools
         }
 
         [RelayCommand]
-        public void WriteField() => App.DataSync.Value.SendData(new InGameActions() { WriteField = FieldString, ClearOnWritingField = ClearOnWritingField });
+        public void WriteField() => App.DataSync.Value.SendData(new InGameActions() { WriteField = FieldString, ClearOnWritingField = ClearOnWritingField ,GaoShuMode=GaoShuMode});
 
         [RelayCommand]
         public void WriteVases() => App.DataSync.Value.SendData(new InGameActions() { WriteVases = VasesFieldString, ClearOnWritingVases = ClearOnWritingVases });
 
         [RelayCommand]
-        public void WriteZombies() => App.DataSync.Value.SendData(new InGameActions() { WriteZombies = ZombieFieldString, ClearOnWritingZombies = ClearOnWritingZombies });
+        public void WriteZombies() => App.DataSync.Value.SendData(new InGameActions() { WriteZombies = ZombieFieldString, ClearOnWritingZombies = ClearOnWritingZombies, GaoShuMode = GaoShuMode });
+        
+        [RelayCommand]
+        public void WriteMix() => App.DataSync.Value.SendData(new InGameActions() { WriteZombies = ZombieFieldString, ClearOnWritingZombies = ClearOnWritingZombies, GaoShuMode = GaoShuMode });
 
         public void ZombieSea()
         {
@@ -1163,12 +1172,18 @@ namespace PVZRHTools
 
         [ObservableProperty]
         public partial bool ClearOnWritingField { get; set; }
+        
+        [ObservableProperty]
+        public partial bool GaoShuMode { get; set; }
 
         [ObservableProperty]
         public partial bool ClearOnWritingVases { get; set; }
 
         [ObservableProperty]
         public partial bool ClearOnWritingZombies { get; set; }
+        
+        [ObservableProperty]
+        public partial bool ClearOnWritingMix { get; set; }
 
         [ObservableProperty]
         public partial bool CobCannonNoCD { get; set; }
@@ -1394,6 +1409,9 @@ namespace PVZRHTools
 
         [ObservableProperty]
         public partial string ZombieFieldString { get; set; }
+        
+        [ObservableProperty]
+        public partial string MixFieldString { get; set; }
 
         [ObservableProperty]
         public partial double ZombieSeaCD { get; set; }

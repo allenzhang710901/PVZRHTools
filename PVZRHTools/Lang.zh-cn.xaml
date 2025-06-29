@@ -81,6 +81,9 @@
     <s:String x:Key="Tab2.Page1.CreatePassiveMateorite">普通陨星</s:String>
     <s:String x:Key="Tab2.Page1.CreateActiveMateorite">充能陨星</s:String>
     <s:String x:Key="Tab2.Page1.CreateUltimateMateorite">究极陨星</s:String>
+    <s:String x:Key="Tab2.Page1.LineupMode">阵容码格式：</s:String>
+    <s:String x:Key="Tab2.Page1.GaoShuMode">使用高数阵容码格式</s:String>
+    <s:String x:Key="Tab2.Page1.MixLineUp">植僵混合阵容(仅高数型)：</s:String>
     <s:String x:Key="Tab2.Page1.PlantLineup">植物布阵：</s:String>
     <s:String x:Key="Tab2.Page1.CreatReadFieldeItem">生成物品</s:String>
     <s:String x:Key="Tab2.Page1.ReadField">获取当前阵型代码</s:String>

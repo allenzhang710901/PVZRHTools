@@ -425,7 +425,6 @@ namespace ToolModBepInEx
                             }
                         }
                     }
-                        ;
                     if (r == 0 && c != 0)
                     {
                         for (int j = 0; j < Board.Instance!.columnNum; j++)

@@ -237,6 +237,8 @@
                 <Border Background="#00212125" Margin="0,8,0,0" BorderBrush="#FF2FA42F" BorderThickness="2,2,2,2">
                     <ScrollViewer HorizontalScrollBarVisibility="Auto">
                         <Grid>
+                            <Label Content="{DynamicResource Tab2.Page1.LineupMode}" HorizontalAlignment="Left" VerticalAlignment="Top" Height="30" Width="89" Margin="400,2,0,0" />
+                            <CheckBox x:Name="GaoShuMode" Content="{DynamicResource Tab2.Page1.GaoShuMode}" Height="30" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding GaoShuMode}" HorizontalAlignment="Left"  Margin="489,2,0,0" />
                             <Label Content="{DynamicResource Tab2.Page1.PlantLineup}" HorizontalAlignment="Left" VerticalAlignment="Top" Height="30" Width="89" Margin="0,2,0,0" />
                             <Button x:Name="ReadField" HorizontalAlignment="Left" Height="30" Margin="89,1,0,0" VerticalAlignment="Top" Width="173" Content="{DynamicResource Tab2.Page1.ReadField}" Command="{Binding CopyFieldScriptsCommand}" ToolTip="{DynamicResource Tab2.Page1.ReadField.Tooltip}" />
                             <CheckBox x:Name="ClearOnWritingField" Content="{DynamicResource Tab2.Page1.ClearOnWritingField}" Height="30" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding ClearOnWritingField}" HorizontalAlignment="Left"  Margin="269,2,0,0" />
@@ -251,15 +253,22 @@
                                 <Button x:Name="WriteFieldZombies" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="105" Content="{DynamicResource Tab2.Page1.WriteField}" Command="{Binding WriteZombiesCommand}" />
                                 <hc:TextBox hc:InfoElement.ShowClearButton="True" x:Name="FieldStringZombies" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top" Width="488" Text="{Binding ZombieFieldString}" Height="30" />
                             </hc:ElementGroup>
-                            <Label Content="{DynamicResource Tab2.Page1.VaseLineUp}" HorizontalAlignment="Left" Margin="0,120,0,0" VerticalAlignment="Top" Height="30" Width="89" />
-                            <Button x:Name="ReadFieldVases" HorizontalAlignment="Left" Height="30" Margin="89,120,0,0" VerticalAlignment="Top" Width="173" Content="{DynamicResource Tab2.Page1.ReadField}" Command="{Binding CopyVasesScriptsCommand}" />
-                            <CheckBox x:Name="ClearVasesOnWritingField" Content="{DynamicResource Tab2.Page1.ClearOnWritingField}" Height="30" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding ClearOnWritingVases}" HorizontalAlignment="Left" Margin="269,120,0,0" />
+                            <Label Content="{DynamicResource Tab2.Page1.MixLineUp}" HorizontalAlignment="Left" Margin="0,120,0,0" VerticalAlignment="Top" Height="30" Width="176" />
+                            <Button x:Name="ReadMixLineUp" HorizontalAlignment="Left" Height="30" Margin="161,120,0,0" VerticalAlignment="Top" Width="135" Content="{DynamicResource Tab2.Page1.ReadField}" Command="{Binding CopyMixScriptsCommand}" />
+                            <CheckBox x:Name="ClearMixOnWritingField" Content="{DynamicResource Tab2.Page1.ClearOnWritingField}" Height="30" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding ClearOnWritingMix}" HorizontalAlignment="Left" Margin="301,120,0,0" />
                             <hc:ElementGroup Orientation="Horizontal" Layout="Stack" Margin="0,150,0,0" Height="30" HorizontalAlignment="Left">
+                                <Button x:Name="WriteFieldMix" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="105" Content="{DynamicResource Tab2.Page1.WriteField}" Command="{Binding WriteMixCommand}" />
+                                <hc:TextBox hc:InfoElement.ShowClearButton="True" x:Name="FieldStringMix1" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top" Width="488" Text="{Binding MixFieldString}" Height="30" />
+                            </hc:ElementGroup>
+                            <Label Content="{DynamicResource Tab2.Page1.VaseLineUp}" HorizontalAlignment="Left" Margin="0,180,0,0" VerticalAlignment="Top" Height="30" Width="89" />
+                            <Button x:Name="ReadFieldVases" HorizontalAlignment="Left" Height="30" Margin="89,180,0,0" VerticalAlignment="Top" Width="173" Content="{DynamicResource Tab2.Page1.ReadField}" Command="{Binding CopyVasesScriptsCommand}" />
+                            <CheckBox x:Name="ClearVasesOnWritingField" Content="{DynamicResource Tab2.Page1.ClearOnWritingField}" Height="30" VerticalAlignment="Top" Foreground="White"  BorderThickness="2,2,2,2" IsChecked="{Binding ClearOnWritingVases}" HorizontalAlignment="Left" Margin="269,180,0,0" />
+                            <hc:ElementGroup Orientation="Horizontal" Layout="Stack" Margin="0,210,0,0" Height="30" HorizontalAlignment="Left">
                                 <Button x:Name="WriteFieldVases" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="105" Content="{DynamicResource Tab2.Page1.WriteField}" Command="{Binding WriteVasesCommand}" />
                                 <hc:TextBox hc:InfoElement.ShowClearButton="True" x:Name="FieldStringZombies1" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top" Width="488" Text="{Binding VasesFieldString}" Height="30" />
                             </hc:ElementGroup>
 
-                            <StackPanel Margin="0,184,0,0">
+                            <StackPanel Margin="0,240,0,0">
                                 <StackPanel Orientation="Horizontal">
                                     <CheckBox x:Name="ZombieSeaEnabled" Content="{DynamicResource Tab2.Page3.ZombieSeaEnabled}" Height="21" Foreground="White" BorderThickness="2,2,2,2" IsChecked="{Binding ZombieSeaEnabled}" Width="133" VerticalAlignment="Top" />
                                     <hc:NumericUpDown DecimalPlaces="0" hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="{DynamicResource Tab2.Page3.FpCreate}" hc:TitleElement.TitleWidth="90" x:Name="FpCreate" Width="167" Value="{Binding ZombieSeaCD}" Maximum="1000" Minimum="10" Style="{DynamicResource NumericUpDownExtend}"  Height="30" />
@@ -267,13 +276,13 @@
                                 <CheckBox x:Name="ZombieSeaLowEnabled" Content="{DynamicResource Tab2.Page3.ZombieSeaLowEnabled}" Height="21" Foreground="White" BorderThickness="2,2,2,2" IsChecked="{Binding ZombieSeaLowEnabled}" Width="463" HorizontalAlignment="Left" />
                                 <hc:CheckComboBox local:SelectedItemsExt.SelectedItems="{Binding ZombieSeaTypes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" hc:TitleElement.TitlePlacement="Left" hc:TitleElement.Title="{DynamicResource Tab2.Page3.ZombieSeaTypes}" hc:TitleElement.TitleWidth="80" Style="{DynamicResource CheckComboBoxExtend}" ItemsSource="{Binding Zombies}" SelectedValuePath="Key" DisplayMemberPath="Value" Width="361" HorizontalAlignment="Left" IsSynchronizedWithCurrentItem="True" />
                                 <Button x:Name="SetZombieIdle" Content="{DynamicResource Tab2.SetZombieIdle}" Height="30" Command="{Binding SetZombieIdleCommand}" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" />
-                                
+
                             </StackPanel>
                         </Grid>
                     </ScrollViewer>
                 </Border>
             </TabItem>
-            <TabItem Header="{DynamicResource Tab3.Header}">
+            <TabItem Header="{DynamicResource Tab3.Header}" Height="28" VerticalAlignment="Bottom">
                 <Border Background="#FF212125" Margin="0,8,0,0" BorderBrush="#FF2FA42F" BorderThickness="2,2,2,2">
                     <hc:ScrollViewer HorizontalScrollBarVisibility="Auto" Height="385" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
                         <StackPanel>

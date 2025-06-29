@@ -7,8 +7,10 @@
         public bool CardNoInit { get; set; }
         public bool ChomperNoCD { get; set; }
         public bool ClearOnWritingField { get; set; }
+        public bool GaoShuMode { get; set; }
         public bool ClearOnWritingVases { get; set; }
         public bool ClearOnWritingZombies { get; set; }
+        public bool ClearOnWritingMix { get; set; }
         public bool CobCannonNoCD { get; set; }
         public double Col { get; set; }
         public bool ColumnPlanting { get; set; }
@@ -73,6 +75,7 @@
         public bool UnlockAllFusions { get; set; }
         public string VasesFieldString { get; set; }
         public string ZombieFieldString { get; set; }
+        public string MixFieldString { get; set; }
         public double ZombieSeaCD { get; set; }
         public bool ZombieSeaEnabled { get; set; }
         public bool ZombieSeaLowEnabled { get; set; }

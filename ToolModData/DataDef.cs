@@ -83,6 +83,7 @@
         public bool? ClearAllPlants { get; set; }
         public bool? ClearAllZombies { get; set; }
         public bool? ClearOnWritingField { get; set; }
+        public bool? GaoShuMode { get; set; }
         public bool? ClearOnWritingVases { get; set; }
         public bool? ClearOnWritingZombies { get; set; }
         public int? Column { get; set; }
@@ -106,6 +107,7 @@
         public bool? ReadField { get; set; }
         public bool? ReadVases { get; set; }
         public bool? ReadZombies { get; set; }
+        public bool? ReadMix { get; set; }
         public int? Row { get; set; }
         public bool? SetAward { get; set; }
         public bool? SetZombieIdle { get; set; }
@@ -118,6 +120,7 @@
         public string? WriteField { get; set; }
         public string? WriteVases { get; set; }
         public string? WriteZombies { get; set; }
+        public string? WriteMix { get; set; }
         public int? ZombieSeaCD { get; set; }
         public bool? ZombieSeaEnabled { get; set; }
         public bool? ZombieSeaLowEnabled { get; set; }
