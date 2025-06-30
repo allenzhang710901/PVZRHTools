@@ -371,8 +371,7 @@
       <HintPath>..\..\..\BepInEx2.6.1\0Codes\libs\__Generated.dll</HintPath>
     </Reference>
   </ItemGroup>
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	<!-- <Target Name="PostBuild" AfterTargets="PostBuildEvent">
 		<Exec Command="COPY &quot;$(TargetPath)&quot; &quot;C:\Users\Liyuan\Desktop\pvzRHdev\BepInEx2.6.1\BepInEx\plugins&quot;" />
-	</Target>
-
+	</Target> -->
 </Project>

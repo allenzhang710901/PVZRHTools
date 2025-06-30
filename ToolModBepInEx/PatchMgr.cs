@@ -651,9 +651,8 @@ namespace ToolModBepInEx
             text2.text = "原作者@Infinite75已停更，这是@听雨夜荷的一个fork\n" +
                          "项目地址: https://github.com/CarefreeSongs712/PVZRHTools\n" +
                          "\n" +
-                         "修改器2.6.1-3.23.2120更新日志:\n" +
-                         "1.可以生成更多的物品，如阳光，金币，梯子。\n" +
-                         "2.适配了新的花园修改器";
+                         "修改器2.6.1-3.24.1000更新日志:\n" +
+                         "1. 适配了高数新的阵容码，现在可以导入/出混合阵容码。也可以选择开启与否gzip+base64压缩，以减少大小。";
             obj2.transform.SetParent(GameObject.Find("Leaves").transform);
             obj2.transform.localScale = new(0.5f, 0.5f, 0.5f);
             obj2.GetComponent<RectTransform>().sizeDelta = new(800, 50);

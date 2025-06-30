@@ -101,21 +101,21 @@ namespace ToolModBepInEx
                 }
                 return;
             }
-            if (data is BasicProperties p)
+            if (data is BasicProperties p1)
             {
-                if (p.DeveloperMode is not null) GameAPP.developerMode = (bool)p.DeveloperMode;
-                if (p.GameSpeed is not null) SyncSpeed = (float)p.GameSpeed;
-                if (p.GloveNoCD is not null) GloveNoCD = (bool)p.GloveNoCD;
-                if (p.HammerNoCD is not null) HammerNoCD = (bool)p.HammerNoCD;
-                if (p.PlantingNoCD is not null && Board.Instance is not null)
+                if (p1.DeveloperMode is not null) GameAPP.developerMode = (bool)p1.DeveloperMode;
+                if (p1.GameSpeed is not null) SyncSpeed = (float)p1.GameSpeed;
+                if (p1.GloveNoCD is not null) GloveNoCD = (bool)p1.GloveNoCD;
+                if (p1.HammerNoCD is not null) HammerNoCD = (bool)p1.HammerNoCD;
+                if (p1.PlantingNoCD is not null && Board.Instance is not null)
                 {
-                    FreeCD = (bool)p.PlantingNoCD;
+                    FreeCD = (bool)p1.PlantingNoCD;
                     Board.Instance.freeCD = FreeCD;
                 }
-                if (p.FreePlanting is not null) FreePlanting = (bool)p.FreePlanting;
-                if (p.UnlockAllFusions is not null)
+                if (p1.FreePlanting is not null) FreePlanting = (bool)p1.FreePlanting;
+                if (p1.UnlockAllFusions is not null)
                 {
-                    UnlockAllFusions = (bool)p.UnlockAllFusions;
+                    UnlockAllFusions = (bool)p1.UnlockAllFusions;
                     if (InGame())
                     {
                         var t = Board.Instance!.boardTag;
@@ -123,29 +123,29 @@ namespace ToolModBepInEx
                         Board.Instance.boardTag = t;
                     }
                 }
-                if (p.SuperPresent is not null) SuperPresent = (bool)p.SuperPresent;
-                if (p.UltimateRamdomZombie is not null) UltimateRamdomZombie = (bool)p.UltimateRamdomZombie;
-                if (p.PresentFastOpen is not null) PresentFastOpen = (bool)p.PresentFastOpen;
-                if (p.LockPresent is not null) LockPresent = (int)p.LockPresent;
-                if (p.FastShooting is not null) FastShooting = (bool)p.FastShooting;
-                if (p.HardPlant is not null) HardPlant = (bool)p.HardPlant;
-                if (p.NoHole is not null) NoHole = (bool)p.NoHole;
-                if (p.HyponoEmperorNoCD is not null) HyponoEmperorNoCD = (bool)p.HyponoEmperorNoCD;
-                if (p.MineNoCD is not null) MineNoCD = (bool)p.MineNoCD;
-                if (p.ChomperNoCD is not null) ChomperNoCD = (bool)p.ChomperNoCD;
-                if (p.CobCannonNoCD is not null) CobCannonNoCD = (bool)p.CobCannonNoCD;
-                if (p.NoIceRoad is not null) NoIceRoad = (bool)p.NoIceRoad;
-                if (p.ItemExistForever is not null) ItemExistForever = (bool)p.ItemExistForever;
-                if (p.CardNoInit is not null) CardNoInit = (bool)p.CardNoInit;
-                if (p.JackboxNotExplode is not null) JackboxNotExplode = (bool)p.JackboxNotExplode;
-                if (p.UndeadBullet is not null) UndeadBullet = (bool)p.UndeadBullet;
-                if (p.GarlicDay is not null) GarlicDay = (bool)p.GarlicDay;
-                if (p.DevLour is not null) DevLour = (bool)p.DevLour;
-                if (p.HammerFullCD is not null) HammerFullCD = (double)p.HammerFullCD;
-                if (p.GloveFullCD is not null) GloveFullCD = (double)p.GloveFullCD;
-                if (p.NewZombieUpdateCD is not null) NewZombieUpdateCD = (float)p.NewZombieUpdateCD;
-                if (p.UltimateSuperGatling is not null) UltimateSuperGatling = (bool)p.UltimateSuperGatling;
-                if (p.PlantUpgrade is not null) PlantUpgrade = (bool)p.PlantUpgrade;
+                if (p1.SuperPresent is not null) SuperPresent = (bool)p1.SuperPresent;
+                if (p1.UltimateRamdomZombie is not null) UltimateRamdomZombie = (bool)p1.UltimateRamdomZombie;
+                if (p1.PresentFastOpen is not null) PresentFastOpen = (bool)p1.PresentFastOpen;
+                if (p1.LockPresent is not null) LockPresent = (int)p1.LockPresent;
+                if (p1.FastShooting is not null) FastShooting = (bool)p1.FastShooting;
+                if (p1.HardPlant is not null) HardPlant = (bool)p1.HardPlant;
+                if (p1.NoHole is not null) NoHole = (bool)p1.NoHole;
+                if (p1.HyponoEmperorNoCD is not null) HyponoEmperorNoCD = (bool)p1.HyponoEmperorNoCD;
+                if (p1.MineNoCD is not null) MineNoCD = (bool)p1.MineNoCD;
+                if (p1.ChomperNoCD is not null) ChomperNoCD = (bool)p1.ChomperNoCD;
+                if (p1.CobCannonNoCD is not null) CobCannonNoCD = (bool)p1.CobCannonNoCD;
+                if (p1.NoIceRoad is not null) NoIceRoad = (bool)p1.NoIceRoad;
+                if (p1.ItemExistForever is not null) ItemExistForever = (bool)p1.ItemExistForever;
+                if (p1.CardNoInit is not null) CardNoInit = (bool)p1.CardNoInit;
+                if (p1.JackboxNotExplode is not null) JackboxNotExplode = (bool)p1.JackboxNotExplode;
+                if (p1.UndeadBullet is not null) UndeadBullet = (bool)p1.UndeadBullet;
+                if (p1.GarlicDay is not null) GarlicDay = (bool)p1.GarlicDay;
+                if (p1.DevLour is not null) DevLour = (bool)p1.DevLour;
+                if (p1.HammerFullCD is not null) HammerFullCD = (double)p1.HammerFullCD;
+                if (p1.GloveFullCD is not null) GloveFullCD = (double)p1.GloveFullCD;
+                if (p1.NewZombieUpdateCD is not null) NewZombieUpdateCD = (float)p1.NewZombieUpdateCD;
+                if (p1.UltimateSuperGatling is not null) UltimateSuperGatling = (bool)p1.UltimateSuperGatling;
+                if (p1.PlantUpgrade is not null) PlantUpgrade = (bool)p1.PlantUpgrade;
                 return;
             }
             if (data is InGameHotkeys h)
@@ -560,117 +560,149 @@ namespace ToolModBepInEx
                 {
                     Board.Instance.newZombieWaveCountDown = 0;
                 }
+
                 //感谢@高数带我飞(Github:https://github.com/LibraHp/)的植物阵容码导出和解码代码
                 //现在此修改器和高数带我飞的修改器植物阵容码可以互通了
                 if (iga.WriteField is not null
                     && iga.ClearOnWritingField is not null)
                 {
-                    /*try
+                    if (iga.GaoShuMode == false)
                     {
-                        var plants = JsonSerializer.Deserialize<List<PlantInfo>>(iga.WriteField);
-                        if (plants is not null)
+                        try
                         {
-                            if ((bool)iga.ClearOnWritingField)
+                            var plants = JsonSerializer.Deserialize<List<PlantInfo>>(iga.WriteField);
+                            if (plants is not null)
                             {
-                                for (int i = Board.Instance.plantArray.Count - 1; i >= 0; i--)
+                                if ((bool)iga.ClearOnWritingField)
+                                {
+                                    for (int i = Board.Instance.plantArray.Count - 1; i >= 0; i--)
+                                    {
+                                        Board.Instance.plantArray[i]?.Die();
+                                    }
+
+                                    Board.Instance.plantArray.Clear();
+                                }
+
+                                foreach (var plant in plants)
+                                {
+                                    var pl = CreatePlant.Instance.SetPlant(plant.Column, plant.Row,
+                                        (PlantType)plant.ID);
+                                    if (pl is null) continue;
+                                    if (pl.GetComponent<Plant>().isLily)
+                                        pl.GetComponent<Plant>().theLilyType = (PlantType)plant.LilyType;
+                                }
+                            }
+                        }
+                        catch (JsonException)
+                        {
+                        }
+                        catch (NotSupportedException)
+                        {
+                        }
+                    }
+
+                    if (iga.GaoShuMode == true)
+                    {
+                        if ((bool)iga.ClearOnWritingField)
+                        {
+                            for (int i = Board.Instance.plantArray.Count - 1; i >= 0; i--)
+                            {
+                                try
                                 {
                                     Board.Instance.plantArray[i]?.Die();
                                 }
-                                Board.Instance.plantArray.Clear();
+                                catch
+                                {
+                                }
                             }
 
-                            foreach (var plant in plants)
-                            {
-                                var pl = CreatePlant.Instance.SetPlant(plant.Column, plant.Row, (PlantType)plant.ID);
-                                if (pl is null) continue;
-                                if (pl.GetComponent<Plant>().isLily) pl.GetComponent<Plant>().theLilyType = (PlantType)plant.LilyType;
-                            }
+                            Board.Instance.plantArray.Clear();
                         }
-                    }
-                    catch (JsonException) { MLogger.Error("布阵代码存在错误！"); }
-                    catch (NotSupportedException) { MLogger.Error("布阵代码存在错误！"); }*/
-                    if ((bool)iga.ClearOnWritingField)
-                    {
-                        for (int i = Board.Instance.plantArray.Count - 1; i >= 0; i--)
+
+                        //from Gaoshu
+                        string lineupCode = DecompressString(iga.WriteField);
+                        string[] plantEntries = lineupCode.Split(';');
+                        foreach (string entry in plantEntries)
                         {
-                            try
+                            string[] plantData = entry.Split(',');
+                            if (plantData.Length == 3)
                             {
-                                Board.Instance.plantArray[i]?.Die();
-                            }
-                            catch { }
-                        }
-                        Board.Instance.plantArray.Clear();
-                    }
-                    //from Gaoshu
-                    string lineupCode = DecompressString(iga.WriteField);
-                    string[] plantEntries = lineupCode.Split(';');
-                    foreach (string entry in plantEntries)
-                    {
-                        string[] plantData = entry.Split(',');
-                        if (plantData.Length == 3)
-                        {
-                            if (int.TryParse(plantData[0], out int column) &&
-                                int.TryParse(plantData[1], out int row) &&
-                                int.TryParse(plantData[2], out int plantType))
-                            {
-                                CreatePlant.Instance.SetPlant(column, row, (PlantType)plantType, null, default, false, true);
+                                if (int.TryParse(plantData[0], out int column) &&
+                                    int.TryParse(plantData[1], out int row) &&
+                                    int.TryParse(plantData[2], out int plantType))
+                                {
+                                    CreatePlant.Instance.SetPlant(column, row, (PlantType)plantType, null, default,
+                                        false, true);
+                                }
                             }
                         }
                     }
                 }
+
                 if (iga.ReadField is not null)
                 {
-                    /*List<PlantInfo> bases = [];
-                    List<PlantInfo> plants = [];
-                    foreach (var plant in Board.Instance.plantArray)
+                    if (iga.GaoShuMode == false)
                     {
-                        if (plant is null) continue;
-                        if (plant.plantTag.potPlant || plant.isLily)
+                        List<PlantInfo> bases = [];
+                        List<PlantInfo> plants = [];
+                        foreach (var plant in Board.Instance.plantArray)
                         {
-                            bases.Add(new()
+                            if (plant is null) continue;
+                            if (plant.plantTag.potPlant || plant.isLily)
+                            {
+                                bases.Add(new()
+                                {
+                                    ID = (int)plant.thePlantType,
+                                    Row = plant.thePlantRow,
+                                    Column = plant.thePlantColumn,
+                                    LilyType = (int)plant.theLilyType
+                                });
+                                continue;
+                            }
+
+                            plants.Add(new()
                             {
                                 ID = (int)plant.thePlantType,
                                 Row = plant.thePlantRow,
                                 Column = plant.thePlantColumn,
                                 LilyType = (int)plant.theLilyType
                             });
-                            continue;
                         }
-                        plants.Add(new()
+
+                        bases.AddRange(plants);
+                        DataSync.Instance.Value.SendData(new InGameActions()
                         {
-                            ID = (int)plant.thePlantType,
-                            Row = plant.thePlantRow,
-                            Column = plant.thePlantColumn,
-                            LilyType = (int)plant.theLilyType
+                            WriteField = JsonSerializer.Serialize(bases)
                         });
                     }
-                    bases.AddRange(plants);
-                    DataSync.Instance.Value.SendData(new InGameActions()
-                    {
-                        WriteField = JsonSerializer.Serialize(bases)
-                    });*/
 
-                    //from Gaoshu
-                    List<string> lineupData = [];
-                    foreach (Plant plant in Board.Instance.plantArray)
+                    if (iga.GaoShuMode == true)
                     {
-                        // 格式为 "行,列,类型"
-                        if (plant == null) continue;
-                        string plantData = $"{plant.thePlantColumn},{plant.thePlantRow},{(int)plant.thePlantType}";
-                        lineupData.Add(plantData);
+                        //from Gaoshu
+                        List<string> lineupData = [];
+                        foreach (Plant plant in Board.Instance.plantArray)
+                        {
+                            // 格式为 "行,列,类型"
+                            if (plant == null) continue;
+                            string plantData = $"{plant.thePlantColumn},{plant.thePlantRow},{(int)plant.thePlantType}";
+                            lineupData.Add(plantData);
+                        }
+
+                        string lineupCode = string.Join(";", lineupData);
+                        DataSync.Instance.Value.SendData(new InGameActions()
+                        {
+                            WriteField = CompressString(lineupCode)
+                        });
                     }
-                    string lineupCode = string.Join(";", lineupData);
-                    DataSync.Instance.Value.SendData(new InGameActions()
-                    {
-                        WriteField = CompressString(lineupCode)
-                    });
                 }
+
                 if (iga.ReadVases is not null)
                 {
                     List<VaseInfo> vases = [];
                     foreach (var vase in Board.Instance.griditemArray)
                     {
-                        if (vase is null || vase.theItemType is not (GridItemType)4 or (GridItemType)5 or (GridItemType)6) continue;
+                        if (vase is null ||
+                            vase.theItemType is not (GridItemType)4 or (GridItemType)5 or (GridItemType)6) continue;
                         vases.Add(new()
                         {
                             Row = vase.theItemRow,
@@ -679,11 +711,13 @@ namespace ToolModBepInEx
                             ZombieType = (int)vase.Cast<ScaryPot>().theZombieType,
                         });
                     }
+
                     DataSync.Instance.Value.SendData(new InGameActions()
                     {
                         WriteVases = JsonSerializer.Serialize(vases)
                     });
                 }
+
                 if (iga.WriteVases is not null && iga.ClearOnWritingVases is not null)
                 {
                     try
@@ -695,13 +729,16 @@ namespace ToolModBepInEx
                             {
                                 for (int i = Board.Instance.griditemArray.Count - 1; i >= 0; i--)
                                 {
-                                    if (Board.Instance.griditemArray[i] is not null && Board.Instance.griditemArray[i].theItemType is (GridItemType)4 or (GridItemType)5 or (GridItemType)6)
+                                    if (Board.Instance.griditemArray[i] is not null &&
+                                        Board.Instance.griditemArray[i].theItemType is (GridItemType)4
+                                            or (GridItemType)5 or (GridItemType)6)
                                     {
                                         Board.Instance.griditemArray[i].gameObject.active = false;
                                         UnityEngine.Object.Destroy(Board.Instance.griditemArray[i]);
                                     }
                                 }
                             }
+
                             foreach (var vase in fieldVases)
                             {
                                 var g = GridItem.SetGridItem(vase.Col, vase.Row, GridItemType.ScaryPot);
@@ -710,61 +747,268 @@ namespace ToolModBepInEx
                             }
                         }
                     }
-                    catch (JsonException) { MLogger.LogError("布阵代码存在错误！"); }
-                    catch (NotSupportedException) { MLogger.LogError("布阵代码存在错误！"); }
+                    catch (JsonException)
+                    {
+                        MLogger.LogError("布阵代码存在错误！");
+                    }
+                    catch (NotSupportedException)
+                    {
+                        MLogger.LogError("布阵代码存在错误！");
+                    }
                 }
 
                 if (iga.Card is not null
-                  && iga.PlantType is not null)
+                    && iga.PlantType is not null)
                 {
-                    Lawnf.SetDroppedCard(new(0f, 0f), (PlantType)iga.PlantType).GameObject().transform.SetParent(InGameUI.Instance.transform);
+                    Lawnf.SetDroppedCard(new(0f, 0f), (PlantType)iga.PlantType).GameObject().transform
+                        .SetParent(InGameUI.Instance.transform);
                 }
+
                 if (iga.ReadZombies is not null)
                 {
-                    List<ZombieInfo> zombies = [];
+                    if (iga.GaoShuMode == false)
+                    {
+                        // JSON 模式（保留完整对象结构）
+                        List<ZombieInfo> zombies = [];
+                        foreach (Zombie zombie in Board.Instance.zombieArray!)
+                        {
+                            if (zombie is not null && zombie.gameObject is not null && !zombie.isMindControlled)
+                            {
+                                zombies.Add(new()
+                                {
+                                    ID = (int)zombie.theZombieType,
+                                    X = zombie.gameObject.transform.position.x,
+                                    Row = zombie.theZombieRow
+                                });
+                            }
+                        }
+
+                        DataSync.Instance.Value.SendData(new InGameActions()
+                        {
+                            WriteZombies = JsonSerializer.Serialize(zombies)
+                        });
+                    }
+
+                    if (iga.GaoShuMode == true)
+                    {
+                        // 高数模式（原生字符串格式 + 压缩）
+                        List<string> zombieDataList = [];
+                        foreach (Zombie zombie in Board.Instance.zombieArray!)
+                        {
+                            if (zombie is not null && zombie.gameObject is not null && !zombie.isMindControlled)
+                            {
+                                // 使用原始坐标精度（保持 7.8724456 的完整精度）
+                                string zombieData =
+                                    $"{zombie.theZombieRow},{zombie.gameObject.transform.position.x},{(int)zombie.theZombieType}";
+                                zombieDataList.Add(zombieData);
+                            }
+                        }
+
+                        // 先拼接后压缩（添加GZIP+Base64处理）
+                        string zombieCode = string.Join(";", zombieDataList);
+                        string compressedCode = CompressString(zombieCode); // GZIP压缩 + Base64编码
+
+                        DataSync.Instance.Value.SendData(new InGameActions()
+                        {
+                            WriteZombies = compressedCode // 发送压缩后的Base64字符串
+                        });
+                    }
+                }
+
+                if (iga.WriteZombies is not null && iga.ClearOnWritingZombies is not null)
+                {
+                    if (iga.GaoShuMode == false)
+                    {
+                        try
+                        {
+                            var fieldZombies = JsonSerializer.Deserialize<List<ZombieInfo>>(iga.WriteZombies);
+                            if (fieldZombies is not null)
+                            {
+                                if ((bool)iga.ClearOnWritingZombies)
+                                {
+                                    Il2CppReferenceArray<UnityEngine.Object> zombies =
+                                        FindObjectsOfTypeAll(Il2CppType.Of<Zombie>());
+                                    for (int i = zombies.Count - 1; i >= 0; i--)
+                                    {
+                                        try
+                                        {
+                                            ((Zombie)zombies[i])?.Die();
+                                        }
+                                        catch
+                                        {
+                                        }
+                                    }
+
+                                    Board.Instance.zombieArray!.Clear();
+                                }
+
+                                foreach (var z in fieldZombies)
+                                {
+                                    CreateZombie.Instance.SetZombie(z.Row, (ZombieType)z.ID, z.X);
+                                }
+                            }
+                        }
+                        catch (JsonException)
+                        {
+                        }
+                        catch (NotSupportedException)
+                        {
+                        }
+                    }
+
+                    if (iga.GaoShuMode == true)
+                    {
+                        if ((bool)iga.ClearOnWritingZombies)
+                        {
+                            Il2CppReferenceArray<UnityEngine.Object> zombies =
+                                FindObjectsOfTypeAll(Il2CppType.Of<Zombie>());
+                            for (int i = zombies.Count - 1; i >= 0; i--)
+                            {
+                                try
+                                {
+                                    ((Zombie)zombies[i])?.Die();
+                                }
+                                catch
+                                {
+                                }
+                            }
+
+                            Board.Instance.zombieArray!.Clear();
+                        }
+
+                        // 先解压后解析（添加GZIP+Base64处理）
+                        string zombieCode = DecompressString(iga.WriteZombies); // Base64解码 + GZIP解压
+                        string[] zombieEntries = zombieCode.Split(';');
+
+                        foreach (string entry in zombieEntries)
+                        {
+                            string[] zombieData = entry.Split(',');
+                            if (zombieData.Length == 3)
+                            {
+                                if (int.TryParse(zombieData[0], out int row) &&
+                                    float.TryParse(zombieData[1], out float x) &&
+                                    int.TryParse(zombieData[2], out int zombieType))
+                                {
+                                    CreateZombie.Instance.SetZombie(row, (ZombieType)zombieType, x);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (iga.ReadMix is not null)
+                {
+                    // 高数模式（原生字符串格式 + 压缩）
+                    List<string> zombieDataList = [];
                     foreach (Zombie zombie in Board.Instance.zombieArray!)
                     {
                         if (zombie is not null && zombie.gameObject is not null && !zombie.isMindControlled)
                         {
-                            zombies.Add(new()
-                            {
-                                ID = (int)zombie.theZombieType,
-                                X = zombie.gameObject.transform.position.x,
-                                Row = zombie.theZombieRow
-                            });
+                            // 使用原始坐标精度（保持 7.8724456 的完整精度）
+                            string zombieData =
+                                $"{zombie.theZombieRow},{zombie.gameObject.transform.position.x},{(int)zombie.theZombieType}";
+                            zombieDataList.Add(zombieData);
                         }
                     }
+
+                    // 先拼接后压缩（添加GZIP+Base64处理）
+                    string zombieCode = string.Join(";", zombieDataList);
+                    string zombieString = CompressString(zombieCode); // GZIP压缩 + Base64编码
+
+                    //from Gaoshu
+                    List<string> lineupData = [];
+                    foreach (Plant plant in Board.Instance.plantArray)
+                    {
+                        // 格式为 "行,列,类型"
+                        if (plant == null) continue;
+                        string plantData = $"{plant.thePlantColumn},{plant.thePlantRow},{(int)plant.thePlantType}";
+                        lineupData.Add(plantData);
+                    }
+                    string plantCode = string.Join(";", lineupData);
+                    string PlantString = CompressString(plantCode); // GZIP压缩 + Base64编码
+                    
+                    string result = PlantString + "|"+ zombieString;
+                    
                     DataSync.Instance.Value.SendData(new InGameActions()
                     {
-                        WriteZombies = JsonSerializer.Serialize(zombies)
+                        WriteMix = result
                     });
+                    
                 }
-                if (iga.WriteZombies is not null
-                    && iga.ClearOnWritingZombies is not null)
+                
+                if (iga.WriteMix is not null && iga.ClearOnWritingMix is not null)
                 {
-                    try
+                    if (iga.ClearOnWritingMix == true)
                     {
-                        var fieldZombies = JsonSerializer.Deserialize<List<ZombieInfo>>(iga.WriteZombies);
-                        if (fieldZombies is not null)
+                        for (int i = Board.Instance.plantArray.Count - 1; i >= 0; i--)
                         {
-                            if ((bool)iga.ClearOnWritingZombies)
+                            try
                             {
-                                Il2CppReferenceArray<UnityEngine.Object> zombies = FindObjectsOfTypeAll(Il2CppType.Of<Zombie>());
-                                for (int i = zombies.Count - 1; i >= 0; i--)
-                                {
-                                    try { ((Zombie)zombies[i])?.Die(); } catch { }
-                                }
-                                Board.Instance.zombieArray!.Clear();
+                                Board.Instance.plantArray[i]?.Die();
                             }
-                            foreach (var z in fieldZombies)
+                            catch
                             {
-                                CreateZombie.Instance.SetZombie(z.Row, (ZombieType)z.ID, z.X);
+                            }
+                        }
+
+                        Board.Instance.plantArray.Clear();
+
+                        Il2CppReferenceArray<UnityEngine.Object> zombies =
+                            FindObjectsOfTypeAll(Il2CppType.Of<Zombie>());
+                        for (int i = zombies.Count - 1; i >= 0; i--)
+                        {
+                            try
+                            {
+                                ((Zombie)zombies[i])?.Die();
+                            }
+                            catch
+                            {
+                            }
+                        }
+
+                        Board.Instance.zombieArray!.Clear();
+                    }
+
+                    //from Gaoshu
+                    string[] codes = iga.WriteMix.Split('|');
+
+                    string plantCode = codes[0];
+                    plantCode = DecompressString(plantCode);
+                    string[] plantEntries = plantCode.Split(';');
+                    foreach (string entry in plantEntries)
+                    {
+                        string[] plantData = entry.Split(',');
+                        if (plantData.Length == 3)
+                        {
+                            if (int.TryParse(plantData[0], out int column) &&
+                                int.TryParse(plantData[1], out int row) &&
+                                int.TryParse(plantData[2], out int plantType))
+                            {
+                                CreatePlant.Instance.SetPlant(column, row, (PlantType)plantType, null, default,
+                                    false, true);
                             }
                         }
                     }
-                    catch (JsonException) { MLogger.LogError("布阵代码存在错误！"); }
-                    catch (NotSupportedException) { MLogger.LogError("布阵代码存在错误！"); }
+
+                    string zombieCode = codes[1];
+                    zombieCode = DecompressString(zombieCode);
+                    string[] zombieEntries = zombieCode.Split(';');
+
+                    foreach (string entry in zombieEntries)
+                    {
+                        string[] zombieData = entry.Split(',');
+                        if (zombieData.Length == 3)
+                        {
+                            if (int.TryParse(zombieData[0], out int row) &&
+                                float.TryParse(zombieData[1], out float x) &&
+                                int.TryParse(zombieData[2], out int zombieType))
+                            {
+                                CreateZombie.Instance.SetZombie(row, (ZombieType)zombieType, x);
+                            }
+                        }
+                    }
                 }
+                
                 if (iga.StartMower is not null)
                 {
                     foreach (var i in FindObjectsOfTypeAll(Il2CppType.Of<Mower>()))
