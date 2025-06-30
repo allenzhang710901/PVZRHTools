@@ -86,6 +86,7 @@
         public bool? GaoShuMode { get; set; }
         public bool? ClearOnWritingVases { get; set; }
         public bool? ClearOnWritingZombies { get; set; }
+        public bool? ClearOnWritingMix { get; set; }
         public int? Column { get; set; }
         public List<int>? ConveyBeltTypes { get; set; }
         public bool? CreateActiveMateorite { get; set; }
