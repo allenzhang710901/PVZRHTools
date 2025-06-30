@@ -82,6 +82,8 @@
     <s:String x:Key="Tab2.Page1.CreateActiveMateorite">ActiveMateorite</s:String>
     <s:String x:Key="Tab2.Page1.CreateUltimateMateorite">UltimateMateorite</s:String>
     <s:String x:Key="Tab2.Page1.LineUpMode">LineUpMode</s:String>
+    <s:String x:Key="Tab2.Page1.GaoShuMode">UseGaoShuMode</s:String>
+    <s:String x:Key="Tab2.Page1.MixLineUp">MixLineUp(OnlyGaoShu):</s:String>
     <s:String x:Key="Tab2.Page1.PlantLineup">PlantLineup</s:String>
     <s:String x:Key="Tab2.Page1.ReadField">GetLineupCode</s:String>
     <s:String x:Key="Tab2.Page1.ReadField.Tooltip">This code can also be used in @高数带我飞's modifier.</s:String>

@@ -89,6 +89,10 @@ namespace PVZRHTools
                             {
                                 Application.Current.Dispatcher.Invoke(() => MainWindow.Instance!.ViewModel.VasesFieldString = iga.WriteVases);
                             }
+                            if (iga.WriteMix is not null)
+                            {
+                                Application.Current.Dispatcher.Invoke(() => MainWindow.Instance!.ViewModel.MixFieldString = iga.WriteMix);
+                            }
 
                             break;
                         }

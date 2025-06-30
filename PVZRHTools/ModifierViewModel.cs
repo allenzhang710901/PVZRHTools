@@ -959,7 +959,7 @@ namespace PVZRHTools
         [RelayCommand]
         public void WriteMix() => App.DataSync.Value.SendData(new InGameActions()
         {
-            WriteZombies = ZombieFieldString,WriteField = FieldString ,ClearOnWritingMix = ClearOnWritingMix, GaoShuMode = GaoShuMode
+            WriteMix = MixFieldString,ClearOnWritingMix = ClearOnWritingMix, GaoShuMode = GaoShuMode
         });
 
         public void ZombieSea()
