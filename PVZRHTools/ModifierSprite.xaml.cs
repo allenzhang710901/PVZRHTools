@@ -1,35 +1,21 @@
-﻿using HandyControl.Controls;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows.Input;
+using HandyControl.Controls;
 
-namespace PVZRHTools
+namespace PVZRHTools;
+
+/// <summary>
+///     Sprite.xaml 的交互逻辑
+/// </summary>
+public partial class ModifierSprite : SimplePanel
 {
-    /// <summary>
-    /// Sprite.xaml 的交互逻辑
-    /// </summary>
-    public partial class ModifierSprite : SimplePanel
+    public ModifierSprite()
     {
-        public ModifierSprite()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+    }
 
-        private void ContentControl_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            MainWindow.Instance!.Topmost = true;
-            MainWindow.Instance!.Topmost = false;
-        }
+    private void ContentControl_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+        MainWindow.Instance!.Topmost = true;
+        MainWindow.Instance!.Topmost = false;
     }
 }

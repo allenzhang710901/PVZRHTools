@@ -4,6 +4,10 @@
 
 ## 修改器更新日志
 
+### · 2.6.1-3.24.1100:
+
+1. 新增插件：更好的显示
+
 ### · 2.6.1-3.24.1000:
 
 0. 新bug：当僵尸数量大于2000时，获取json阵容码会导致崩溃。请使用高数型阵容码（我不打算修）
@@ -17,19 +21,22 @@
 2. 适配了新的花园修改器
 
 # PVZRHTools
+
 植物大战僵尸融合版修改器 by [@Infinite75](https://space.bilibili.com/672619350)    
 适配游戏版本2.6.1      
-已构建版本的链接在b站视频简介中    
+已构建版本的链接在b站视频简介中
 
-模组部分基于[MelonLoader](https://github.com/LavaGang/MelonLoader)与[BepInEx](https://github.com/BepInEx/BepInEx)开发      
-内置了听雨夜荷的花园修改器[pvzRH-GardenEditor](https://github.com/CarefreeSongs712/pvzRH-GardenEditor)，并为其适配了动态id和贴图加载     
+模组部分基于[MelonLoader](https://github.com/LavaGang/MelonLoader)与[BepInEx](https://github.com/BepInEx/BepInEx)
+开发      
+内置了听雨夜荷的花园修改器[pvzRH-GardenEditor](https://github.com/CarefreeSongs712/pvzRH-GardenEditor)
+，并为其适配了动态id和贴图加载     
 修改窗口使用了[HandyControl](https://github.com/HandyOrg/HandyControl), [FastHotKeyForWPF](https://github.com/Axvser/FastHotKeyForWPF)
 
 融合版制作组：    
 [@蓝飘飘fly](https://space.bilibili.com/3546619314178489) 请在此处下载游戏本体  
 [@机鱼吐司](https://space.bilibili.com/85881762)   
 [@梦珞呀](https://space.bilibili.com/270840380)    
-[@蓝蝶蝶Starryfly](https://space.bilibili.com/27033629)    
+[@蓝蝶蝶Starryfly](https://space.bilibili.com/27033629)
 
 感谢[@高数带我飞](https://space.bilibili.com/1117414477)(Github:[@LibraHp](https://github.com/LibraHp/))的技术支持    
 
