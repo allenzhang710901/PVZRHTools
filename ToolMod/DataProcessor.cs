@@ -425,7 +425,6 @@ namespace ToolMod
                                 CreateZombie.Instance.SetZombieWithMindControl(r - 1, (ZombieType)id,
                                     -5f + (c - 1) * 1.37f);
                             }
-
                         }
                     }
                 }
@@ -754,6 +753,7 @@ namespace ToolMod
                         }
                     }
                 }
+
                 if (iga.ReadField is not null)
                 {
                     if (iga.GaoShuMode == false)
@@ -810,6 +810,7 @@ namespace ToolMod
                         });
                     }
                 }
+
                 if (iga.ReadVases is not null)
                 {
                     List<VaseInfo> vases = [];
@@ -874,6 +875,7 @@ namespace ToolMod
                     Lawnf.SetDroppedCard(new(0f, 0f), (PlantType)iga.PlantType).GameObject().transform
                         .SetParent(InGameUI.Instance.transform);
                 }
+
                 // 修改 InGameActions 处理部分（完整替换原有僵尸代码）
                 if (iga.ReadZombies is not null)
                 {
@@ -1023,6 +1025,7 @@ namespace ToolMod
                             {
                             }
                         }
+
                         Board.Instance.plantArray.Clear();
 
                         Il2CppReferenceArray<UnityEngine.Object> zombies =
@@ -1037,12 +1040,13 @@ namespace ToolMod
                             {
                             }
                         }
+
                         Board.Instance.zombieArray!.Clear();
                     }
 
                     //from Gaoshu
                     string[] codes = iga.WriteMix.Split('|');
-                    
+
                     string plantCode = codes[0];
                     plantCode = DecompressString(plantCode);
                     string[] plantEntries = plantCode.Split(';');
@@ -1108,16 +1112,21 @@ namespace ToolMod
                         string plantData = $"{plant.thePlantColumn},{plant.thePlantRow},{(int)plant.thePlantType}";
                         lineupData.Add(plantData);
                     }
+
                     string plantCode = string.Join(";", lineupData);
                     string PlantString = CompressString(plantCode); // GZIP压缩 + Base64编码
-                    
-                    string result = PlantString + "|"+ zombieString;
-                    
+
+                    string result = PlantString + "|" + zombieString;
+
                     DataSync.Instance.Value.SendData(new InGameActions()
                     {
                         WriteMix = result
                     });
-                    
+                }
+
+                if (iga.BetterShowEnabled is not null)
+                {
+                    BetterShowEnabled = (bool)iga.BetterShowEnabled;
                 }
 
                 if (iga.StartMower is not null)
@@ -1160,38 +1169,7 @@ namespace ToolMod
             }
         }
 
-        private static void ClearPlants()
-        {
-            for (int i = Board.Instance.plantArray.Count - 1; i >= 0; i--)
-            {
-                try
-                {
-                    Board.Instance.plantArray[i]?.Die();
-                }
-                catch
-                {
-                }
-            }
-
-            Board.Instance.plantArray.Clear();
-        }
-
-        private static void ClearZombies()
-        {
-            var zombies = FindObjectsOfTypeAll(Il2CppType.Of<Zombie>());
-            for (int i = zombies.Count - 1; i >= 0; i--)
-            {
-                try
-                {
-                    ((Zombie)zombies[i])?.Die();
-                }
-                catch
-                {
-                }
-            }
-
-            Board.Instance.zombieArray.Clear();
-        }
+        public static bool BetterShowEnabled;
 
 
         private static void ProcessGaoshuData<T>(string data, Func<string, IEnumerable<T>> parser, Action<T> creator)

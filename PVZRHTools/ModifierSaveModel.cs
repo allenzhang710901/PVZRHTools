@@ -81,5 +81,6 @@
         public bool ZombieSeaLowEnabled { get; set; }
         public List<int> ZombieSeaTypes { get; set; }
         public int ZombieType { get; set; }
+        public bool BetterShowEnabled { get; set; }
     }
 }

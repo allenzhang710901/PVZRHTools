@@ -339,6 +339,7 @@ namespace PVZRHTools
             GloveFullCDEnabled = s.GloveFullCDEnabled;
             NewZombieUpdateCD = s.NewZombieUpdateCD;
             PlantUpgrade = s.PlantUpgrade;
+            BetterShowEnabled = s.BetterShowEnabled;
             int bi = 0;
             foreach (var b in App.InitData.Value.AdvBuffs)
             {
@@ -515,6 +516,12 @@ namespace PVZRHTools
             {
             }
         }
+        
+        [RelayCommand]
+        public void BetterShow() => App.DataSync.Value.SendData(new InGameActions()
+        {
+            BetterShowEnabled = BetterShowEnabled
+        });
 
         [RelayCommand]
         public void Health1st() => App.DataSync.Value.SendData(new ValueProperties()
@@ -644,9 +651,9 @@ namespace PVZRHTools
                 CardNoInit = CardNoInit,
                 ChomperNoCD = ChomperNoCD,
                 ClearOnWritingField = ClearOnWritingField,
-                GaoShuMode = GaoShuMode,
                 ClearOnWritingVases = ClearOnWritingVases,
                 ClearOnWritingZombies = ClearOnWritingZombies,
+                ClearOnWritingMix = ClearOnWritingMix,
                 CobCannonNoCD = CobCannonNoCD,
                 Col = Col,
                 ColumnPlanting = ColumnPlanting,
@@ -704,6 +711,8 @@ namespace PVZRHTools
                 UnlockAllFusions = UnlockAllFusions,
                 VasesFieldString = VasesFieldString,
                 ZombieFieldString = ZombieFieldString,
+                MixFieldString = MixFieldString,
+                GaoShuMode = GaoShuMode,
                 ZombieSeaCD = ZombieSeaCD,
                 ZombieSeaEnabled = ZombieSeaEnabled,
                 ZombieSeaTypes = [],
@@ -716,6 +725,7 @@ namespace PVZRHTools
                 Hotkeys = Hotkeys,
                 NewZombieUpdateCD = NewZombieUpdateCD,
                 PlantUpgrade = PlantUpgrade,
+                BetterShowEnabled = BetterShowEnabled,
             };
             if (ZombieSeaTypes.Count > 0)
             {
@@ -1144,7 +1154,7 @@ namespace PVZRHTools
         partial void OnZombieSeaLowEnabledChanged(bool value) => ZombieSea();
 
         partial void OnZombieSeaTypesChanged(List<KeyValuePair<int, string>> value) => ZombieSea();
-
+        
         #endregion Commands
 
         #region ItemSources
@@ -1430,6 +1440,8 @@ namespace PVZRHTools
         [ObservableProperty] public partial bool ZombieSeaEnabled { get; set; }
 
         [ObservableProperty] public partial bool ZombieSeaLowEnabled { get; set; }
+        
+        [ObservableProperty] public partial bool BetterShowEnabled { get; set; }
 
         [ObservableProperty] public partial List<KeyValuePair<int, string>> ZombieSeaTypes { get; set; }
 
