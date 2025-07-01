@@ -919,7 +919,9 @@ public class DataProcessor : MonoBehaviour
                             CreateZombie.Instance.SetZombie(row, (ZombieType)zombieType, x);
                 }
             }
-
+            
+            if (iga.BetterShowEnabled is not null) BetterShowEnabled = (bool)iga.BetterShowEnabled;
+            
             if (iga.StartMower is not null)
                 foreach (var i in FindObjectsOfTypeAll(Il2CppType.Of<Mower>()))
                     try
@@ -948,6 +950,7 @@ public class DataProcessor : MonoBehaviour
             }
         }
     }
+    public static bool BetterShowEnabled;
 
     public static void ProcessData(string data)
     {

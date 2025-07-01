@@ -624,8 +624,8 @@ public static class UIMgrPatch
         text2.text = "原作者@Infinite75已停更，这是@听雨夜荷的一个fork\n" +
                      "项目地址: https://github.com/CarefreeSongs712/PVZRHTools\n" +
                      "\n" +
-                     "修改器2.6.1-3.24.1000更新日志:\n" +
-                     "1. 适配了高数新的阵容码，现在可以导入/出混合阵容码。也可以选择开启与否gzip+base64压缩，以减少大小。";
+                     "修改器2.6.1-3.24.1100更新日志:\n" +
+                     "1. 新增插件: 更好的显示";
         obj2.transform.SetParent(GameObject.Find("Leaves").transform);
         obj2.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
         obj2.GetComponent<RectTransform>().sizeDelta = new Vector2(800, 50);
@@ -668,8 +668,384 @@ public static class ZombiePatch
     }
 }
 
+
+[HarmonyPatch(typeof(Plant))]
+public class Plant_HealthTextPatch
+{
+    [HarmonyPatch(nameof(Plant.Update))]
+    [HarmonyPostfix]
+    public static void Postfix_Update(Plant __instance)
+    {
+        if (!__instance)
+            return;
+        if (DataProcessor.BetterShowEnabled)
+        {
+            var produceText = "生产冷却:";
+            var armingTimeText = "出土:";
+            var chompingCoolDownText = "咀嚼冷却:";
+            var reloadCooldownText = "装填冷却:";
+            var summonCooldownText = "召唤冷却:";
+            var charmLeftText = "魅惑次数:";
+            var purgeCooldownText = "消化冷却:";
+            var impactCooldownText = "普通陨石:";
+            var ultimateCooldownText = "究极陨石:";
+            var goldRushCooldownText = "大招冷却:";
+            var snipeCooldownText = "狙击冷却:";
+            var depletionCooldownText = "衰减冷却:";
+            var spawnCooldownText = "生成冷却:";
+            var transformCooldown = "变身冷却:";
+            var attackCooldown = "攻击冷却:";
+            var lightLevelText = "光照等级:";
+            var solarCooldownText = "太阳CD:";
+            var magnetLevelText = "磁力等级:";
+            var fireTimesText = "过火次数:";
+            var starCountText = "星星数:";
+            var storedDamageText = "存储伤害:";
+
+            var DisplayedString = $"{__instance.thePlantHealth}/{__instance.thePlantMaxHealth}";
+
+            if (__instance != null)
+            {
+                switch (__instance.thePlantType)
+                {
+                    case PlantType.SunMine:
+                        DisplayedString += '\n' + produceText + __instance.thePlantProduceCountDown.ToString("0.0") +
+                                           "s\n" + armingTimeText + __instance.attributeCountdown.ToString("0.0") + "s";
+                        break;
+                    case PlantType.SilverSunflower:
+                    case PlantType.SunFlower:
+                    case PlantType.PeaSunFlower:
+                    case PlantType.TwinFlower:
+                    case PlantType.SunNut:
+                    case PlantType.SunShroom:
+                    case PlantType.SunPot:
+                    case PlantType.SeaSunShroom:
+                        DisplayedString += '\n' + produceText + __instance.thePlantProduceCountDown.ToString("0.0") +
+                                           "s";
+                        break;
+                    case PlantType.SunMagnet:
+                        DisplayedString += '\n' + produceText + __instance.attributeCountdown.ToString("0.0") + "s";
+                        break;
+                    case PlantType.PotatoMine:
+                        DisplayedString += '\n' + armingTimeText + __instance.attributeCountdown.ToString("0.0") + "s";
+                        break;
+                    case PlantType.PeaMine:
+                        DisplayedString += '\n' + armingTimeText + (__instance.attributeCountdown / 2).ToString("0.0") +
+                                           "s";
+                        break;
+                    case PlantType.Chomper:
+                    case PlantType.PeaChomper:
+                    case PlantType.SunChomper:
+                    case PlantType.CherryChomper:
+                    case PlantType.NutChomper:
+                    case PlantType.PotatoChomper:
+                    case PlantType.DoomChomper:
+                        DisplayedString += '\n' + chompingCoolDownText + __instance.attributeCountdown.ToString("0.0") +
+                                           "s";
+                        break;
+                    case PlantType.Marigold:
+                    case PlantType.TwinMarigold:
+                        DisplayedString += '\n' + produceText + __instance.thePlantProduceCountDown.ToString("0.0") +
+                                           "s";
+                        break;
+                    case PlantType.CobCannon:
+                    case PlantType.FireCannon:
+                    case PlantType.IceCannon:
+                    case PlantType.MelonCannon:
+                    case PlantType.UltimateCannon:
+                        DisplayedString += '\n' + reloadCooldownText + __instance.attributeCountdown.ToString("0.0") +
+                                           "s";
+                        break;
+                    case PlantType.SuperPumpkin:
+                    case PlantType.UltimatePumpkin:
+                    case PlantType.BlowerPumpkin:
+                        DisplayedString += '\n' + produceText + __instance.attributeCountdown.ToString("0.0") + "s";
+                        break;
+                    case PlantType.HypnoEmperor:
+                        DisplayedString += '\n' + summonCooldownText +
+                                           __instance.GetComponent<HyponoEmperor>().summonZombieTime.ToString("0.0") +
+                                           "s " + '\n' + charmLeftText +
+                                           __instance.GetComponent<HyponoEmperor>().restHealth;
+                        break;
+                    case PlantType.HypnoQueen:
+                        DisplayedString += '\n' + summonCooldownText +
+                                           __instance.GetComponent<HypnoQueen>().summonZombieTime.ToString("0.0") +
+                                           "s " + '\n' + charmLeftText +
+                                           __instance.GetComponent<HypnoQueen>().restHealth;
+                        break;
+                    case PlantType.LanternMagnet:
+                    case PlantType.CherryMagnet:
+                    case PlantType.Magnetshroom:
+                        DisplayedString += '\n' + purgeCooldownText + __instance.attributeCountdown.ToString("0.0") +
+                                           "s";
+                        break;
+                    case PlantType.SuperStar:
+                        DisplayedString += '\n' + impactCooldownText + board.bigStarPassiveCountDown.ToString("0.0") +
+                                           "s";
+                        break;
+                    case PlantType.UltimateStar:
+                        DisplayedString += '\n' + ultimateCooldownText + board.ultimateStarCountDown.ToString("0.0") +
+                                           "s";
+                        break;
+                    case PlantType.GoldCabbage:
+                    case PlantType.GoldCorn:
+                    case PlantType.GoldGarlic:
+                    case PlantType.GoldUmbrella:
+                    case PlantType.GoldMelon:
+                    case PlantType.SuperUmbrella:
+                    case PlantType.EmeraldUmbrella:
+                    case PlantType.RedEmeraldUmbrella:
+                        DisplayedString += '\n' + goldRushCooldownText + __instance.flashCountDown.ToString("0.0") +
+                                           "s";
+                        break;
+                    case PlantType.UltimateCabbage:
+                        DisplayedString += '\n' + goldRushCooldownText + __instance.flashCountDown.ToString("0.0") +
+                                           "s\n" + solarCooldownText + board.solarCountDown.ToString("0.0") + "s";
+                        break;
+                    case PlantType.GoldSunflower:
+                        DisplayedString += '\n' + goldRushCooldownText + __instance.flashCountDown.ToString("0.0") +
+                                           "s\n" + produceText + __instance.attributeCountdown.ToString("0.0") + "s";
+                        break;
+                    case PlantType.SniperPea:
+                        DisplayedString += '\n' + snipeCooldownText +
+                                           __instance.thePlantAttackCountDown.ToString("0.0") + "s";
+                        break;
+                    case PlantType.FireSniper:
+                        DisplayedString += '\n' + snipeCooldownText +
+                                           __instance.thePlantAttackCountDown.ToString("0.0") + "s";
+                        break;
+                    case PlantType.UltimateHypno:
+                        DisplayedString += '\n' + depletionCooldownText +
+                                           __instance.attributeCountdown.ToString("0.0") + "s";
+                        break;
+                    case PlantType.SquashTorch:
+                        __instance.TryGetComponent(out SquashTorch squashTorch);
+                        DisplayedString += '\n' + fireTimesText + squashTorch.fireTimes;
+                        break;
+                    case PlantType.UltimateTorch:
+                        __instance.TryGetComponent(out UltimateTorch ultimateTorch);
+                        DisplayedString += '\n' + fireTimesText + ultimateTorch.fireTimes;
+                        break;
+                    case PlantType.CherryTorch:
+                        __instance.TryGetComponent(out CherryTorch cherryTorch);
+                        DisplayedString += '\n' + fireTimesText + cherryTorch.fireTimes;
+                        break;
+                    case PlantType.TorchSpike:
+                        __instance.TryGetComponent(out CaltropTorch torchSpike);
+                        DisplayedString += '\n' + fireTimesText + torchSpike.count;
+                        break;
+                    case PlantType.KelpTorch:
+                        __instance.TryGetComponent(out KelpTorch kelpTorch);
+                        DisplayedString += '\n' + fireTimesText + kelpTorch.count;
+                        break;
+                    case PlantType.Wheat:
+                        DisplayedString += '\n' + transformCooldown + (30 - __instance.wheatTime).ToString("0.0") + "s";
+                        break;
+                    case PlantType.DoomFume:
+                        DisplayedString += '\n' + attackCooldown + __instance.thePlantAttackCountDown.ToString("0.0") +
+                                           "s";
+                        break;
+                    case PlantType.PotatoPuff:
+                        DisplayedString += '\n' + spawnCooldownText + __instance.attributeCountdown.ToString("0.0") +
+                                           "s";
+                        break;
+                    case PlantType.StarBlover:
+                        __instance.TryGetComponent(out StarBlover starBlover);
+                        var count = 0;
+                        for (var i = 0; i < starBlover.starBullets.Count; i++)
+                            if (starBlover.starBullets[i] != null)
+                                count++;
+                        DisplayedString += '\n' + starCountText + count + '/' + starBlover.maxBullets;
+                        break;
+                    case PlantType.UltimateBlover:
+                        __instance.TryGetComponent(out UltimateStarBlover ultimateStarBlover);
+                        var count_ultimate = 0;
+                        for (var i = 0; i < ultimateStarBlover.starBullets.Count; i++)
+                            if (ultimateStarBlover.starBullets[i] != null)
+                                count_ultimate++;
+                        DisplayedString += '\n' + starCountText + count_ultimate + '/' + ultimateStarBlover.maxBullets;
+                        break;
+                    case PlantType.MelonUmbrella:
+                        __instance.TryGetComponent(out MelonUmbrella melonUmbrella);
+                        DisplayedString += '\n' + storedDamageText + melonUmbrella.storgedDamage;
+                        break;
+                }
+
+                if (__instance.wheatType == 1 && __instance.thePlantType != PlantType.Wheat)
+                    DisplayedString += '\n' + transformCooldown + (30 - __instance.wheatTime).ToString("0.0") + "s";
+
+                if (__instance.currentLightLevel != 0)
+                    DisplayedString += '\n' + lightLevelText + __instance.currentLightLevel;
+
+                if (__instance.magnetCount > 0) DisplayedString += '\n' + magnetLevelText + __instance.magnetCount;
+                __instance.healthSlider.healthText.text = DisplayedString;
+                __instance.healthSlider.healthTextShadow.text = DisplayedString;
+                switch (GetCharInStringCount(DisplayedString, '\n'))
+                {
+                    case 1:
+                        __instance.healthSlider.healthText.fontSize = 2.35f;
+                        __instance.healthSlider.healthTextShadow.fontSize = 2.35f;
+                        break;
+                    case 2:
+                        __instance.healthSlider.healthText.fontSize = 2.25f;
+                        __instance.healthSlider.healthTextShadow.fontSize = 2.25f;
+                        break;
+                    case 3:
+                        __instance.healthSlider.healthText.fontSize = 2.10f;
+                        __instance.healthSlider.healthTextShadow.fontSize = 2.10f;
+                        break;
+                    case 4:
+                        __instance.healthSlider.healthText.fontSize = 2.0f;
+                        __instance.healthSlider.healthTextShadow.fontSize = 2.0f;
+                        break;
+                    default:
+                        __instance.healthSlider.healthText.fontSize = 1.85f;
+                        __instance.healthSlider.healthTextShadow.fontSize = 1.85f;
+                        break;
+                }
+
+                object GetCharInStringCount(string str, char target)
+                {
+                    var count = 0;
+
+                    for (var i = 0; i < str.Length; i++)
+                        if (str[i] == target)
+                            count++;
+
+                    return count;
+                }
+
+                __instance.healthSlider.Update();
+            }
+        }
+    }
+}
+
+[HarmonyPatch(typeof(Zombie), nameof(Zombie.UpdateHealthText))]
+public class Zombie_HealthTextPatch
+{
+    [HarmonyPatch(nameof(Zombie.UpdateHealthText))]
+    [HarmonyPostfix]
+    public static void Postfix(Zombie __instance)
+    {
+        if (!__instance)
+            return;
+        if (DataProcessor.BetterShowEnabled)
+        {
+            var count = 0;
+            foreach (var p in board.plantArray)
+                if (p != null)
+                {
+                    if (p.TryGetComponent(out SniperPea sniperPea) && sniperPea.targetZombie == __instance)
+                    {
+                        count += sniperPea.attackCount % 6;
+                        break;
+                    }
+
+                    if (p.TryGetComponent(out FireSniper fireSniper) && fireSniper.targetZombie == __instance)
+                    {
+                        count += fireSniper.attackCount % 6;
+                        break;
+                    }
+                }
+
+            var poisonLevelText = "狙击秒杀:";
+            var snipeExecute = "蒜值:";
+            var freezeLevelText = "冻结值:";
+            var snowZombieBackText = "回头:";
+            var jumpTimeText = "起跳:";
+
+            if (count > 0)
+            {
+                __instance.healthText.text += '\n' + snipeExecute + (6 - count % 6);
+                __instance.healthTextShadow.text += '\n' + snipeExecute + (6 - count % 6);
+            }
+
+            if (__instance.freezeLevel > 0)
+            {
+                __instance.healthText.text +=
+                    '\n' + freezeLevelText + __instance.freezeLevel + '/' + __instance.freezeMaxLevel;
+                __instance.healthTextShadow.text +=
+                    '\n' + freezeLevelText + __instance.freezeLevel + '/' + __instance.freezeMaxLevel;
+            }
+
+            if (__instance.poisonLevel > 0)
+            {
+                __instance.healthText.text += '\n' + poisonLevelText + __instance.poisonLevel;
+                __instance.healthTextShadow.text += '\n' + poisonLevelText + __instance.poisonLevel;
+            }
+
+            if (__instance != null)
+                switch (__instance.theZombieType)
+                {
+                    case ZombieType.SnowZombie:
+                        if (__instance.attributeCountDown > 0)
+                        {
+                            __instance.healthText.text += '\n' + snowZombieBackText +
+                                                          __instance.attributeCountDown.ToString("0.0") + "s";
+                            __instance.healthTextShadow.text += '\n' + snowZombieBackText +
+                                                                __instance.attributeCountDown.ToString("0.0") + "s";
+                        }
+
+                        break;
+                    case ZombieType.SuperPogoZombie:
+                        __instance.TryGetComponent(out SuperPogoZombie pogo);
+                        if (pogo.waitTime > 0 && pogo.waitTime < 5)
+                        {
+                            __instance.healthText.text +=
+                                '\n' + jumpTimeText + (5 - pogo.waitTime).ToString("0.0") + "s";
+                            __instance.healthTextShadow.text +=
+                                '\n' + jumpTimeText + (5 - pogo.waitTime).ToString("0.0") + "s";
+                        }
+
+                        break;
+                    case ZombieType.JackboxJumpZombie:
+                        __instance.TryGetComponent(out JackboxJumpZombie jackbox);
+                        if (jackbox.waitTime > 0 && jackbox.waitTime < 5)
+                        {
+                            __instance.healthText.text +=
+                                '\n' + jumpTimeText + (5 - jackbox.waitTime).ToString("0.0") + "s";
+                            __instance.healthTextShadow.text +=
+                                '\n' + jumpTimeText + (5 - jackbox.waitTime).ToString("0.0") + "s";
+                        }
+
+                        break;
+                }
+
+            switch (GetCharInStringCount(__instance!.healthText.text, '\n'))
+            {
+                case 1:
+                    __instance.healthText.fontSize = 2.15f;
+                    __instance.healthTextShadow.fontSize = 2.15f;
+                    break;
+                case 2:
+                    __instance.healthText.fontSize = 2.1f;
+                    __instance.healthTextShadow.fontSize = 2.1f;
+                    break;
+                default:
+                    __instance.healthText.fontSize = 1.95f;
+                    __instance.healthTextShadow.fontSize = 1.95f;
+                    break;
+            }
+        }
+
+        object GetCharInStringCount(string str, char target)
+        {
+            var count = 0;
+
+            for (var i = 0; i < str.Length; i++)
+                if (str[i] == target)
+                    count++;
+
+            return count;
+        }
+    }
+}
+
+
 public class PatchMgr : MonoBehaviour
 {
+    public static Board board = new();
     internal static bool originalTravel;
     private static int garlicDayTime;
     private static int seaTime;
@@ -771,6 +1147,13 @@ public class PatchMgr : MonoBehaviour
 
     public void Update()
     {
+        try
+        {
+            board = GameAPP.board.GetComponent<Board>();
+        }
+        catch (Exception)
+        {
+        }
         if (GameAPP.theGameStatus is GameStatus.InGame or GameStatus.InInterlude or GameStatus.Selecting)
         {
             if (Input.GetKeyDown(Core.KeyTimeStop.Value.Value))
