@@ -227,5 +227,5 @@ public struct ZombieInfo
 public static class Modifier
 {
     public static string CommandLineToken => "PVZRHTools";
-    public static bool Dev { get; set; } = true;
+    public static bool Dev { get; set; } = false;
 }
