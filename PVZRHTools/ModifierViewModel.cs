@@ -228,6 +228,7 @@ public partial class ModifierViewModel : ObservableObject
         BuffRefreshNoLimit = s.BuffRefreshNoLimit;
         CardNoInit = s.CardNoInit;
         ChomperNoCD = s.ChomperNoCD;
+        SuperStarNoCD = s.SuperStarNoCD;
         ClearOnWritingField = s.ClearOnWritingField;
         ClearOnWritingZombies = s.ClearOnWritingZombies;
         ClearOnWritingVases = s.ClearOnWritingVases;
@@ -674,6 +675,7 @@ public partial class ModifierViewModel : ObservableObject
             BuffRefreshNoLimit = BuffRefreshNoLimit,
             CardNoInit = CardNoInit,
             ChomperNoCD = ChomperNoCD,
+            SuperStarNoCD = SuperStarNoCD,
             ClearOnWritingField = ClearOnWritingField,
             ClearOnWritingVases = ClearOnWritingVases,
             ClearOnWritingZombies = ClearOnWritingZombies,
@@ -1036,6 +1038,10 @@ public partial class ModifierViewModel : ObservableObject
         App.DataSync.Value.SendData(new BasicProperties { ChomperNoCD = value });
     }
 
+    partial void OnSuperStarNoCDChanged(bool value)
+    {
+        App.DataSync.Value.SendData(new BasicProperties { SuperStarNoCD = value });
+    }
     partial void OnCobCannonNoCDChanged(bool value)
     {
         App.DataSync.Value.SendData(new BasicProperties { CobCannonNoCD = value });
@@ -1402,6 +1408,8 @@ public partial class ModifierViewModel : ObservableObject
     [ObservableProperty] public partial bool CardNoInit { get; set; }
 
     [ObservableProperty] public partial bool ChomperNoCD { get; set; }
+    
+    [ObservableProperty] public partial bool SuperStarNoCD { get; set; }
 
     [ObservableProperty] public partial bool ClearOnWritingField { get; set; }
 

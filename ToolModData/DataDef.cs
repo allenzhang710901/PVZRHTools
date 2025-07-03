@@ -14,6 +14,7 @@ public struct BasicProperties : ISyncData
 {
     public bool? CardNoInit { get; set; }
     public bool? ChomperNoCD { get; set; }
+    public bool? SuperStarNoCD { get; set; }
     public bool? CobCannonNoCD { get; set; }
     public bool? DeveloperMode { get; set; }
     public bool? DevLour { get; set; }
@@ -226,5 +227,5 @@ public struct ZombieInfo
 public static class Modifier
 {
     public static string CommandLineToken => "PVZRHTools";
-    public static bool Dev { get; set; } = false;
+    public static bool Dev { get; set; } = true;
 }

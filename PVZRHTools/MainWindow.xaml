@@ -558,7 +558,10 @@
                                                   VerticalAlignment="Top" Foreground="White" BorderThickness="2,2,2,2"
                                                   HorizontalAlignment="Left" Margin="0,0,10,0" />
                                         <CheckBox x:Name="PlantUpgrade" IsChecked="{Binding PlantUpgrade}"
-                                                  Content="{DynamicResource Tab1.Page6.PlantUpgrade}" Height="21"
+                                                  Content="{DynamicResource Tab1.Page6.PlantUpgrade}" Height="22"
+                                                  Foreground="White" BorderThickness="2,2,2,2" Width="84" />
+                                        <CheckBox x:Name="SuperStarNoCD" IsChecked="{Binding SuperStarNoCD}"
+                                                  Content="{DynamicResource Tab1.Page6.SuperStarNoCD}" Height="22"
                                                   Foreground="White" BorderThickness="2,2,2,2" />
                                     </StackPanel>
                                 </Grid>
@@ -689,6 +692,11 @@
                                 <Button x:Name="SetZombieIdle" Content="{DynamicResource Tab2.SetZombieIdle}"
                                         Height="30" Command="{Binding SetZombieIdleCommand}" HorizontalAlignment="Left"
                                         Margin="0,0,0,0" VerticalAlignment="Top" />
+
+                                <CheckBox x:Name="MouseBullet" Content="{DynamicResource Tab2.MouseBullet}"
+                                              Height="21" Margin="10,0,0,0" VerticalAlignment="Top" Foreground="White"
+                                              IsChecked="{Binding MouseBullet}" BorderThickness="2,2,2,2"
+                                              HorizontalAlignment="Left" />
 
                             </StackPanel>
                         </Grid>

@@ -421,9 +421,38 @@ public static class PlantPatch
     }
 }
 
+[HarmonyPatch(typeof(Plant), nameof(Plant.GetDamage))]
+public static class PlantGetDamagePatch
+{
+    [HarmonyPostfix]
+    public static void Postfix(Plant __instance, ref int __result)
+    {
+        if (HardPlant)
+        {
+            __result = 0;
+        }
+    }
+}
+
+[HarmonyPatch(typeof(Plant), nameof(Plant.Crashed))]
+public static class PlantCrashedPatch
+{
+    [HarmonyPrefix]
+    public static bool Prefix(Plant __instance)
+    {
+        if (HardPlant)
+        {
+            return false;
+        }
+        return true;
+    }
+}
+
+
 [HarmonyPatch(typeof(PotatoMine), "Update")]
 public static class PotatoMinePatch
 {
+    [HarmonyPrefix]
     public static void Prefix(PotatoMine __instance)
     {
         if (MineNoCD && __instance.attributeCountdown > 0.05f) __instance.attributeCountdown = 0.05f;
@@ -624,8 +653,9 @@ public static class UIMgrPatch
         text2.text = "原作者@Infinite75已停更，这是@听雨夜荷的一个fork\n" +
                      "项目地址: https://github.com/CarefreeSongs712/PVZRHTools\n" +
                      "\n" +
-                     "修改器2.6.1-3.24.1100更新日志:\n" +
-                     "1. 新增插件: 更好的显示";
+                     "修改器2.6.1-3.25.1000更新日志:\n" +
+                     "1. 修复了植物无敌\n"+
+                     "2. 添加了超桃无CD选项";
         obj2.transform.SetParent(GameObject.Find("Leaves").transform);
         obj2.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
         obj2.GetComponent<RectTransform>().sizeDelta = new Vector2(800, 50);
@@ -1072,6 +1102,7 @@ public class PatchMgr : MonoBehaviour
     public static Dictionary<BulletType, int> BulletDamage { get; set; } = [];
     public static bool CardNoInit { get; set; } = false;
     public static bool ChomperNoCD { get; set; } = false;
+    public static bool SuperStarNoCD { get; set; } = false;
     public static bool CobCannonNoCD { get; set; } = false;
     public static List<int> ConveyBeltTypes { get; set; } = [];
     public static bool[] Debuffs { get; set; } = [];
@@ -1256,6 +1287,14 @@ public class PatchMgr : MonoBehaviour
                     b?.TryCast<Zombie>()?.StartCoroutine_Auto(b?.TryCast<Zombie>()?.DeLayGarliced(0.1f, false, false));
                     return true;
                 });
+            }
+            
+            if (SuperStarNoCD)
+            {
+                if (board.bigStarActiveCountDown > 0.5f)
+                {
+                    board.bigStarActiveCountDown = 0.5f;
+                }
             }
         }
     }

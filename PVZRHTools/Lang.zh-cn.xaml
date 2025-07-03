@@ -145,6 +145,7 @@
     <s:String x:Key="Tab2.Page1.ConveyBeltModify">传送带植物类型，重进关卡生效</s:String>
     <s:String x:Key="Tab1.Page5.JachsonSummonType">舞王撑杆召唤僵尸类型</s:String>
     <s:String x:Key="Tab1.Page6.PlantUpgrade">植物升级</s:String>
+    <s:String x:Key="Tab1.Page6.SuperStarNoCD">超桃无CD</s:String>
     <s:String x:Key="Tab2.Page2.BuffRefreshNoLimit">旅行词条无限刷新</s:String>
     <s:String x:Key="Tab2.Page1.VaseLineUp">罐子布阵：</s:String>
     <s:String x:Key="Tab0.AbyssCheat">深渊作弊</s:String>
@@ -152,6 +153,7 @@
     <s:String x:Key="Tab0.LoadCustomPlantData">加载自定义植物数值表</s:String>
     <s:String x:Key="Tab0.LoadCustomPlantData.Tooltip">由于代码限制，无法保证所有条目均能生效</s:String>
     <s:String x:Key="Tab2.SetZombieIdle">僵尸全员站桩</s:String>
+    <s:String x:Key="Tab2.MouseBullet">在鼠标处创建子弹 (test)</s:String>
     <s:String x:Key="Tab8.BetterShow">更好的显示僵尸和植物的各类信息，适合iz/无尽</s:String>
     <s:String x:Key="Tab8.BetterShowAuthor">开发者：@MC屑鱼，听雨夜荷</s:String>
     <s:String x:Key="Tab8.BetterShowEnabled">开启显示</s:String>

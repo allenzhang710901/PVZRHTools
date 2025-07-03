@@ -1074,6 +1074,7 @@ public class PatchMgr : MonoBehaviour
     public static Dictionary<BulletType, int> BulletDamage { get; set; } = [];
     public static bool CardNoInit { get; set; } = false;
     public static bool ChomperNoCD { get; set; } = false;
+    public static bool SuperStarNoCD { get; set; } = false;
     public static bool CobCannonNoCD { get; set; } = false;
     public static List<int> ConveyBeltTypes { get; set; } = [];
     public static bool[] Debuffs { get; set; } = [];

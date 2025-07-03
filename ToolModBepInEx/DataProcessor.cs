@@ -171,6 +171,7 @@ public class DataProcessor : MonoBehaviour
             if (p1.HyponoEmperorNoCD is not null) HyponoEmperorNoCD = (bool)p1.HyponoEmperorNoCD;
             if (p1.MineNoCD is not null) MineNoCD = (bool)p1.MineNoCD;
             if (p1.ChomperNoCD is not null) ChomperNoCD = (bool)p1.ChomperNoCD;
+            if (p1.SuperStarNoCD is not null) SuperStarNoCD = (bool)p1.SuperStarNoCD;
             if (p1.CobCannonNoCD is not null) CobCannonNoCD = (bool)p1.CobCannonNoCD;
             if (p1.NoIceRoad is not null) NoIceRoad = (bool)p1.NoIceRoad;
             if (p1.ItemExistForever is not null) ItemExistForever = (bool)p1.ItemExistForever;
