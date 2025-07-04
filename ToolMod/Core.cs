@@ -166,10 +166,10 @@ public class Core : MelonMod
 
             for (var i = 0; i < GameAPP.resourcesManager.allPlants.Count; i++)
             {
-                alm.theSeedType = (int)(object)GameAPP.resourcesManager.allPlants[i];
+                alm.theSeedType = (int)GameAPP.resourcesManager.allPlants[i];
                 alm.InitNameAndInfoFromJson();
                 var item =
-                    $"{(int)GameAPP.resourcesManager.allPlants[i]} : {alm.plantName.GetComponent<TextMeshPro>().text}";
+                    $"{GameAPP.resourcesManager.allPlants[i]} : {alm.plantName.GetComponent<TextMeshPro>().text}";
                 MLogger.Msg($"Dumping Plant String: {item}");
                 plants.Add((int)GameAPP.resourcesManager.allPlants[i], item);
                 HealthPlants.Add(GameAPP.resourcesManager.allPlants[i], -1);

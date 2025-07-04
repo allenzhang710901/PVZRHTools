@@ -809,11 +809,11 @@ public class Plant_HealthTextPatch
                                            "s";
                         break;
                     case PlantType.SuperStar:
-                        DisplayedString += '\n' + impactCooldownText + board.bigStarPassiveCountDown.ToString("0.0") +
+                        DisplayedString += '\n' + impactCooldownText + Board.Instance.bigStarPassiveCountDown.ToString("0.0") +
                                            "s";
                         break;
                     case PlantType.UltimateStar:
-                        DisplayedString += '\n' + ultimateCooldownText + board.ultimateStarCountDown.ToString("0.0") +
+                        DisplayedString += '\n' + ultimateCooldownText + Board.Instance.ultimateStarCountDown.ToString("0.0") +
                                            "s";
                         break;
                     case PlantType.GoldCabbage:
@@ -829,7 +829,7 @@ public class Plant_HealthTextPatch
                         break;
                     case PlantType.UltimateCabbage:
                         DisplayedString += '\n' + goldRushCooldownText + __instance.flashCountDown.ToString("0.0") +
-                                           "s\n" + solarCooldownText + board.solarCountDown.ToString("0.0") + "s";
+                                           "s\n" + solarCooldownText + Board.Instance.solarCountDown.ToString("0.0") + "s";
                         break;
                     case PlantType.GoldSunflower:
                         DisplayedString += '\n' + goldRushCooldownText + __instance.flashCountDown.ToString("0.0") +
@@ -962,7 +962,7 @@ public class Zombie_HealthTextPatch
         if (DataProcessor.BetterShowEnabled)
         {
             var count = 0;
-            foreach (var p in board.plantArray)
+            foreach (var p in Board.Instance.plantArray)
                 if (p != null)
                 {
                     if (p.TryGetComponent(out SniperPea sniperPea) && sniperPea.targetZombie == __instance)
@@ -1074,7 +1074,6 @@ public class Zombie_HealthTextPatch
 [RegisterTypeInIl2Cpp]
 public class PatchMgr : MonoBehaviour
 {
-    public static Board board = new();
     internal static bool originalTravel;
     private static int garlicDayTime;
     private static int seaTime;
@@ -1176,14 +1175,6 @@ public class PatchMgr : MonoBehaviour
 
     public void Update()
     {
-        try
-        {
-            board = GameAPP.board.GetComponent<Board>();
-        }
-        catch (Exception)
-        {
-        }
-
         if (GameAPP.theGameStatus is GameStatus.InGame or GameStatus.InInterlude or GameStatus.Selecting)
         {
             if (Input.GetKeyDown(Core.KeyTimeStop.Value.Value))
@@ -1291,9 +1282,9 @@ public class PatchMgr : MonoBehaviour
             
             if (SuperStarNoCD)
             {
-                if (board.bigStarActiveCountDown > 0.5f)
+                if (Board.Instance.bigStarActiveCountDown > 0.5f)
                 {
-                    board.bigStarActiveCountDown = 0.5f;
+                    Board.Instance.bigStarActiveCountDown = 0.5f;
                 }
             }
         }

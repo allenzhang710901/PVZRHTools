@@ -9,10 +9,11 @@ using MelonLoader;
 using ToolModData;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.NVIDIA;
 using static ToolMod.PatchMgr;
 using static ToolModData.Modifier;
 using Object = UnityEngine.Object;
-
+using System.Diagnostics.CodeAnalysis;
 namespace ToolMod;
 
 [RegisterTypeInIl2Cpp]
