@@ -9,6 +9,7 @@ using HarmonyLib;
 using Il2CppInterop.Runtime;
 using Il2CppInterop.Runtime.Injection;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using Newtonsoft.Json;
 using TMPro;
 using ToolModData;
 using Unity.VisualScripting;
@@ -459,6 +460,43 @@ public static class PotatoMinePatch
     }
 }
 
+[HarmonyPatch(typeof(Board), nameof(Board.SetEvePlants))]
+public static class BoardPatch
+{
+    [HarmonyPrefix]
+    public static bool Prefix(Board __instance, ref int theColumn, ref int theRow, ref bool fromWheat,ref GameObject __result)
+    {
+        if (fromWheat && LockWheat >= 0)
+        {
+            GameObject plantObject = CreatePlant.Instance.SetPlant(
+                theColumn, 
+                theRow, 
+                (PlantType)LockWheat
+            );
+
+            plantObject.TryGetComponent<Plant>(out var component);
+            if (component is not null)
+            {
+                component.wheatType = 1;
+            }
+            
+            if (!plantObject)
+            {
+                float boxX = Mouse.Instance.GetBoxXFromColumn(theColumn);
+                float landY = Mouse.Instance.GetLandY(boxX, theRow);
+                Lawnf.SetDroppedCard(new Vector2(boxX, landY), (PlantType)LockWheat);
+            }
+            else
+            {
+                __result = plantObject;
+            }
+            return false;
+        }
+
+        return true;
+    }
+}
+
 [HarmonyPatch(typeof(Present), "RandomPlant")]
 public static class PresentPatchA
 {
@@ -650,7 +688,7 @@ public static class UIMgrPatch
         var text2 = obj2.AddComponent<TextMeshProUGUI>();
         text2.font = Resources.Load<TMP_FontAsset>("Fonts/ContinuumBold SDF");
         text2.color = new Color(0, 1, 0, 1);
-        text2.text = "原作者@Infinite75已停更，这是@听雨夜荷的一个fork。有bug找我反馈\n" +
+        text2.text = "原作者@Infinite75已停更，这是@听雨夜荷的一个fork。\n" +
                      "项目地址: https://github.com/CarefreeSongs712/PVZRHTools\n" +
                      "\n" +
                      "修改器2.7-3.26.3更新日志:\n" +
@@ -662,6 +700,140 @@ public static class UIMgrPatch
         obj2.GetComponent<RectTransform>().sizeDelta = new Vector2(800, 50);
         obj2.transform.localPosition = new Vector3(-345.5f, 55f, 0);
     }
+}
+
+
+[HarmonyPatch(typeof(EveManager), nameof(EveManager.SaveCustomIZ))]
+public static class EveManagerPatch
+{
+    [HarmonyPostfix]
+    public static void Postfix(EveManager __instance)
+    {
+        if(!DataProcessor.BetterIZDataEnabled)return;
+        var zombiesList = new List<object>();
+        foreach (var zb in Board.Instance.zombieArray)
+        {
+            if (zb != null)
+            {
+                zombiesList.Add(new
+                {
+                    Type = (int)zb.theZombieType,
+                    Row = zb.theZombieRow,
+                    PositionX = zb.transform.position.x,
+                    IsMindControlled = zb.isMindControlled
+                });
+           }
+        }
+
+        var gridItemsList = new List<object>();
+        foreach (var git in GameAPP.board.GetComponent<Board>().griditemArray)
+        {
+            if (git != null)
+            {
+                gridItemsList.Add(new
+                {
+                    Type = (int)git.theItemType,
+                    Column = git.theItemColumn,
+                    Row = git.theItemRow
+                });
+            }
+        }
+
+        var combinedData = new
+        {
+            Zombies = zombiesList,
+            GridItems = gridItemsList
+        };
+
+        string basePath = Application.persistentDataPath;
+        string fileName = "CustomIZ.extra.json";
+        var path = Path.Combine(basePath, fileName);
+
+        string json = JsonConvert.SerializeObject(combinedData, Formatting.Indented);
+
+        string? directory = Path.GetDirectoryName(path);
+        if (!Directory.Exists(directory))
+        {
+            if (directory != null) Directory.CreateDirectory(directory);
+        }
+
+        File.WriteAllText(path, json);
+        Debug.Log("CustomIZ.extra.json 已保存！");
+    }
+}
+
+[HarmonyPatch(typeof(InGameUI_IZ),nameof(InGameUI_IZ.Awake))]
+public static class InGameUI_IZPatch
+{
+    [HarmonyPostfix]
+    public static void Postfix(InGameUI_IZ __instance)
+    { 
+        if(!DataProcessor.BetterIZDataEnabled)return;
+        
+        string basePath = Application.persistentDataPath;
+        string fileName = "CustomIZ.extra.json";
+        var filePath = Path.Combine(basePath, fileName);
+
+        if (!File.Exists(filePath))
+        {
+            Debug.Log("CustomIZ.extra.json文件不存在");
+            return;
+        }
+
+        string json = File.ReadAllText(filePath);
+        var data = JsonConvert.DeserializeObject<CustomIZData>(json);
+
+        foreach (var zombieData in data?.Zombies ?? new List<ZombieData>())
+        {
+            if (zombieData.IsMindControlled)
+            {
+                CreateZombie.Instance.SetZombieWithMindControl(
+                    zombieData.Row,
+                    (ZombieType)zombieData.Type,
+                    zombieData.PositionX
+                );
+            }
+            else
+            {
+                CreateZombie.Instance.SetZombie(
+                    zombieData.Row,
+                    (ZombieType)zombieData.Type,
+                    zombieData.PositionX
+                );
+            }
+        }
+        foreach (var gridItemData in data?.GridItems ?? new List<GridItemData>())
+        {
+            GridItem.SetGridItem(
+                gridItemData.Column,
+                gridItemData.Row,
+                (GridItemType)gridItemData.Type
+            );
+        }
+
+        Debug.Log("成功加载自定义IZ数据");;
+    }
+}
+
+public class CustomIZData
+{
+    public List<ZombieData>? Zombies { get; set; }
+    public List<GridItemData>? GridItems { get; set; }
+}
+
+public class ZombieData
+{
+    public int Type { get; set; }
+    public int Row { get; set; }
+    public float PositionX { get; set; }
+    public bool IsMindControlled { get; set; }
+}
+
+public class GridItemData
+{
+    public int Type { get; set; }
+    public int Column { get; set; }
+    public int Row { get; set; }
 }
 
 [HarmonyPatch(typeof(Zombie), "Start")]
@@ -1136,6 +1308,7 @@ public class PatchMgr : MonoBehaviour
     public static bool LockMoney { get; set; } = false;
     public static int LockMoneyCount { get; set; } = 3000;
     public static int LockPresent { get; set; } = -1;
+    public static int LockWheat { get; set; } = -1;
     public static bool LockSun { get; set; } = false;
     public static int LockSunCount { get; set; } = 500;
     public static bool MineNoCD { get; set; } = false;

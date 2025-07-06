@@ -468,7 +468,6 @@ public static class BoardPatch
     {
         if (fromWheat && LockWheat >= 0)
         {
-            MelonLogger.Msg(LockWheat);
             GameObject plantObject = CreatePlant.Instance.SetPlant(
                 theColumn, 
                 theRow, 
