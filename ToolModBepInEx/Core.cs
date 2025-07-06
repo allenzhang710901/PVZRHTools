@@ -34,7 +34,7 @@ public static class Help_Patch
     }
 }
 
-[BepInPlugin("inf75.toolmod", "ToolMod", "3.23")]
+[BepInPlugin("tyyh.toolmod", "ToolMod", "3.23")]
 public class Core : BasePlugin
 {
     public static bool inited;
