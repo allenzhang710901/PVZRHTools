@@ -20,7 +20,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        Title = $"PVZ融合版修改器{ModifierVersion.GameVersion}-{ModifierVersion.Version} b站@Infinite75制作";
+        Title = $"PVZ融合版修改器{ModifierVersion.GameVersion}-{ModifierVersion.Version} b站@听雨夜荷 制作";
         WindowTitle.Content = Title;
         Instance = this;
         ModifierSprite = new ModifierSprite();
@@ -102,5 +102,10 @@ public partial class MainWindow : Window
             Application.Current.Resources.MergedDictionaries.Add(lang);
             OnApplyTemplate();
         }
+    }
+
+    private void LockWheatPlant_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+
     }
 }

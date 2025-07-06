@@ -134,6 +134,7 @@ public partial class ModifierViewModel : ObservableObject
         ShowText = "";
         BulletDamageType = 0;
         LockPresent = -1;
+        LockWheat = -1;
         LockBulletType = -2;
         ZombieSeaTypes = [];
         TravelBuffs = [];
@@ -260,6 +261,7 @@ public partial class ModifierViewModel : ObservableObject
         LockBulletType = s.LockBulletType;
         LockMoney = s.LockMoney;
         LockPresent = s.LockPresent;
+        LockWheat = s.LockWheat;
         LockSun = s.LockSun;
         MineNoCD = s.MineNoCD;
         NeedSave = s.NeedSave;
@@ -303,6 +305,7 @@ public partial class ModifierViewModel : ObservableObject
         NewZombieUpdateCD = s.NewZombieUpdateCD;
         PlantUpgrade = s.PlantUpgrade;
         BetterShowEnabled = s.BetterShowEnabled;
+        BetterIZDataEnabled = s.BetterIZDataEnabled;
         var bi = 0;
         foreach (var b in App.InitData.Value.AdvBuffs)
         {
@@ -523,6 +526,22 @@ public partial class ModifierViewModel : ObservableObject
         App.DataSync.Value.SendData(new InGameActions
         {
             BetterShowEnabled = BetterShowEnabled
+        });
+    }
+    [RelayCommand]
+    public void BetterIZDataEnable()
+    {
+        App.DataSync.Value.SendData(new InGameActions
+        {
+            BetterIZDataEnabled = true
+        });
+    }
+    [RelayCommand]
+    public void BetterIZDataDisable()
+    {
+        App.DataSync.Value.SendData(new InGameActions
+        {
+            BetterIZDataEnabled = false
         });
     }
 
@@ -1157,6 +1176,12 @@ public partial class ModifierViewModel : ObservableObject
         App.DataSync.Value.SendData(new BasicProperties { LockPresent = value });
     }
 
+
+    partial void OnLockWheatChanged(int value)
+    {
+        App.DataSync.Value.SendData(new BasicProperties { LockWheat = value });
+    }
+
     partial void OnLockSunChanged(bool value)
     {
         App.DataSync.Value.SendData(new InGameActions
@@ -1505,6 +1530,8 @@ public partial class ModifierViewModel : ObservableObject
 
     [ObservableProperty] public partial int LockPresent { get; set; }
 
+    [ObservableProperty] public partial int LockWheat { get; set; }
+
     [ObservableProperty] public partial bool LockSun { get; set; }
 
     [ObservableProperty] public partial bool MineNoCD { get; set; }
@@ -1580,6 +1607,7 @@ public partial class ModifierViewModel : ObservableObject
     [ObservableProperty] public partial bool ZombieSeaLowEnabled { get; set; }
 
     [ObservableProperty] public partial bool BetterShowEnabled { get; set; }
+    [ObservableProperty] public partial bool BetterIZDataEnabled { get; set; }
 
     [ObservableProperty] public partial List<KeyValuePair<int, string>> ZombieSeaTypes { get; set; }
 

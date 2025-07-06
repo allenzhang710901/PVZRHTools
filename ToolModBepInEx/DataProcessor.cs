@@ -87,6 +87,7 @@ public class DataProcessor : MonoBehaviour
                 if (InGame())
                     foreach (var z in Board.Instance.zombieArray)
                     {
+                        if (z is null)continue;
                         if (HealthZombies[z.theZombieType] >= 0)
                         {
                             z.theMaxHealth = HealthZombies[z.theZombieType];
@@ -103,6 +104,7 @@ public class DataProcessor : MonoBehaviour
                 if (InGame())
                     foreach (var z in Board.Instance.zombieArray)
                     {
+                        if (z is null)continue;
                         if (Health1st[z.theFirstArmorType] >= 0)
                         {
                             z.theFirstArmorMaxHealth = Health1st[z.theFirstArmorType];
@@ -120,6 +122,7 @@ public class DataProcessor : MonoBehaviour
                 if (InGame())
                     foreach (var z in Board.Instance.zombieArray)
                     {
+                        if (z is null)continue;
                         if (Health2nd[z.theSecondArmorType] >= 0)
                         {
                             z.theSecondArmorMaxHealth = Health2nd[z.theSecondArmorType];
@@ -165,6 +168,7 @@ public class DataProcessor : MonoBehaviour
             if (p1.UltimateRamdomZombie is not null) UltimateRamdomZombie = (bool)p1.UltimateRamdomZombie;
             if (p1.PresentFastOpen is not null) PresentFastOpen = (bool)p1.PresentFastOpen;
             if (p1.LockPresent is not null) LockPresent = (int)p1.LockPresent;
+            if (p1.LockWheat is not null) LockWheat = (int)p1.LockWheat;
             if (p1.FastShooting is not null) FastShooting = (bool)p1.FastShooting;
             if (p1.HardPlant is not null) HardPlant = (bool)p1.HardPlant;
             if (p1.NoHole is not null) NoHole = (bool)p1.NoHole;
@@ -517,7 +521,10 @@ public class DataProcessor : MonoBehaviour
 
             if (iga.SetZombieIdle is not null)
                 foreach (var z in Board.Instance.zombieArray)
+                {
+                    if (z is null)continue;
                     z?.anim.Play("idle");
+                }
 
             if (iga.ClearAllIceRoads is not null)
                 for (var i = 0; i < Board.Instance.iceRoadFadeTime.Count; i++)
@@ -922,7 +929,7 @@ public class DataProcessor : MonoBehaviour
             }
             
             if (iga.BetterShowEnabled is not null) BetterShowEnabled = (bool)iga.BetterShowEnabled;
-            
+            if (iga.BetterIZDataEnabled is not null) BetterIZDataEnabled = (bool)iga.BetterIZDataEnabled;
             if (iga.StartMower is not null)
                 foreach (var i in FindObjectsOfTypeAll(Il2CppType.Of<Mower>()))
                     try
@@ -952,6 +959,7 @@ public class DataProcessor : MonoBehaviour
         }
     }
     public static bool BetterShowEnabled;
+    public static bool BetterIZDataEnabled;
 
     public static void ProcessData(string data)
     {
