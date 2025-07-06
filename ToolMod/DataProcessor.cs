@@ -57,13 +57,16 @@ public class DataProcessor : MonoBehaviour
                 if (InGame())
                     foreach (var z in Board.Instance.zombieArray)
                     {
-                        if (HealthZombies[z.theZombieType] >= 0)
+                        if (z is not null)
                         {
-                            z.theMaxHealth = HealthZombies[z.theZombieType];
-                            if (z.theHealth > z.theMaxHealth) z.theHealth = z.theMaxHealth;
-                        }
+                            if (HealthZombies[z.theZombieType] >= 0)
+                            {
+                                z.theMaxHealth = HealthZombies[z.theZombieType];
+                                if (z.theHealth > z.theMaxHealth) z.theHealth = z.theMaxHealth;
+                            }
 
-                        z.UpdateHealthText();
+                            z.UpdateHealthText();
+                        }
                     }
             }
 
@@ -73,14 +76,16 @@ public class DataProcessor : MonoBehaviour
                 if (InGame())
                     foreach (var z in Board.Instance.zombieArray)
                     {
-                        if (Health1st[z.theFirstArmorType] >= 0)
+                        if (z is not null)
                         {
-                            z.theFirstArmorMaxHealth = Health1st[z.theFirstArmorType];
-                            if (z.theFirstArmorHealth > z.theFirstArmorMaxHealth)
-                                z.theFirstArmorHealth = z.theFirstArmorMaxHealth;
+                            if (Health1st[z.theFirstArmorType] >= 0)
+                            {
+                                z.theFirstArmorMaxHealth = Health1st[z.theFirstArmorType];
+                                if (z.theFirstArmorHealth > z.theFirstArmorMaxHealth)
+                                    z.theFirstArmorHealth = z.theFirstArmorMaxHealth;
+                            }
+                            z.UpdateHealthText();
                         }
-
-                        z.UpdateHealthText();
                     }
             }
 
@@ -91,14 +96,17 @@ public class DataProcessor : MonoBehaviour
                 if (InGame())
                     foreach (var z in Board.Instance.zombieArray)
                     {
-                        if (Health2nd[z.theSecondArmorType] >= 0)
+                        if (z is not null)
                         {
-                            z.theSecondArmorMaxHealth = Health2nd[z.theSecondArmorType];
-                            if (z.theSecondArmorHealth > z.theSecondArmorMaxHealth)
-                                z.theSecondArmorHealth = z.theSecondArmorMaxHealth;
-                        }
+                            if (Health2nd[z.theSecondArmorType] >= 0)
+                            {
+                                z.theSecondArmorMaxHealth = Health2nd[z.theSecondArmorType];
+                                if (z.theSecondArmorHealth > z.theSecondArmorMaxHealth)
+                                    z.theSecondArmorHealth = z.theSecondArmorMaxHealth;
+                            }
 
-                        z.UpdateHealthText();
+                            z.UpdateHealthText();
+                        }
                     }
             }
 
@@ -133,11 +141,11 @@ public class DataProcessor : MonoBehaviour
                     Board.Instance.boardTag = t;
                 }
             }
-
             if (p1.SuperPresent is not null) SuperPresent = (bool)p1.SuperPresent;
             if (p1.UltimateRamdomZombie is not null) UltimateRamdomZombie = (bool)p1.UltimateRamdomZombie;
             if (p1.PresentFastOpen is not null) PresentFastOpen = (bool)p1.PresentFastOpen;
             if (p1.LockPresent is not null) LockPresent = (int)p1.LockPresent;
+            if (p1.LockWheat is not null) LockWheat = (int)p1.LockWheat;
             if (p1.FastShooting is not null) FastShooting = (bool)p1.FastShooting;
             if (p1.HardPlant is not null) HardPlant = (bool)p1.HardPlant;
             if (p1.NoHole is not null) NoHole = (bool)p1.NoHole;
@@ -511,8 +519,12 @@ public class DataProcessor : MonoBehaviour
 
             if (iga.SetZombieIdle is not null)
                 foreach (var z in Board.Instance.zombieArray)
-                    z?.anim.Play("idle");
-
+                {
+                    if (z is not null)
+                    {
+                        z?.anim.Play("idle");
+                    }
+                }
             if (iga.ClearAllIceRoads is not null)
                 for (var i = 0; i < Board.Instance.iceRoadFadeTime.Count; i++)
                     Board.Instance.iceRoadFadeTime[i] = 0f;
@@ -918,6 +930,7 @@ public class DataProcessor : MonoBehaviour
             }
 
             if (iga.BetterShowEnabled is not null) BetterShowEnabled = (bool)iga.BetterShowEnabled;
+            if (iga.BetterIZDataEnabled is not null) BetterIZDataEnabled = (bool)iga.BetterIZDataEnabled;
 
             if (iga.StartMower is not null)
                 foreach (var i in Board.Instance.mowerArray)
@@ -950,6 +963,7 @@ public class DataProcessor : MonoBehaviour
     }
 
     public static bool BetterShowEnabled;
+    public static bool BetterIZDataEnabled;
 
 
     private static void ProcessGaoshuData<T>(string data, Func<string, IEnumerable<T>> parser, Action<T> creator)

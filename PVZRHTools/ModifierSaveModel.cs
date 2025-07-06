@@ -43,6 +43,7 @@ public struct ModifierSaveModel
     public int LockBulletType { get; set; }
     public bool LockMoney { get; set; }
     public int LockPresent { get; set; }
+    public int LockWheat { get; set; }
     public bool LockSun { get; set; }
     public bool MineNoCD { get; set; }
     public bool NeedSave { get; set; }
@@ -83,4 +84,5 @@ public struct ModifierSaveModel
     public List<int> ZombieSeaTypes { get; set; }
     public int ZombieType { get; set; }
     public bool BetterShowEnabled { get; set; }
+    public bool BetterIZDataEnabled { get; set; }
 }

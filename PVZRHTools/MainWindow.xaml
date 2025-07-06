@@ -524,7 +524,7 @@
                                                   VerticalAlignment="Top" Foreground="White" BorderThickness="2,2,2,2"
                                                   HorizontalAlignment="Left" Margin="0,0,10,0" />
                                         <CheckBox x:Name="NoHole" IsChecked="{Binding NoHole}"
-                                                  Content="{DynamicResource Tab1.Page6.NoHole}" Height="20"
+                                                  Content="{DynamicResource Tab1.Page6.NoHole}" Height="21"
                                                   VerticalAlignment="Top" Foreground="White" BorderThickness="2,2,2,2"
                                                   HorizontalAlignment="Left" Margin="0,0,10,0" />
 
@@ -558,11 +558,32 @@
                                                   VerticalAlignment="Top" Foreground="White" BorderThickness="2,2,2,2"
                                                   HorizontalAlignment="Left" Margin="0,0,10,0" />
                                         <CheckBox x:Name="PlantUpgrade" IsChecked="{Binding PlantUpgrade}"
-                                                  Content="{DynamicResource Tab1.Page6.PlantUpgrade}" Height="22"
-                                                  Foreground="White" BorderThickness="2,2,2,2" Width="84" />
+                                                  Content="{DynamicResource Tab1.Page6.PlantUpgrade}" Height="21"
+                                                  VerticalAlignment="Top" Foreground="White" BorderThickness="2,2,2,2"
+                                                  Margin="0,0,10,0" Width="72" RenderTransformOrigin="0.5,0.5">
+                                            <CheckBox.RenderTransform>
+                                                <TransformGroup>
+                                                    <ScaleTransform />
+                                                    <SkewTransform AngleY="0.245" />
+                                                    <RotateTransform />
+                                                    <TranslateTransform Y="0.162" />
+                                                </TransformGroup>
+                                            </CheckBox.RenderTransform>
+                                        </CheckBox>
                                         <CheckBox x:Name="SuperStarNoCD" IsChecked="{Binding SuperStarNoCD}"
-                                                  Content="{DynamicResource Tab1.Page6.SuperStarNoCD}" Height="22"
-                                                  Foreground="White" BorderThickness="2,2,2,2" />
+                                                  Content="{DynamicResource Tab1.Page6.SuperStarNoCD}" Height="21"
+                                                  VerticalAlignment="Top" Foreground="White" BorderThickness="2,2,2,2"
+                                                  Margin="0,0,10,0" Width="77" />
+                                        <ComboBox SelectedValue="{Binding LockWheat}"
+                                                  hc:TitleElement.TitlePlacement="Left"
+                                                  hc:TitleElement.VerticalAlignment="Top"
+                                                  hc:TitleElement.Title="{DynamicResource Tab1.Page6.LockWheatPlant}"
+                                                  hc:TitleElement.TitleWidth="90" x:Name="LockWheatPlant"
+                                                  Height="24" Width="217"
+                                                  SelectedValuePath="Key" DisplayMemberPath="Value"
+                                                  ItemsSource="{Binding Plants}"
+                                                  Style="{DynamicResource ComboBoxExtend}"
+                                                  SelectionChanged="LockWheatPlant_SelectionChanged" />
                                     </StackPanel>
                                 </Grid>
                             </Expander>
@@ -694,9 +715,9 @@
                                         Margin="0,0,0,0" VerticalAlignment="Top" />
 
                                 <CheckBox x:Name="MouseBullet" Content="{DynamicResource Tab2.MouseBullet}"
-                                              Height="21" Margin="10,0,0,0" VerticalAlignment="Top" Foreground="White"
-                                              IsChecked="{Binding MouseBullet}" BorderThickness="2,2,2,2"
-                                              HorizontalAlignment="Left" />
+                                          Height="21" Margin="10,0,0,0" VerticalAlignment="Top" Foreground="White"
+                                          IsChecked="{Binding MouseBullet}" BorderThickness="2,2,2,2"
+                                          HorizontalAlignment="Left" />
 
                             </StackPanel>
                         </Grid>
@@ -949,6 +970,17 @@
                                       Margin="6,35,0,0" VerticalAlignment="Top" />
                             <Button x:Name="BetterShow" Content="{DynamicResource Tab8.Sure}"
                                     Command="{Binding BetterShowCommand}" Margin="116,32,0,0"
+                                    HorizontalAlignment="Left" VerticalAlignment="Top" />
+                            <Label Content="{DynamicResource Tab9.BetterIZData}" HorizontalAlignment="Left" Height="30"
+                                   Width="552" Margin="0,100,0,0" VerticalAlignment="Top" />
+                            <Label Content="{DynamicResource Tab9.Author}" HorizontalAlignment="Right"
+                                   Margin="0,100,0,0"
+                                   Height="30" Width="122" VerticalAlignment="Top" />
+                            <Button x:Name="BetterIZDataEnable" Content="{DynamicResource Tab9.BetterIZDataEnable}"
+                                    Command="{Binding BetterIZDataEnableCommand}" Margin="10,132,0,0"
+                                    HorizontalAlignment="Left" VerticalAlignment="Top" />
+                            <Button x:Name="BetterIZDataDisable" Content="{DynamicResource Tab9.BetterIZDataDisable}"
+                                    Command="{Binding BetterIZDataDisableCommand}" Margin="55,132,0,0"
                                     HorizontalAlignment="Left" VerticalAlignment="Top" />
                         </Grid>
                     </ScrollViewer>

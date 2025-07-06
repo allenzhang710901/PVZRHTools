@@ -32,6 +32,7 @@ public struct BasicProperties : ISyncData
     public bool? ItemExistForever { get; set; }
     public bool? JackboxNotExplode { get; set; }
     public int? LockPresent { get; set; }
+    public int? LockWheat { get; set; }
     public bool? MineNoCD { get; set; }
     public double? NewZombieUpdateCD { get; set; }
     public bool? NoHole { get; set; }
@@ -130,6 +131,7 @@ public struct InGameActions : ISyncData
     public int? ZombieType { get; set; }
     public bool? ZombieVase { get; set; }
     public bool? BetterShowEnabled { get; set; }
+    public bool? BetterIZDataEnabled { get; set; }
 }
 
 public struct InGameHotkeys : ISyncData

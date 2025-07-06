@@ -650,12 +650,13 @@ public static class UIMgrPatch
         var text2 = obj2.AddComponent<TextMeshProUGUI>();
         text2.font = Resources.Load<TMP_FontAsset>("Fonts/ContinuumBold SDF");
         text2.color = new Color(0, 1, 0, 1);
-        text2.text = "原作者@Infinite75已停更，这是@听雨夜荷的一个fork\n" +
+        text2.text = "原作者@Infinite75已停更，这是@听雨夜荷的一个fork。有bug找我反馈\n" +
                      "项目地址: https://github.com/CarefreeSongs712/PVZRHTools\n" +
                      "\n" +
-                     "修改器2.6.1-3.25.1000更新日志:\n" +
-                     "1. 修复了植物无敌\n"+
-                     "2. 添加了超桃无CD选项";
+                     "修改器2.7-3.26.3更新日志:\n" +
+                     "1. 适配2.7版本\n"+
+                     "1. 添加了大麦锁定植物\n"+
+                     "2. 添加了插件：更好的iz存档";
         obj2.transform.SetParent(GameObject.Find("Leaves").transform);
         obj2.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
         obj2.GetComponent<RectTransform>().sizeDelta = new Vector2(800, 50);
