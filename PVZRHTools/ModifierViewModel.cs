@@ -804,7 +804,9 @@ public partial class ModifierViewModel : ObservableObject
         App.DataSync.Value.SendData(new InGameActions
         {
             WriteField = "H4sIAAAAAAAACjPQMdIxMjWzNoTSQBJMG0NpEyhtCqYNrM2gtDmUtoDSlhAaABg+1o9PAAAA",
-            ClearOnWritingField = ClearOnWritingField
+            ClearOnWritingField = ClearOnWritingField,
+            GaoShuMode = true,
+            ClearAllZombies = true
         });
     }
 
@@ -1607,8 +1609,8 @@ public partial class ModifierViewModel : ObservableObject
     [ObservableProperty] public partial bool ZombieSeaLowEnabled { get; set; }
 
     [ObservableProperty] public partial bool BetterShowEnabled { get; set; }
+    
     [ObservableProperty] public partial bool BetterIZDataEnabled { get; set; }
-
     [ObservableProperty] public partial List<KeyValuePair<int, string>> ZombieSeaTypes { get; set; }
 
     [ObservableProperty] public partial int ZombieType { get; set; }

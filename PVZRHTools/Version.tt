@@ -23,6 +23,6 @@ public static class ModifierVersion
 <#+
     private readonly int major = 3;
     private readonly int minor = 26;
-    private int build = 1;
+    private int build = 4;
     private readonly string gameVersion = "2.7";
 #>
