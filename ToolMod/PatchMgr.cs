@@ -17,7 +17,6 @@ using UnityEngine;
 using static ToolMod.PatchMgr;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
-using Array = Il2CppSystem.Array;
 
 
 namespace ToolMod;
@@ -718,10 +717,10 @@ public static class UIMgrPatch
         text2.text = "原作者@Infinite75已停更，这是@听雨夜荷的一个fork。\n" +
                      "项目地址: https://github.com/CarefreeSongs712/PVZRHTools\n" +
                      "\n" +
-                     "修改器2.7-3.26.3更新日志:\n" +
-                     "1. 适配2.7版本\n"+
-                     "2. 添加了大麦锁定植物\n"+
-                     "3. 添加了插件: 更好的iz存档";
+                     "修改器2.7-3.26.4更新日志:\n" +
+                     "1. 修复了一大堆bug。详见github\n"+
+                     "2. 新增功能诸神进化无限刷新\n"+
+                     "3. 新增betterizdata保存冰块里的植物";
         obj2.transform.SetParent(GameObject.Find("Leaves").transform);
         obj2.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
         obj2.GetComponent<RectTransform>().sizeDelta = new Vector2(800, 50);

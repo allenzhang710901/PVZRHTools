@@ -502,16 +502,29 @@ public static class PresentPatchA
 {
     public static bool Prefix(Present __instance)
     {
+#if false
         foreach (var plant in __instance.board.plantArray)
             try
             {
-                if (plant.thePlantRow == __instance.thePlantRow && plant.thePlantColumn == __instance.thePlantColumn &&
-                    plant.thePlantType != __instance.thePlantType) return true;
+                if (plant.thePlantRow == __instance.thePlantRow && plant.thePlantColumn == __instance.thePlantColumn)
+                {
+                    if(plant.thePlantType==__instance.thePlantType)
+                        MelonLogger.Msg("TRUE");
+                    var array = MixData.data.Cast<Array>();
+                    for (int i = 0; i < array.Length; i++)
+                    {
+                        var element = array.GetValue(i);
+                        MelonLogger.Msg($"{i}: {element}");
+                    }
+
+                    MelonLogger.Msg($"{plant.thePlantRow},{plant.thePlantColumn},{plant.thePlantType}");
+                    return true;
+                }
             }
             catch
             {
             }
-
+#endif
         if (LockPresent >= 0)
         {
             CreatePlant.Instance.SetPlant(__instance.thePlantColumn, __instance.thePlantRow, (PlantType)LockPresent);
@@ -655,6 +668,17 @@ public static class TravelStorePatch
     }
 }
 
+[HarmonyPatch(typeof(ShootingMenu), nameof(ShootingMenu.Refresh))]
+public static class ShootingMenuPatch
+{
+    [HarmonyPostfix]
+    public static void Postfix()
+    {
+        if (BuffRefreshNoLimit) ShootingManager.Instance.refreshCount = 2147483647;
+    }
+}
+
+
 /*
 [HarmonyPatch(typeof(CreatePlant), "Lim")]
 public static class CreatePlantPatchA
@@ -682,7 +706,7 @@ public static class UIMgrPatch
         obj1.transform.SetParent(GameObject.Find("Leaves").transform);
         obj1.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
         obj1.GetComponent<RectTransform>().sizeDelta = new Vector2(800, 50);
-        obj1.transform.localPosition = new Vector3(-345.5f, -76.1f, 0);
+        obj1.transform.localPosition = new Vector3(-345.5f, -96.1f, 0);
 
         GameObject obj2 = new("UpgradeInfo");
         var text2 = obj2.AddComponent<TextMeshProUGUI>();
@@ -691,10 +715,10 @@ public static class UIMgrPatch
         text2.text = "原作者@Infinite75已停更，这是@听雨夜荷的一个fork。\n" +
                      "项目地址: https://github.com/CarefreeSongs712/PVZRHTools\n" +
                      "\n" +
-                     "修改器2.7-3.26.3更新日志:\n" +
-                     "1. 适配2.7版本\n"+
-                     "1. 添加了大麦锁定植物\n"+
-                     "2. 添加了插件：更好的iz存档";
+                     "修改器2.7-3.26.4更新日志:\n" +
+                     "1. 修复了一大堆bug。详见github\n"+
+                     "2. 新增功能诸神进化无限刷新\n"+
+                     "3. 新增betterizdata保存冰块里的植物";
         obj2.transform.SetParent(GameObject.Find("Leaves").transform);
         obj2.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
         obj2.GetComponent<RectTransform>().sizeDelta = new Vector2(800, 50);
@@ -730,6 +754,21 @@ public static class EveManagerPatch
         {
             if (git != null)
             {
+                if (git.theItemType == GridItemType.IceBlock)
+                {
+                    git.TryGetComponent<FreezedPlant>(out var freezedPlant);
+                    if (freezedPlant is not null)
+                    {
+                        gridItemsList.Add(new
+                        {
+                            Type = (int)git.theItemType,
+                            Column = git.theItemColumn,
+                            Row = git.theItemRow,
+                            PlantType = (int)freezedPlant.thePlantType
+                        });
+                        continue;
+                    }
+                }
                 gridItemsList.Add(new
                 {
                     Type = (int)git.theItemType,
@@ -804,6 +843,32 @@ public static class InGameUI_IZPatch
         }
         foreach (var gridItemData in data?.GridItems ?? new List<GridItemData>())
         {
+            if (gridItemData.Type == (int)GridItemType.IceBlock)
+            {
+                var gridItem = GridItem.SetGridItem(
+                    gridItemData.Column,
+                    gridItemData.Row,
+                    (GridItemType)gridItemData.Type
+                );
+
+                gridItem.TryGetComponent<FreezedPlant>(out var component);
+                if (component is not null)
+                {
+                    component.InitFreezedPlant((PlantType)gridItemData.PlantType);
+                }
+#if  false
+                    MelonLogger.Msg(gridItemData.PlantType);
+                    var plant = CreatePlant.Instance.SetPlant(gridItemData.Column, gridItemData.Row, (PlantType)gridItemData.PlantType,
+                        null, default, true, false,
+                        null);
+                    plant.TryGetComponent<Plant>(out var component);
+                    if (component is not null)
+                    {
+                        MelonLogger.Msg(component.thePlantType);
+                    }
+#endif
+                continue;
+            }
             GridItem.SetGridItem(
                 gridItemData.Column,
                 gridItemData.Row,
@@ -834,6 +899,7 @@ public class GridItemData
     public int Type { get; set; }
     public int Column { get; set; }
     public int Row { get; set; }
+    public int PlantType { get; set; }
 }
 
 [HarmonyPatch(typeof(Zombie), "Start")]
@@ -1041,6 +1107,7 @@ public class Plant_HealthTextPatch
                         __instance.TryGetComponent(out KelpTorch kelpTorch);
                         DisplayedString += '\n' + fireTimesText + kelpTorch.count;
                         break;
+                    case PlantType.ObsidianWheat:
                     case PlantType.Wheat:
                         DisplayedString += '\n' + transformCooldown + (30 - __instance.wheatTime).ToString("0.0") + "s";
                         break;
@@ -1074,7 +1141,7 @@ public class Plant_HealthTextPatch
                         break;
                 }
 
-                if (__instance.wheatType == 1 && __instance.thePlantType != PlantType.Wheat)
+                if (__instance.wheatType != 0 && __instance.thePlantType != PlantType.Wheat && __instance.thePlantType != PlantType.ObsidianWheat)
                     DisplayedString += '\n' + transformCooldown + (30 - __instance.wheatTime).ToString("0.0") + "s";
 
                 if (__instance.currentLightLevel != 0)

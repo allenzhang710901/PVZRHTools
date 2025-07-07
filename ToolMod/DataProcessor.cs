@@ -445,7 +445,6 @@ public class DataProcessor : MonoBehaviour
                 Il2CppReferenceArray<Object> zombies = FindObjectsOfTypeAll(Il2CppType.Of<Zombie>());
                 for (var i = zombies.Count - 1; i >= 0; i--)
                 {
-                    
                     try
                     {
                         ((Zombie)zombies[i]).TakeDamage(DmgType.MaxDamage,2147483647);

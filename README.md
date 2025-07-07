@@ -1,3 +1,5 @@
+下载请到：https://github.com/CarefreeSongs712/PVZRHTools/releases
+
 # 纪念伟大的infinite75
 
 自己比较菜，但试图去做吧。

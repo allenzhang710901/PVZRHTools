@@ -447,17 +447,23 @@ public class DataProcessor : MonoBehaviour
             {
                 Il2CppReferenceArray<Object> zombies = FindObjectsOfTypeAll(Il2CppType.Of<Zombie>());
                 for (var i = zombies.Count - 1; i >= 0; i--)
+                {
                     try
                     {
+                        ((Zombie)zombies[i]).TakeDamage(DmgType.MaxDamage,2147483647);
+                        ((Zombie)zombies[i]).BodyTakeDamage(2147483647);
                         ((Zombie)zombies[i])?.Die();
                     }
-                    catch
+                    catch 
                     {
                     }
+                }
 
                 for (var j = Board.Instance.zombieArray.Count; j >= 0; j--)
                     try
                     {
+                        Board.Instance.zombieArray[j]?.TakeDamage(DmgType.MaxDamage,2147483647);
+                        Board.Instance.zombieArray[j]?.BodyTakeDamage(2147483647);
                         Board.Instance.zombieArray[j]?.Die();
                     }
                     catch
@@ -929,7 +935,11 @@ public class DataProcessor : MonoBehaviour
             }
             
             if (iga.BetterShowEnabled is not null) BetterShowEnabled = (bool)iga.BetterShowEnabled;
-            if (iga.BetterIZDataEnabled is not null) BetterIZDataEnabled = (bool)iga.BetterIZDataEnabled;
+            if (iga.BetterIZDataEnabled is not null)
+            {
+                MLogger.LogInfo($"extraIZ已{((bool)iga.BetterIZDataEnabled?"启用":"关闭")}");
+                BetterIZDataEnabled = (bool)iga.BetterIZDataEnabled;
+            }
             if (iga.StartMower is not null)
                 foreach (var i in FindObjectsOfTypeAll(Il2CppType.Of<Mower>()))
                     try
