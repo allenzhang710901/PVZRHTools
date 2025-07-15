@@ -304,8 +304,6 @@ public partial class ModifierViewModel : ObservableObject
         GloveFullCDEnabled = s.GloveFullCDEnabled;
         NewZombieUpdateCD = s.NewZombieUpdateCD;
         PlantUpgrade = s.PlantUpgrade;
-        BetterShowEnabled = s.BetterShowEnabled;
-        BetterIZDataEnabled = s.BetterIZDataEnabled;
         var bi = 0;
         foreach (var b in App.InitData.Value.AdvBuffs)
         {
@@ -518,31 +516,6 @@ public partial class ModifierViewModel : ObservableObject
         catch
         {
         }
-    }
-
-    [RelayCommand]
-    public void BetterShow()
-    {
-        App.DataSync.Value.SendData(new InGameActions
-        {
-            BetterShowEnabled = BetterShowEnabled
-        });
-    }
-    [RelayCommand]
-    public void BetterIZDataEnable()
-    {
-        App.DataSync.Value.SendData(new InGameActions
-        {
-            BetterIZDataEnabled = true
-        });
-    }
-    [RelayCommand]
-    public void BetterIZDataDisable()
-    {
-        App.DataSync.Value.SendData(new InGameActions
-        {
-            BetterIZDataEnabled = false
-        });
     }
 
     [RelayCommand]
@@ -770,7 +743,6 @@ public partial class ModifierViewModel : ObservableObject
             Hotkeys = Hotkeys,
             NewZombieUpdateCD = NewZombieUpdateCD,
             PlantUpgrade = PlantUpgrade,
-            BetterShowEnabled = BetterShowEnabled
         };
         if (ZombieSeaTypes.Count > 0) s.ZombieSeaTypes.AddRange(from zst in ZombieSeaTypes select zst.Key);
 
@@ -1608,9 +1580,6 @@ public partial class ModifierViewModel : ObservableObject
 
     [ObservableProperty] public partial bool ZombieSeaLowEnabled { get; set; }
 
-    [ObservableProperty] public partial bool BetterShowEnabled { get; set; }
-    
-    [ObservableProperty] public partial bool BetterIZDataEnabled { get; set; }
     [ObservableProperty] public partial List<KeyValuePair<int, string>> ZombieSeaTypes { get; set; }
 
     [ObservableProperty] public partial int ZombieType { get; set; }

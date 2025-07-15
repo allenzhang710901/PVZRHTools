@@ -130,8 +130,6 @@ public struct InGameActions : ISyncData
     public List<int>? ZombieSeaTypes { get; set; }
     public int? ZombieType { get; set; }
     public bool? ZombieVase { get; set; }
-    public bool? BetterShowEnabled { get; set; }
-    public bool? BetterIZDataEnabled { get; set; }
 }
 
 public struct InGameHotkeys : ISyncData

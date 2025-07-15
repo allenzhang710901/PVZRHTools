@@ -950,36 +950,6 @@
                     </hc:ScrollViewer>
                 </Border>
             </TabItem>
-            <TabItem Header="{DynamicResource Tab8.Header}">
-                <Border Background="#00212125" Margin="0,8,0,0" BorderBrush="#FF2FA42F" BorderThickness="2,2,2,2">
-                    <ScrollViewer HorizontalScrollBarVisibility="Auto" Margin="0,0,0,-2">
-                        <Grid>
-                            <Label Content="{DynamicResource Tab8.BetterShow}" HorizontalAlignment="Left" Height="30"
-                                   Width="401" Margin="0,0,0,0" VerticalAlignment="Top" />
-                            <Label Content="{DynamicResource Tab8.BetterShowAuthor}" HorizontalAlignment="Right"
-                                   Height="30" Width="282" Margin="306,0,0,0" VerticalAlignment="Top" />
-                            <CheckBox x:Name="BetterShowEnabled" Content="{DynamicResource Tab8.BetterShowEnabled}"
-                                      Height="21" Foreground="White" BorderThickness="2,2,2,2"
-                                      IsChecked="{Binding BetterShowEnabled}" Width="87" HorizontalAlignment="Left"
-                                      Margin="6,35,0,0" VerticalAlignment="Top" />
-                            <Button x:Name="BetterShow" Content="{DynamicResource Tab8.Sure}"
-                                    Command="{Binding BetterShowCommand}" Margin="116,32,0,0"
-                                    HorizontalAlignment="Left" VerticalAlignment="Top" />
-                            <Label Content="{DynamicResource Tab9.BetterIZData}" HorizontalAlignment="Left" Height="30"
-                                   Width="552" Margin="0,100,0,0" VerticalAlignment="Top" />
-                            <Label Content="{DynamicResource Tab9.Author}" HorizontalAlignment="Right"
-                                   Margin="0,100,0,0"
-                                   Height="30" Width="122" VerticalAlignment="Top" />
-                            <Button x:Name="BetterIZDataEnable" Content="{DynamicResource Tab9.BetterIZDataEnable}"
-                                    Command="{Binding BetterIZDataEnableCommand}" Margin="10,132,0,0"
-                                    HorizontalAlignment="Left" VerticalAlignment="Top" />
-                            <Button x:Name="BetterIZDataDisable" Content="{DynamicResource Tab9.BetterIZDataDisable}"
-                                    Command="{Binding BetterIZDataDisableCommand}" Margin="55,132,0,0"
-                                    HorizontalAlignment="Left" VerticalAlignment="Top" />
-                        </Grid>
-                    </ScrollViewer>
-                </Border>
-            </TabItem>
         </TabControl>
     </Grid>
 </Window>

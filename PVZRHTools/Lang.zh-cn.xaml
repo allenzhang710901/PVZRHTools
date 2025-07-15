@@ -11,7 +11,6 @@
     <s:String x:Key="Tab5.Header">全局按键绑定</s:String>
     <s:String x:Key="Tab6.Header">游戏内按键绑定</s:String>
     <s:String x:Key="Tab7.Header">杂项</s:String>
-    <s:String x:Key="Tab8.Header">插件</s:String>
     <s:String x:Key="Tab1.Page1.Header">基本特性</s:String>
     <s:String x:Key="Tab1.Page2.Header">礼盒修改</s:String>
     <s:String x:Key="Tab1.Page3.Header">数值修改</s:String>
@@ -155,13 +154,4 @@
     <s:String x:Key="Tab0.LoadCustomPlantData.Tooltip">由于代码限制，无法保证所有条目均能生效</s:String>
     <s:String x:Key="Tab2.SetZombieIdle">僵尸全员站桩</s:String>
     <s:String x:Key="Tab2.MouseBullet">在鼠标处创建子弹 (test)</s:String>
-    <s:String x:Key="Tab8.BetterShow">更好的显示僵尸和植物的各类信息，适合iz/无尽</s:String>
-    <s:String x:Key="Tab8.BetterShowAuthor">开发者：@MC屑鱼，听雨夜荷</s:String>
-    <s:String x:Key="Tab8.BetterShowEnabled">开启显示</s:String>
-    <s:String x:Key="Tab8.Sure">应用</s:String>
-    <s:String x:Key="Tab9.BetterIZData">保存iz存档时额外保存CustomIZ.extra.json加载时试图读入。可以保存僵尸，梯子，坑，冰块等信息</s:String>
-    <s:String x:Key="Tab9.Author">开发者：听雨夜荷</s:String>
-    <s:String x:Key="Tab9.BetterIZDataEnable">开启</s:String>
-    <s:String x:Key="Tab9.BetterIZDataDisable">关闭</s:String>
-
 </ResourceDictionary>
