@@ -658,7 +658,6 @@ public static class TravelRefreshPatch
 {
     public static void Postfix(TravelRefresh __instance)
     {
-        MelonLogger.Msg($"1 {__instance.refreshTimes}");
     if (BuffRefreshNoLimit) __instance.refreshTimes = 2147483647;
     }
 }
@@ -668,7 +667,6 @@ public static class TravelStorePatch
 {
     public static void Postfix(TravelStore __instance)
     {
-        MelonLogger.Msg($"2 {__instance.count}");
         if (BuffRefreshNoLimit) __instance.count = 2147483647;
     }
 }
@@ -678,8 +676,7 @@ public static class ShootingMenuPatch
 {
     [HarmonyPostfix]
     public static void Postfix()
-    {
-        MelonLogger.Msg($"3 {ShootingManager.Instance.refreshCount}");
+    {;
         if (BuffRefreshNoLimit) ShootingManager.Instance.refreshCount = 2147483647;
     }
 }

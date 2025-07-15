@@ -176,6 +176,7 @@ public class DataProcessor : MonoBehaviour
             if (p1.MineNoCD is not null) MineNoCD = (bool)p1.MineNoCD;
             if (p1.ChomperNoCD is not null) ChomperNoCD = (bool)p1.ChomperNoCD;
             if (p1.SuperStarNoCD is not null) SuperStarNoCD = (bool)p1.SuperStarNoCD;
+            if (p1.AutoCutFruit is not null) AutoCutFruit = (bool)p1.AutoCutFruit;
             if (p1.CobCannonNoCD is not null) CobCannonNoCD = (bool)p1.CobCannonNoCD;
             if (p1.NoIceRoad is not null) NoIceRoad = (bool)p1.NoIceRoad;
             if (p1.ItemExistForever is not null) ItemExistForever = (bool)p1.ItemExistForever;
@@ -244,6 +245,10 @@ public class DataProcessor : MonoBehaviour
 
             if (iga.NoFail is not null) EnableAll<GameLose>(!(bool)iga.NoFail);
             if (iga.BuffRefreshNoLimit is not null) BuffRefreshNoLimit = (bool)iga.BuffRefreshNoLimit;
+            if (iga.BuffRefreshNoLimit is true)
+            {
+                FruitNinjaManager.Instance.AddScore(114514);
+            }
             if (iga.StopSummon is not null) StopSummon = (bool)iga.StopSummon;
             if (iga.ConveyBeltTypes is not null) ConveyBeltTypes = iga.ConveyBeltTypes;
             if (iga.AbyssCheat is not null)

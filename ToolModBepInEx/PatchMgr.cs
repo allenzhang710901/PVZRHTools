@@ -655,7 +655,7 @@ public static class TravelRefreshPatch
 {
     public static void Postfix(TravelRefresh __instance)
     {
-        if (BuffRefreshNoLimit) __instance.refreshTimes = 0;
+        if (BuffRefreshNoLimit) __instance.refreshTimes = 2147483647;
     }
 }
 
@@ -664,7 +664,7 @@ public static class TravelStorePatch
 {
     public static void Postfix(TravelStore __instance)
     {
-        if (BuffRefreshNoLimit) __instance.count = 0;
+        if (BuffRefreshNoLimit) __instance.count = 2147483647;
     }
 }
 
@@ -677,8 +677,33 @@ public static class ShootingMenuPatch
         if (BuffRefreshNoLimit) ShootingManager.Instance.refreshCount = 2147483647;
     }
 }
-
-
+[HarmonyPatch(typeof(FruitNinjaManager),nameof(FruitNinjaManager.LoseScore))]
+public static class FruitNinjaManagerPatch
+{
+    [HarmonyPrefix]
+    public static void Postfix(ref float value)
+    {
+        if (BuffRefreshNoLimit) value = -1e-10f;
+    }
+}
+[HarmonyPatch(typeof(FruitObject), nameof(FruitObject.FixedUpdate))]
+public static class FrFruitObjectPatch
+{
+    [HarmonyPostfix]
+    public static void Postfix(FruitObject __instance)
+    {
+        if(!AutoCutFruit) return;
+        __instance.gameObject.TryGetComponent<Rigidbody2D>(out var rb);
+        if (rb is not null)
+        {
+            float screenHeight = Camera.main.orthographicSize;
+            if (__instance.transform.position.y < -screenHeight && rb.velocity.y < -.0f)
+            {
+                __instance.Slice();
+            }
+        }
+    }
+}
 /*
 [HarmonyPatch(typeof(CreatePlant), "Lim")]
 public static class CreatePlantPatchA
@@ -715,9 +740,10 @@ public static class UIMgrPatch
         text2.text = "原作者@Infinite75已停更，这是@听雨夜荷的一个fork。\n" +
                      "项目地址: https://github.com/CarefreeSongs712/PVZRHTools\n" +
                      "\n" +
-                     "修改器2.7-3.27.1更新日志:\n" +
+                     "修改器2.7-3.27.2更新日志:\n" +
                      "1. 修复了一些bug\n" +
-                     "2. 移除插件部分，抽成单独的mod";
+                     "2. 移除插件部分，抽成单独的mod\n" +
+                     "3. 添加：”水果落地自动切";
         obj2.transform.SetParent(GameObject.Find("Leaves").transform);
         obj2.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
         obj2.GetComponent<RectTransform>().sizeDelta = new Vector2(800, 50);
@@ -815,6 +841,7 @@ public class PatchMgr : MonoBehaviour
     public static bool CardNoInit { get; set; } = false;
     public static bool ChomperNoCD { get; set; } = false;
     public static bool SuperStarNoCD { get; set; } = false;
+    public static bool AutoCutFruit { get; set; } = false;
     public static bool CobCannonNoCD { get; set; } = false;
     public static List<int> ConveyBeltTypes { get; set; } = [];
     public static bool[] Debuffs { get; set; } = [];
