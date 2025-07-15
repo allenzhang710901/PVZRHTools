@@ -934,12 +934,6 @@ public class DataProcessor : MonoBehaviour
                 }
             }
             
-            if (iga.BetterShowEnabled is not null) BetterShowEnabled = (bool)iga.BetterShowEnabled;
-            if (iga.BetterIZDataEnabled is not null)
-            {
-                MLogger.LogInfo($"extraIZ已{((bool)iga.BetterIZDataEnabled?"启用":"关闭")}");
-                BetterIZDataEnabled = (bool)iga.BetterIZDataEnabled;
-            }
             if (iga.StartMower is not null)
                 foreach (var i in FindObjectsOfTypeAll(Il2CppType.Of<Mower>()))
                     try
@@ -968,8 +962,6 @@ public class DataProcessor : MonoBehaviour
             }
         }
     }
-    public static bool BetterShowEnabled;
-    public static bool BetterIZDataEnabled;
 
     public static void ProcessData(string data)
     {
