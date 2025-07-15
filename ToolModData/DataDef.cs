@@ -15,6 +15,7 @@ public struct BasicProperties : ISyncData
     public bool? CardNoInit { get; set; }
     public bool? ChomperNoCD { get; set; }
     public bool? SuperStarNoCD { get; set; }
+    public bool? AutoCutFruit { get; set; }
     public bool? CobCannonNoCD { get; set; }
     public bool? DeveloperMode { get; set; }
     public bool? DevLour { get; set; }
@@ -118,7 +119,6 @@ public struct InGameActions : ISyncData
     public bool? StartMower { get; set; }
     public bool? StopSummon { get; set; }
     public bool? SummonMindControlledZombies { get; set; }
-
     public int? Times { get; set; }
     public string? WriteField { get; set; }
     public string? WriteVases { get; set; }

@@ -17,6 +17,7 @@
     <s:String x:Key="Tab1.Page4.Header">关卡特性附加</s:String>
     <s:String x:Key="Tab1.Page5.Header">场地特性</s:String>
     <s:String x:Key="Tab1.Page6.Header">植物特性</s:String>
+    <s:String x:Key="Tab1.Page7.Header">其他特性</s:String>
     <s:String x:Key="Tab1.Description">此修改器完全免费且已在github开源。若有付费/要求三连+关注/私信发链接的情况，说明你被骗了，请注意隐私和财产安全！</s:String>
     <s:String x:Key="Tab1.Page1.DevMode">开发者模式</s:String>
     <s:String x:Key="Tab1.Page1.GloveNoCD">手套无CD</s:String>
@@ -67,6 +68,10 @@
     <s:String x:Key="Tab1.Page6.UndeadBullet">子弹无限穿透</s:String>
     <s:String x:Key="Tab1.Page6.DevLour">窝红温了</s:String>
     <s:String x:Key="Tab1.Page6.DevLour.Tooltip">开发者模式珞瓜，植物叠太多可能导致问题，仅供娱乐</s:String>
+    <s:String x:Key="Tab1.Page7.InfFuritScore">水果忍者无限积分</s:String>
+    <s:String x:Key="Tab1.Page7.InfZJFresh">诸神进化无限刷新</s:String>
+    <s:String x:Key="Tab1.Page7.InfLSFresh">旅行随机无限刷新</s:String>
+    <s:String x:Key="Tab1.Page7.AutoCutFruit">水果落地自动切</s:String>
     <s:String x:Key="Tab2.Page1.Header">布阵</s:String>
     <s:String x:Key="Tab2.Page1.Description">行、列号设为0表示整行/整列</s:String>
     <s:String x:Key="Tab2.Page1.Row">行：</s:String>
@@ -146,7 +151,7 @@
     <s:String x:Key="Tab1.Page6.PlantUpgrade">植物升级</s:String>
     <s:String x:Key="Tab1.Page6.SuperStarNoCD">超桃无CD</s:String>
     <s:String x:Key="Tab1.Page6.LockWheatPlant">锁定大麦变植</s:String>
-    <s:String x:Key="Tab2.Page2.BuffRefreshNoLimit">无限刷新（旅行词条，诸神进化）</s:String>
+    <s:String x:Key="Tab2.Page2.BuffRefreshNoLimit">无限刷新和积分</s:String>
     <s:String x:Key="Tab2.Page1.VaseLineUp">罐子布阵：</s:String>
     <s:String x:Key="Tab0.AbyssCheat">深渊作弊</s:String>
     <s:String x:Key="Tab0.GardenTools">花园修改器（打开较慢，别急）</s:String>
