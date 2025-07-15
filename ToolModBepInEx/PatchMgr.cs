@@ -707,7 +707,7 @@ public static class UIMgrPatch
         obj1.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
         obj1.GetComponent<RectTransform>().sizeDelta = new Vector2(800, 50);
         obj1.transform.localPosition = new Vector3(-345.5f, -96.1f, 0);
-
+        
         GameObject obj2 = new("UpgradeInfo");
         var text2 = obj2.AddComponent<TextMeshProUGUI>();
         text2.font = Resources.Load<TMP_FontAsset>("Fonts/ContinuumBold SDF");
