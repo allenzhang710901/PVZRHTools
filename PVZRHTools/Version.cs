@@ -1,4 +1,4 @@
-﻿//ver5
+﻿//ver7
 namespace PVZRHTools;
 
 public static class ModifierVersion
