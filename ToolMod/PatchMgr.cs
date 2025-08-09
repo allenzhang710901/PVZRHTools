@@ -745,10 +745,10 @@ public static class UIMgrPatch
         text2.text = "原作者@Infinite75已停更，这是@听雨夜荷的一个fork。\n" +
                      "项目地址: https://github.com/CarefreeSongs712/PVZRHTools\n" +
                      "\n" +
-                     "修改器2.7-3.27.2更新日志:\n" +
-                     "1. 修复了一些bug\n" +
-                     "2. 移除插件部分，抽成单独的mod\n" +
-                     "3. 添加：”水果落地自动切";
+                     "修改器2.8-3.28.1更新日志:\n" +
+                     "1. 适配2.8\n" +
+                     "2. 添加了随机卡槽功能\n" +
+                     "3. 未来计划：添加卡槽修改";
         obj2.transform.SetParent(GameObject.Find("Leaves").transform);
         obj2.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
         obj2.GetComponent<RectTransform>().sizeDelta = new Vector2(800, 50);
