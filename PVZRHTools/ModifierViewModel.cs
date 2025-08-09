@@ -231,6 +231,7 @@ public partial class ModifierViewModel : ObservableObject
         ChomperNoCD = s.ChomperNoCD;
         SuperStarNoCD = s.SuperStarNoCD;
         AutoCutFruit = s.AutoCutFruit;
+        RandomCard = s.RandomCard;
         ClearOnWritingField = s.ClearOnWritingField;
         ClearOnWritingZombies = s.ClearOnWritingZombies;
         ClearOnWritingVases = s.ClearOnWritingVases;
@@ -1040,6 +1041,10 @@ public partial class ModifierViewModel : ObservableObject
     {
         App.DataSync.Value.SendData(new BasicProperties { AutoCutFruit = value });
     }
+    partial void OnRandomCardChanged(bool value)
+    {
+        App.DataSync.Value.SendData(new BasicProperties { RandomCard = value });
+    }
     partial void OnCobCannonNoCDChanged(bool value)
     {
         App.DataSync.Value.SendData(new BasicProperties { CobCannonNoCD = value });
@@ -1415,6 +1420,7 @@ public partial class ModifierViewModel : ObservableObject
     
     [ObservableProperty] public partial bool SuperStarNoCD { get; set; }
     [ObservableProperty] public partial bool AutoCutFruit { get; set; }
+    [ObservableProperty] public partial bool RandomCard { get; set; }
 
     [ObservableProperty] public partial bool ClearOnWritingField { get; set; }
 

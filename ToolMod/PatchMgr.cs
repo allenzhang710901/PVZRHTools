@@ -1219,6 +1219,7 @@ public class PatchMgr : MonoBehaviour
     public static bool ChomperNoCD { get; set; } = false;
     public static bool SuperStarNoCD { get; set; } = false;
     public static bool AutoCutFruit { get; set; } = false;
+    public static bool RandomCard { get; set; } = false;
     public static bool CobCannonNoCD { get; set; } = false;
     public static List<int> ConveyBeltTypes { get; set; } = [];
     public static bool[] Debuffs { get; set; } = [];
@@ -1403,6 +1404,27 @@ public class PatchMgr : MonoBehaviour
                 if (Board.Instance.bigStarActiveCountDown > 0.5f)
                 {
                     Board.Instance.bigStarActiveCountDown = 0.5f;
+                }
+            }
+
+            if (RandomCard)
+            {
+                Il2CppSystem.Collections.Generic.List<PlantType> randomPlant = Lawnf.GetRandomPlant();
+                if (InGameUI.Instance && randomPlant != null && randomPlant.Count != 0)
+                {
+                    for (int i = 0; i < InGameUI.Instance.cardOnBank.Length; i++)
+                    {
+                        try
+                        {
+                            var index = Random.RandomRangeInt(0, randomPlant.Count);
+                            var card = InGameUI.Instance.cardOnBank[i];
+                            card.thePlantType = randomPlant[index];
+                            card.ChangeCardSprite();
+                            card.theSeedCost = 0;
+                            card.fullCD = 0;
+                        }
+                        catch (Exception e) { }
+                    }
                 }
             }
         }

@@ -8,6 +8,7 @@ public struct ModifierSaveModel
     public bool ChomperNoCD { get; set; }
     public bool SuperStarNoCD { get; set; }
     public bool AutoCutFruit { get; set; }
+    public bool RandomCard { get; set; }
     public bool ClearOnWritingField { get; set; }
     public bool GaoShuMode { get; set; }
     public bool ClearOnWritingVases { get; set; }

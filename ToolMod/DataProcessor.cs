@@ -154,6 +154,7 @@ public class DataProcessor : MonoBehaviour
             if (p1.ChomperNoCD is not null) ChomperNoCD = (bool)p1.ChomperNoCD;
             if (p1.SuperStarNoCD is not null) SuperStarNoCD = (bool)p1.SuperStarNoCD;
             if (p1.AutoCutFruit is not null) AutoCutFruit = (bool)p1.AutoCutFruit;
+            if (p1.RandomCard is not null) RandomCard = (bool)p1.RandomCard;
             if (p1.CobCannonNoCD is not null) CobCannonNoCD = (bool)p1.CobCannonNoCD;
             if (p1.NoIceRoad is not null) NoIceRoad = (bool)p1.NoIceRoad;
             if (p1.ItemExistForever is not null) ItemExistForever = (bool)p1.ItemExistForever;
