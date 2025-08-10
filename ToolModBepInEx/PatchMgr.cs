@@ -882,6 +882,7 @@ public class PatchMgr : MonoBehaviour
     public static bool NoHole { get; set; } = false;
     public static bool NoIceRoad { get; set; } = false;
     public static bool PlantUpgrade { get; set; } = false;
+    public static bool PvPPotRange { get; set; } = false;
     public static bool PresentFastOpen { get; set; } = false;
     public static List<int> SeaTypes { get; set; } = [];
 

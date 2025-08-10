@@ -1228,6 +1228,10 @@ public partial class ModifierViewModel : ObservableObject
     {
         GameModes();
     }
+    partial void OnPvPPotRangeChanged(bool value)
+    {
+        App.DataSync.Value.SendData(new BasicProperties { PvPPotRange = value });
+    }
 
     partial void OnSeedRainChanged(bool value)
     {
@@ -1561,6 +1565,7 @@ public partial class ModifierViewModel : ObservableObject
     [ObservableProperty] public partial double Row { get; set; }
 
     [ObservableProperty] public partial bool ScaredyDream { get; set; }
+    [ObservableProperty] public partial bool PvPPotRange { get; set; }
 
     [ObservableProperty] public partial bool SeedRain { get; set; }
 

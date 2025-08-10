@@ -42,6 +42,7 @@ public struct BasicProperties : ISyncData
     public bool? PlantingNoCD { get; set; }
     public bool? PlantUpgrade { get; set; }
     public bool? PresentFastOpen { get; set; }
+    public bool? PvPPotRange { get; set; }
     public bool? SuperPresent { get; set; }
     public bool? UltimateRamdomZombie { get; set; }
     public bool? UltimateSuperGatling { get; set; }

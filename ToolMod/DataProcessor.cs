@@ -170,6 +170,7 @@ public class DataProcessor : MonoBehaviour
             if (p1.NewZombieUpdateCD is not null) NewZombieUpdateCD = (float)p1.NewZombieUpdateCD;
             if (p1.UltimateSuperGatling is not null) UltimateSuperGatling = (bool)p1.UltimateSuperGatling;
             if (p1.PlantUpgrade is not null) PlantUpgrade = (bool)p1.PlantUpgrade;
+            if (p1.PvPPotRange is not null) PvPPotRange = (bool)p1.PvPPotRange;
             return;
         }
 
@@ -261,11 +262,20 @@ public class DataProcessor : MonoBehaviour
                 var id = (int)iga.PlantType;
                 var r = (int)iga.Row;
                 var c = (int)iga.Column;
-                if (iga.Times > 50) iga.Times = 50;
+                //if (iga.Times > 50) iga.Times = 50;
                 try
                 {
                     for (var n = 0; n < iga.Times; n++)
                     {
+                        if (PvPPotRange)
+                        {
+                            for (var i = 0; i < Board.Instance!.rowNum; i++)
+                            for (var j = 3; j < Board.Instance.columnNum; j++)
+                                CreatePlant.Instance.SetPlant(j, i, (PlantType)id);
+
+                            continue;
+                        }
+                        
                         if (r * r + c * c == 0)
                         {
                             for (var i = 0; i < Board.Instance!.rowNum; i++)
@@ -316,6 +326,17 @@ public class DataProcessor : MonoBehaviour
                     var id = (int)iga.ZombieType;
                     var r = (int)iga.Row;
                     var c = (int)iga.Column;
+                    if (PvPPotRange)
+                    {
+                        for (var i = 0; i < Board.Instance.rowNum; i++)
+                        for (var j = 3; j < Board.Instance.columnNum; j++)
+                            if (!(bool)iga.SummonMindControlledZombies)
+                                CreateZombie.Instance.SetZombie(i, (ZombieType)id, -5f + j * 1.37f);
+                            else
+                                CreateZombie.Instance.SetZombieWithMindControl(i, (ZombieType)id,
+                                    -5f + j * 1.37f);
+                        continue;
+                    }
                     if (r * r + c * c == 0)
                     {
                         for (var i = 0; i < Board.Instance.rowNum; i++)
@@ -370,25 +391,37 @@ public class DataProcessor : MonoBehaviour
                 var id = (int)iga.PlantType;
                 var r = (int)iga.Row;
                 var c = (int)iga.Column;
-                if (r * r + c * c == 0)
+                if (PvPPotRange)
+                {
+                    
                     for (var i = 0; i < Board.Instance!.rowNum; i++)
-                    for (var j = 0; j < Board.Instance.columnNum; j++)
+                    for (var j = 3; j < Board.Instance.columnNum; j++)
                         GridItem.SetGridItem(j, i, GridItemType.ScaryPot).Cast<ScaryPot>().thePlantType =
                             (PlantType)id;
+                    
+                }
+                else
+                {
+                    if (r * r + c * c == 0)
+                        for (var i = 0; i < Board.Instance!.rowNum; i++)
+                        for (var j = 0; j < Board.Instance.columnNum; j++)
+                            GridItem.SetGridItem(j, i, GridItemType.ScaryPot).Cast<ScaryPot>().thePlantType =
+                                (PlantType)id;
 
-                if (r == 0 && c != 0)
-                    for (var j = 0; j < Board.Instance!.columnNum; j++)
-                        GridItem.SetGridItem(c - 1, j, GridItemType.ScaryPot).Cast<ScaryPot>().thePlantType =
+                    if (r == 0 && c != 0)
+                        for (var j = 0; j < Board.Instance!.columnNum; j++)
+                            GridItem.SetGridItem(c - 1, j, GridItemType.ScaryPot).Cast<ScaryPot>().thePlantType =
+                                (PlantType)id;
+
+                    if (c == 0 && r != 0)
+                        for (var j = 0; j < Board.Instance!.columnNum; j++)
+                            GridItem.SetGridItem(j, r - 1, GridItemType.ScaryPot).Cast<ScaryPot>().thePlantType =
+                                (PlantType)id;
+
+                    if (c > 0 && r > 0 && c <= Board.Instance!.columnNum && r <= Board.Instance.rowNum)
+                        GridItem.SetGridItem(c - 1, r - 1, GridItemType.ScaryPot).Cast<ScaryPot>().thePlantType =
                             (PlantType)id;
-
-                if (c == 0 && r != 0)
-                    for (var j = 0; j < Board.Instance!.columnNum; j++)
-                        GridItem.SetGridItem(j, r - 1, GridItemType.ScaryPot).Cast<ScaryPot>().thePlantType =
-                            (PlantType)id;
-
-                if (c > 0 && r > 0 && c <= Board.Instance!.columnNum && r <= Board.Instance.rowNum)
-                    GridItem.SetGridItem(c - 1, r - 1, GridItemType.ScaryPot).Cast<ScaryPot>().thePlantType =
-                        (PlantType)id;
+                }
             }
 
             if (iga.Row is not null && iga.Column is not null && iga.ZombieType is not null &&
@@ -397,46 +430,67 @@ public class DataProcessor : MonoBehaviour
                 var id = (int)iga.ZombieType;
                 var r = (int)iga.Row;
                 var c = (int)iga.Column;
-                if (r * r + c * c == 0)
+                if (PvPPotRange)
+                {
                     for (var i = 0; i < Board.Instance!.rowNum; i++)
-                    for (var j = 0; j < Board.Instance.columnNum; j++)
+                    for (var j = 3; j < Board.Instance.columnNum; j++)
                         GridItem.SetGridItem(j, i, GridItemType.ScaryPot).Cast<ScaryPot>().theZombieType =
                             (ZombieType)id;
+                }
+                else
+                {
+                    if (r * r + c * c == 0)
+                        for (var i = 0; i < Board.Instance!.rowNum; i++)
+                        for (var j = 0; j < Board.Instance.columnNum; j++)
+                            GridItem.SetGridItem(j, i, GridItemType.ScaryPot).Cast<ScaryPot>().theZombieType =
+                                (ZombieType)id;
 
-                if (r == 0 && c != 0)
-                    for (var j = 0; j < Board.Instance!.columnNum; j++)
-                        GridItem.SetGridItem(c - 1, j, GridItemType.ScaryPot).Cast<ScaryPot>().theZombieType =
+                    if (r == 0 && c != 0)
+                        for (var j = 0; j < Board.Instance!.columnNum; j++)
+                            GridItem.SetGridItem(c - 1, j, GridItemType.ScaryPot).Cast<ScaryPot>().theZombieType =
+                                (ZombieType)id;
+
+                    if (c == 0 && r != 0)
+                        for (var j = 0; j < Board.Instance!.columnNum; j++)
+                            GridItem.SetGridItem(j, r - 1, GridItemType.ScaryPot).Cast<ScaryPot>().theZombieType =
+                                (ZombieType)id;
+
+                    if (c > 0 && r > 0 && c <= Board.Instance!.columnNum && r <= Board.Instance.rowNum)
+                        GridItem.SetGridItem(c - 1, r - 1, GridItemType.ScaryPot).Cast<ScaryPot>().theZombieType =
                             (ZombieType)id;
-
-                if (c == 0 && r != 0)
-                    for (var j = 0; j < Board.Instance!.columnNum; j++)
-                        GridItem.SetGridItem(j, r - 1, GridItemType.ScaryPot).Cast<ScaryPot>().theZombieType =
-                            (ZombieType)id;
-
-                if (c > 0 && r > 0 && c <= Board.Instance!.columnNum && r <= Board.Instance.rowNum)
-                    GridItem.SetGridItem(c - 1, r - 1, GridItemType.ScaryPot).Cast<ScaryPot>().theZombieType =
-                        (ZombieType)id;
+                }
             }
 
             if (iga.Row is not null && iga.Column is not null&& iga.RandomVase is not null)
             {
                 var r = (int)iga.Row;
                 var c = (int)iga.Column;
-                if (r * r + c * c == 0)
+                if (PvPPotRange)
+                {
+                    
                     for (var i = 0; i < Board.Instance!.rowNum; i++)
-                    for (var j = 0; j < Board.Instance.columnNum; j++)
+                    for (var j = 3; j < Board.Instance.columnNum; j++)
                         PutRandomPot(j, i);
+                }
+                else
+                {
+                    
+                    if (r * r + c * c == 0)
+                        for (var i = 0; i < Board.Instance!.rowNum; i++)
+                        for (var j = 0; j < Board.Instance.columnNum; j++)
+                            PutRandomPot(j, i);
 
-                if (r == 0 && c != 0)
-                    for (var j = 0; j < Board.Instance!.columnNum; j++)
-                        PutRandomPot(c - 1, j);
+                    if (r == 0 && c != 0)
+                        for (var j = 0; j < Board.Instance!.columnNum; j++)
+                            PutRandomPot(c - 1, j);
 
-                if (c == 0 && r != 0)
-                    for (var j = 0; j < Board.Instance!.columnNum; j++)
-                        PutRandomPot(j, r-1);
+                    if (c == 0 && r != 0)
+                        for (var j = 0; j < Board.Instance!.columnNum; j++)
+                            PutRandomPot(j, r-1);
 
-                if (c > 0 && r > 0 && c <= Board.Instance!.columnNum && r <= Board.Instance.rowNum)
-                    PutRandomPot(c - 1, r-1);
+                    if (c > 0 && r > 0 && c <= Board.Instance!.columnNum && r <= Board.Instance.rowNum)
+                        PutRandomPot(c - 1, r-1);
+                }
             }
 
             void PutRandomPot(int i1, int i2)
@@ -511,6 +565,7 @@ all");
                             //zombielist = loadedZombies.Keys.ToList();
                              foreach (var t in GameAPP.resourcesManager.allZombieTypes)
                              {
+                                 if(t is ZombieType.ZombieBoss or ZombieType.ZombieBoss2 or ZombieType.TrainingDummy) continue;
                                  zombielist.Add((int)t);
                              }
                         }

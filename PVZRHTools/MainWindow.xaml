@@ -182,9 +182,13 @@
                                                       hc:TitleElement.Title="{DynamicResource Tab2.Page1.RepeatTimes}"
                                                       hc:TitleElement.TitleWidth="100" x:Name="Times"
                                                       HorizontalAlignment="Left" Margin="10,0,0,0"
-                                                      VerticalAlignment="Top" Width="224" Value="{Binding Times}"
+                                                      VerticalAlignment="Top" Width="174" Value="{Binding Times}"
                                                       Maximum="50" Minimum="1"
                                                       Style="{DynamicResource NumericUpDownExtend}" />
+                                    <CheckBox x:Name="PvPPotRange" Content="{DynamicResource Tab2.Page1.PvPPotRange}"
+                                              Height="21" Foreground="White" BorderThickness="2,2,2,2"
+                                              IsChecked="{Binding PvPPotRange}" Margin="10,0,0,0"
+                                              VerticalAlignment="Top" />
                                 </StackPanel>
                                 <hc:ElementGroup Orientation="Horizontal" Layout="Stack" Width="552"
                                                  HorizontalAlignment="Left" Style="{DynamicResource ElementGroupSolid}"

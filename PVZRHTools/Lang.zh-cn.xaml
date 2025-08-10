@@ -78,6 +78,7 @@
     <s:String x:Key="Tab2.Page1.Row">行：</s:String>
     <s:String x:Key="Tab2.Page1.Col">列：</s:String>
     <s:String x:Key="Tab2.Page1.RepeatTimes">重复执行次数：</s:String>
+    <s:String x:Key="Tab2.Page1.PvPPotRange">砸罐子全屏</s:String>
     <s:String x:Key="Tab2.Page1.CreatePlant">生成植物</s:String>
     <s:String x:Key="Tab2.Page1.CreateCard">生成植物卡片</s:String>
     <s:String x:Key="Tab2.Page1.SimplePresents">斗蛐蛐快速布阵(5礼盒+5僵尸礼盒)</s:String>
