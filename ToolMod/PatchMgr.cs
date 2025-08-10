@@ -747,7 +747,8 @@ public static class UIMgrPatch
                      "\n" +
                      "修改器2.8.1-3.28.2更新日志:\n" +
                      "1. 适配2.8.1\n" +
-                     "2. 未来计划：添加卡槽修改";
+                     "2. 添加随机罐子\n" +
+                     "3. 未来计划：添加卡槽修改";
         obj2.transform.SetParent(GameObject.Find("Leaves").transform);
         obj2.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
         obj2.GetComponent<RectTransform>().sizeDelta = new Vector2(800, 50);

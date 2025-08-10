@@ -10,6 +10,7 @@ using UnityEngine;
 using static ToolModBepInEx.PatchMgr;
 using static ToolModData.Modifier;
 using Object = UnityEngine.Object;
+using Random = UnityEngine.Random;
 
 namespace ToolModBepInEx;
 
@@ -423,6 +424,122 @@ public class DataProcessor : MonoBehaviour
                         (ZombieType)id;
             }
 
+                        if (iga.Row is not null && iga.Column is not null&& iga.RandomVase is not null)
+            {
+                var r = (int)iga.Row;
+                var c = (int)iga.Column;
+                if (r * r + c * c == 0)
+                    for (var i = 0; i < Board.Instance!.rowNum; i++)
+                    for (var j = 0; j < Board.Instance.columnNum; j++)
+                        PutRandomPot(j, i);
+
+                if (r == 0 && c != 0)
+                    for (var j = 0; j < Board.Instance!.columnNum; j++)
+                        PutRandomPot(c - 1, j);
+
+                if (c == 0 && r != 0)
+                    for (var j = 0; j < Board.Instance!.columnNum; j++)
+                        PutRandomPot(j, r-1);
+
+                if (c > 0 && r > 0 && c <= Board.Instance!.columnNum && r <= Board.Instance.rowNum)
+                    PutRandomPot(c - 1, r-1);
+            }
+
+            void PutRandomPot(int i1, int i2)
+            {
+                var g = GridItem.SetGridItem(i1, i2, GridItemType.ScaryPot);
+                const string filename = "randompot.txt";
+                if (!File.Exists(filename))
+                {
+                    File.WriteAllText(filename,@"# 这个文件用来设置右键放置罐子里面的类型
+# 下面这个表示罐子出现僵尸的概率：
+0.5
+# 下面这个表示植物的种类
+# 例如：0,1,2,3,4,5,6
+# 你也可以用all表示所有
+all
+# 下面这个表示僵尸的种类
+# 例如：0,1,2,3,4,5,6
+# 你也可以用all表示所有
+all");
+                }
+                
+                var lines = File.ReadLines(filename);
+                int index = 0;
+                float zombiechance = 0.5f;
+
+                List<int> plantlist = new List<int>();
+                List<int> zombielist = new List<int>();
+                foreach (var line in lines)
+                {
+                    if (line.StartsWith("#")) continue;
+                    if (line=="") continue;
+                    if (index == 0)
+                    {
+                        float.TryParse(line.Trim(), out zombiechance);
+                    }
+
+                    if (index == 1)
+                    {
+                        try
+                        {
+                            plantlist = line.Replace("，", ",")
+                                .Split(",")
+                                .Where(x => int.TryParse(x.Trim(), out _))
+                                .Select(x => int.Parse(x.Trim()))
+                                .ToList();
+                            var a = plantlist[0];
+                        }
+                        catch
+                        {
+                            plantlist.Clear();
+                            foreach (var t in GameAPP.resourcesManager.allPlants)
+                            {
+                                plantlist.Add((int)t);
+                            }
+                        }
+                    }
+
+                    if (index == 2)
+                    {
+                        try
+                        {
+                            zombielist = line.Replace("，", ",")
+                                .Split(",")
+                                .Where(x => int.TryParse(x.Trim(), out _))
+                                .Select(x => int.Parse(x.Trim()))
+                                .ToList();
+                            var a = zombielist[0];
+                        }
+                        catch
+                        {
+                            zombielist.Clear();
+                            //zombielist = loadedZombies.Keys.ToList();
+                             foreach (var t in GameAPP.resourcesManager.allZombieTypes)
+                             {
+                                 zombielist.Add((int)t);
+                             }
+                        }
+                    }
+
+                    index++;
+                }
+                var nextDouble = System.Random.Shared.NextDouble();
+                if (nextDouble < zombiechance)
+                {
+                    int ty = zombielist[Random.RandomRangeInt(0, zombielist.Count - 1)];
+                    g.Cast<ScaryPot>().theZombieType = (ZombieType)ty;
+                }
+                else
+                {
+                    int ty = plantlist[Random.RandomRangeInt(0, plantlist.Count - 1)];
+                    g.Cast<ScaryPot>().thePlantType = (PlantType)ty;
+                }
+
+                //GridItem.SetGridItem(i1, i2, GridItemType.ScaryPot).Cast<ScaryPot>().theZombieType =
+                //    (ZombieType)id1;
+            }
+            
             if (iga.ItemType is not null)
             {
                 if (iga.ItemType <= 8 && iga.ItemType >= 0)
