@@ -416,6 +416,33 @@ public class DataProcessor : MonoBehaviour
                         (ZombieType)id;
             }
 
+            if (iga.Row is not null && iga.Column is not null&& iga.RandomVase is not null)
+            {
+                var r = (int)iga.Row;
+                var c = (int)iga.Column;
+                if (r * r + c * c == 0)
+                    for (var i = 0; i < Board.Instance!.rowNum; i++)
+                    for (var j = 0; j < Board.Instance.columnNum; j++)
+                        PutRandomPot(j, i);
+
+                if (r == 0 && c != 0)
+                    for (var j = 0; j < Board.Instance!.columnNum; j++)
+                        PutRandomPot(c - 1, j);
+
+                if (c == 0 && r != 0)
+                    for (var j = 0; j < Board.Instance!.columnNum; j++)
+                        PutRandomPot(j, r-1);
+
+                if (c > 0 && r > 0 && c <= Board.Instance!.columnNum && r <= Board.Instance.rowNum)
+                    PutRandomPot(c - 1, r-1);
+            }
+
+            void PutRandomPot(int i1, int i2)
+            {
+                GridItem.SetGridItem(i1, i2, GridItemType.ScaryPot).Cast<ScaryPot>().theZombieType =
+                    (ZombieType)id1;
+            }
+
             if (iga.ItemType is not null)
             {
                 if (iga.ItemType <= 8 && iga.ItemType >= 0)

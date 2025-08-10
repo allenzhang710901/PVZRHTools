@@ -223,10 +223,12 @@
                                               Margin="10,0,0,0" VerticalAlignment="Top" />
                                     <hc:ButtonGroup Margin="10,0,0,0">
                                         <Button x:Name="PlantVase" Content="{DynamicResource Tab2.Page1.PlantVase}"
-                                                Command="{Binding PlantVaseCommand}" />
+                                                Command="{Binding PlantVaseCommand}"  />
                                         <Button x:Name="ZombieVase" Content="{DynamicResource Tab2.Page1.ZombieVase}"
-                                                Command="{Binding ZombieVaseCommand}" />
+                                                Command="{Binding ZombieVaseCommand}"   />
                                     </hc:ButtonGroup>
+                                    <Button x:Name="RandomVase" Content="{DynamicResource Tab2.Page1.RandomVase}"
+                                            Command="{Binding RandomVaseCommand}" />
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
                                     <hc:ElementGroup Orientation="Horizontal" Layout="Stack" HorizontalAlignment="Left"

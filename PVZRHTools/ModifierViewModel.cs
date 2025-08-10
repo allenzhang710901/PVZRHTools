@@ -1008,6 +1008,18 @@ public partial class ModifierViewModel : ObservableObject
         });
     }
 
+    
+    [RelayCommand]
+    public void RandomVase()
+    {
+        App.DataSync.Value.SendData(new InGameActions
+        {
+            RandomVase = true,
+            Row = (int)Row,
+            Column = (int)Col
+        });
+    }
+    
     private void GameModes()
     {
         App.DataSync.Value.SendData(new GameModes
