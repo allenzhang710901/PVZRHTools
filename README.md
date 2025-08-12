@@ -1,12 +1,18 @@
 下载请到：https://github.com/CarefreeSongs712/PVZRHTools/releases
 
+# **紧急修复：3.28.2版本存在恶性bug。请立刻更新至3.28.3！！**
+
 # 纪念伟大的infinite75
 
 自己比较菜，但试图去做吧。
 
 ## 修改器更新日志
 
+### · 2.8.1-3.28.3
+1. 修复了3.28.2的恶性bug
+
 ### · 2.8.1-3.28.2
+0. **该版本存在恶性bug，请使用3.28.3版本！！！**
 1. 适配2.8.1
 2. 添加随机罐子
 3. 未来计划：添加卡槽修改
@@ -21,7 +27,7 @@
 # PVZRHTools
 
 植物大战僵尸融合版修改器 by [@Infinite75](https://space.bilibili.com/672619350)  [@听雨夜荷](https://space.bilibili.com/3537110030092294)    
-适配游戏版本2.8     
+适配游戏版本2.8.1 
 已构建版本的链接在b站视频简介中
 
 模组部分基于[MelonLoader](https://github.com/LavaGang/MelonLoader)与[BepInEx](https://github.com/BepInEx/BepInEx)
@@ -36,5 +42,6 @@
 [@梦珞呀](https://space.bilibili.com/270840380)    
 [@蓝蝶蝶Starryfly](https://space.bilibili.com/27033629)
 
-感谢[@高数带我飞](https://space.bilibili.com/1117414477)(Github:[@LibraHp](https://github.com/LibraHp/))的技术支持    
+感谢[@MC屑鱼](https://space.bilibili.com/3493077316536784)(Github:[@SalmonCN-RH](https://github.com/SalmonCN-RH/))的技术支持
 
+感谢[@高数带我飞](https://space.bilibili.com/1117414477)(Github:[@LibraHp](https://github.com/LibraHp/))的技术支持    
