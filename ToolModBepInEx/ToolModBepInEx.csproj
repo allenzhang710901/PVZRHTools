@@ -127,6 +127,9 @@
       <Reference Include="System.Drawing.Common">
         <HintPath>..\..\lib\System.Drawing.Common.dll</HintPath>
       </Reference>
+      <Reference Include="System.Security.Cryptography.ProtectedData">
+        <HintPath>..\..\lib\System.Security.Cryptography.ProtectedData.dll</HintPath>
+      </Reference>
       <Reference Include="Unity.2D.Animation.Runtime">
         <HintPath>..\..\lib-bep\Unity.2D.Animation.Runtime.dll</HintPath>
       </Reference>
@@ -373,6 +376,10 @@
       <Reference Include="__Generated">
         <HintPath>..\..\lib-bep\__Generated.dll</HintPath>
       </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="System.Management" Version="9.0.8" />
     </ItemGroup>
     <!-- <Target Name="PostBuild" AfterTargets="PostBuildEvent">
         <Exec Command="COPY &quot;$(TargetPath)&quot; &quot;C:\Users\Liyuan\Desktop\pvzRHdev\BepInEx2.6.1\BepInEx\plugins&quot;" />

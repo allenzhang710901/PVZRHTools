@@ -1026,7 +1026,7 @@ public class PatchMgr : MonoBehaviour
         
         if (RandomCard)
         {
-            Il2CppSystem.Collections.Generic.List<PlantType> randomPlant = Lawnf.GetRandomPlant();
+            Il2CppSystem.Collections.Generic.List<PlantType> randomPlant = GameAPP.resourcesManager.allPlants;
             if (InGameUI.Instance && randomPlant != null && randomPlant.Count != 0)
             {
                 for (int i = 0; i < InGameUI.Instance.cardOnBank.Length; i++)
