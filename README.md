@@ -1,12 +1,14 @@
 下载请到：https://github.com/CarefreeSongs712/PVZRHTools/releases
 
-# **紧急修复：3.28.2版本存在恶性bug。请立刻更新至3.28.3！！**
-
 # 纪念伟大的infinite75
 
 自己比较菜，但试图去做吧。
 
 ## 修改器更新日志
+
+### · 2.8.2-3.29.1
+1. 适配2.8.2
+2. 修复旅行商店的bug
 
 ### · 2.8.1-3.28.3
 1. 修复了3.28.2的恶性bug
@@ -27,7 +29,7 @@
 # PVZRHTools
 
 植物大战僵尸融合版修改器 by [@Infinite75](https://space.bilibili.com/672619350)  [@听雨夜荷](https://space.bilibili.com/3537110030092294)    
-适配游戏版本2.8.1 
+适配游戏版本2.8.2
 已构建版本的链接在b站视频简介中
 
 模组部分基于[MelonLoader](https://github.com/LavaGang/MelonLoader)与[BepInEx](https://github.com/BepInEx/BepInEx)

@@ -664,7 +664,7 @@ public static class TravelStorePatch
 {
     public static void Postfix(TravelStore __instance)
     {
-        if (BuffRefreshNoLimit) __instance.count = 2147483647;
+        if (BuffRefreshNoLimit) __instance.count = 0;
     }
 }
 
@@ -740,8 +740,9 @@ public static class UIMgrPatch
         text2.text = "原作者@Infinite75已停更，这是@听雨夜荷的一个fork。\n" +
                      "项目地址: https://github.com/CarefreeSongs712/PVZRHTools\n" +
                      "\n" +
-                     "修改器2.8.1-3.28.3更新日志:\n" +
-                     "1. 修复了3.28.2的恶性bug";
+                     "修改器2.8.2-3.29.1更新日志:\n" +
+                     "1. 适配2.8.2\n"+
+                     "2. 修复旅行商店的bug";
         obj2.transform.SetParent(GameObject.Find("Leaves").transform);
         obj2.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
         obj2.GetComponent<RectTransform>().sizeDelta = new Vector2(800, 50);
